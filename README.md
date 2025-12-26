@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # LinguaFabric 🗣️
 
 > A collaborative language creation platform where users design custom languages, build dictionaries and grammar rules, create courses to teach others, and collaborate with friends.
@@ -454,3 +455,7 @@ For questions or issues:
 **Last Updated:** December 26, 2025  
 **Current Phase:** Phase 0 - Setup  
 **Next Milestone:** Complete Firebase initialization
+=======
+# language_creator
+This is a language creator app.
+>>>>>>> 28c0f762b7ef0012812f9977366ebc5f2e5da2e5
