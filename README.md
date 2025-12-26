@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # LinguaFabric 🗣️
 
 > A collaborative language creation platform where users design custom languages, build dictionaries and grammar rules, create courses to teach others, and collaborate with friends.
@@ -459,3 +460,7 @@ For questions or issues:
 # language_creator
 This is a language creator app.
 >>>>>>> 28c0f762b7ef0012812f9977366ebc5f2e5da2e5
+=======
+# language_creator
+This is a language creator app.
+>>>>>>> 9196fa2c20c64ef561733cff6998c17103847704
