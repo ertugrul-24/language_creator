@@ -22,14 +22,15 @@
 }
 
 /* Global styles */
-@layer base {
-  body {
-    @apply bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden selection:bg-primary/30 selection:text-primary;
-  }
+body {
+  background-color: #0F1419;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
 
-  html {
-    @apply scroll-smooth;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 /* Material Symbols styling */

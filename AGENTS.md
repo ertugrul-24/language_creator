@@ -7,17 +7,46 @@
 
 ## Core Decisions
 
-### 1. Tech Stack
+### Project Philosophy
+**LinguaFabric is open-source software** for the global conlang community. Anyone can:
+- ✅ Fork and self-host for free
+- ✅ Contribute code, docs, translations
+- ✅ Deploy on Firebase (paid) or Supabase (free)
+- ✅ Build commercial services on top
+
+### 1. Tech Stack (Dual Backend Support)
+
+**Frontend (Required):**
 | Component | Choice | Reason |
 |-----------|--------|--------|
-| **Frontend** | React 18 + TypeScript | Component-based, scalable, strong typing |
+| **Framework** | React 18 + TypeScript | Component-based, scalable, strong typing |
 | **Styling** | Tailwind CSS + Material Symbols | Pre-built dark mode theme, responsive design |
-| **State Management** | React Context / Zustand | Lightweight, Firebase-friendly |
-| **Backend** | Firebase (Firestore + Auth) | MVP speed, real-time updates, scalable, no DevOps |
-| **Authentication** | Firebase Auth (Google + Email) | Native OAuth integration, user management |
-| **Translation Engine** | DeepL API | Superior quality, language nuance |
-| **Hosting** | Vercel (frontend) + Firebase (backend) | Zero-config deployment |
-| **Future: PWA** | Service Workers + Web App Manifest | Offline support, installable app |
+| **State Management** | React Context / Zustand | Works with both Firebase and Supabase |
+| **Routing** | React Router 6 | Client-side navigation, SEO-friendly |
+| **Hosting** | Vercel (Free tier) | Zero-config deployment, automatic CI/CD |
+
+**Backend Option A: Firebase (Paid - Enterprise)**
+- **Cost:** $25-75/month (scales with usage)
+- **Database:** Firestore (NoSQL, real-time)
+- **Auth:** Google OAuth, Email/Password
+- **Best for:** Production apps with paying users
+- **Who:** Teams with budget
+
+**Backend Option B: Supabase (Free - Open-Source) ⭐ Default for GitHub**
+- **Cost:** FREE tier includes 500MB storage, unlimited API calls
+- **Database:** PostgreSQL (SQL, real-time with LISTEN/NOTIFY)
+- **Auth:** Email, Google, GitHub OAuth
+- **Self-hosting:** Docker support included
+- **Best for:** Open-source, community-driven projects
+- **Who:** Individual developers, GitHub contributors
+
+**Translation Engine (Developer's Choice):**
+- **Paid:** DeepL API ($10-20/month) - Highest quality
+- **Free:** Hugging Face Inference - Open-source ML
+- **Self-hosted:** LibreTranslate - Run locally
+- **Simple:** Google Translate - Easy integration
+
+**Future: PWA** | Service Workers | Offline support, installable app |
 
 ---
 
