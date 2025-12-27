@@ -1,388 +1,379 @@
-# Project Brief - LinguaFabric
+# Project Brief
 
 ## Executive Summary
 
-**LinguaFabric** is a collaborative web platform that democratizes language creation. It enables creators (writers, game designers, educators, worldbuilders) to design custom languages with professional linguistic depth or simplified modes, build comprehensive dictionaries, create teaching courses, and collaborate with teams—all in one intuitive interface.
+**LinguaFabric** is a collaborative language creation platform enabling users to design constructed languages, build dictionaries and grammar systems, create language courses, and collaborate with friends. The MVP (Phase 1) launches March 20, 2026, focusing on single-user language creation with collaborative foundations.
 
-The MVP launches with core language creation, dictionary management, and grammar rule documentation, targeting a launch date of **March 20, 2025**.
+### Key Metrics
+- **Target Launch:** March 20, 2026
+- **MVP Scope:** Language creation + dictionary + single-user courses
+- **Phase 2 (Collaboration):** May 15, 2026
+- **Estimated DAU at 6 months:** 500 active creators
+- **Estimated revenue at 12 months:** $15,000 - $40,000 MRR (pro subscriptions)
 
 ---
 
 ## Problem Statement
 
-### User Pain Points
+### Current Market Gaps
 
-1. **No unified platform for constructed language creation**
-   - Creators use scattered tools (spreadsheets, word docs, online dictionaries)
-   - Hard to manage complex language specifications
-   - Difficult to share and collaborate
+1. **Language Hobbyists** struggle to organize constructed language projects
+   - No integrated tools for conlangs
+   - Scattered documentation (spreadsheets, Google Docs, personal wikis)
+   - No standardized workflow
+   - Hard to share work with other enthusiasts
 
-2. **Manual dictionary management**
-   - Spreadsheets don't scale
-   - No phonetics/pronunciation support
-   - Cannot track word etymology or relationships
+2. **Language Teachers** lack tools to teach constructed languages
+   - Conlangs taught informally through Discord/forums
+   - No curriculum structure
+   - No progress tracking for students
+   - Cannot monetize teaching
 
-3. **Hard to teach constructed languages**
-   - No dedicated course platforms for conlangs
-   - Cannot create interactive learning materials easily
-   - No community sharing mechanism
+3. **Collaborative Creators** cannot easily work together
+   - No real-time collaboration tools
+   - Permission management complex
+   - Activity tracking non-existent
+   - Contribution disputes common
 
-4. **Collaboration is manual and error-prone**
-   - Merging changes from multiple contributors
-   - Tracking who added/edited what
-   - Permission management is ad-hoc
+### Opportunity
 
-### Market Opportunity
-
-- **Constructed Language Community:** 100k+ active community members (r/conlangs, conlang.org)
-- **Game Development:** Studios creating world-building assets
-- **Education:** Language teachers creating supplementary materials
-- **Content Creation:** Authors, screenwriters needing fictional languages
+- **Global Conlang Community:** ~50,000 active creators worldwide (Reddit r/conlangs: 47K members)
+- **Education Market:** Language learning platforms (Duolingo: $750M valuation) show demand
+- **Content Creator Economy:** Creators want to monetize niche knowledge
+- **Untapped Niche:** No integrated tooling specifically for conlangs
 
 ---
 
 ## Product Vision
 
-### Core Mission
+**Empower language creators** to design, document, teach, and collaborate on constructed languages through an intuitive, community-driven platform.
 
-*"Empower language creators to bring their linguistic visions to life through collaborative, intelligent tools."*
+### Core Values
 
-### Strategic Goals
-
-| Goal | Metric | Timeline |
-|------|--------|----------|
-| **Acquire Users** | 1,000+ users | Year 1 |
-| **Build Community** | 50+ public languages | Year 1 |
-| **Enable Collaboration** | 10+ multi-user projects | Phase 3 |
-| **Establish Authority** | Featured on conlang.org, dev blogs | Year 1 |
+1. **Accessibility** - Easy for beginners, powerful for experts
+2. **Collaboration** - Built for teamwork from day one
+3. **Creativity** - Support any language design paradigm
+4. **Community** - Foster connections between creators
 
 ---
 
-## Target Audience
+## Features by Phase
 
-### Primary Users
+### Phase 0 (Foundation) ✅ COMPLETE
+- React 18 + TypeScript project initialization
+- Tailwind CSS with dark mode
+- Basic component system (Header, Sidebar, PageShell)
+- React Router with placeholder pages
+- Firebase configuration ready
+- Development environment setup
 
-1. **Constructed Language Creators (Conlangers)**
-   - Age: 18-45
-   - Tech-savvy, hobby-focused
-   - Spend 5-10 hrs/week on language projects
-   - Value community & sharing
-   - **Use Case:** Create full languages with rich specs, share online
+### Phase 1 (MVP Core) — Feb 15 - Mar 20, 2026
+**Goal:** Single-user language creation and course building
 
-2. **Game Developers & Worldbuilders**
-   - Age: 25-50
-   - Professional or semi-professional
-   - Need languages for immersion
-   - **Use Case:** Quickly create believable languages for games/fiction
+**Features:**
+- User authentication (Google OAuth + Email/Password)
+- Language creation wizard
+  - Name, description, icon, cover image
+  - Linguistic specifications (alphabet, word order, phoneme set, depth level)
+  - Real-time validation
+- Dictionary management
+  - Add/edit/delete words
+  - Word parts of speech, pronunciation (IPA), audio
+  - Etymology and usage examples
+  - Bulk import from CSV
+  - Search and filter
+- Grammar rules system
+  - Create rules by category (morphology, phonology, syntax, pragmatics)
+  - Pattern matching and examples
+  - Rule editor with real-time preview
+- Basic courses (single-user)
+  - Lesson creation with markdown content
+  - Flashcard system
+  - Quiz builder with multiple question types
+  - Progress tracking for personal review
+- User dashboard
+  - Statistics cards (total words, rules, projects)
+  - Recent activity feed
+  - Quick-start templates for language types
 
-3. **Language Teachers & Educators**
-   - Age: 25-55
-   - Create educational content
-   - Want to teach constructed languages
-   - **Use Case:** Build courses, share with students
+### Phase 2 (Collaboration) — Mar 20 - May 15, 2026
+**Goal:** Real-time collaborative editing and social features
 
-### Secondary Users
+**Features:**
+- Collaboration system
+  - Invite other creators to languages
+  - Role-based permissions (owner, editor, viewer)
+  - Real-time activity feed
+  - Conflict resolution UI
+- Friend system
+  - User discovery / search
+  - Friend requests / invitations
+  - Activity visibility permissions
+- Shared courses
+  - Publish courses publicly
+  - Enrollment tracking
+  - Student progress management
+- Community features
+  - Public language gallery
+  - Trending / popular languages
+  - Language templates marketplace
+- Notifications
+  - Collaboration invites
+  - Friend requests
+  - Course enrollment
+  - Edit notifications (real-time)
 
-- **Language Enthusiasts:** Learning constructed languages
-- **Students:** Using for linguistics projects
-- **Researchers:** Studying language design patterns
+### Phase 3 (Monetization) — May 15 - Jun 30, 2026
+**Goal:** Enable creators to earn from courses and premium features
 
----
+**Features:**
+- Pro subscription
+  - Unlimited courses (free: 3 max)
+  - Unlimited collaborators (free: 3 max)
+  - Advanced analytics on course enrollment
+  - Custom course branding
+  - Course revenue share (70/30 platform split)
+- Payment processing (Stripe)
+- Revenue dashboard
+- Course analytics
+  - Student engagement metrics
+  - Completion rates
+  - Time spent per lesson
 
-## Product Pillars
+### Phase 4 (Platform Growth) — Jul+ 2026
+**Goal:** Scale community and add advanced features
 
-### 1. **Simplicity** 🎯
-- Intuitive interface for non-programmers
-- Guided workflows for complex tasks (language creation)
-- Smart defaults, minimal required inputs
-
-### 2. **Power** ⚡
-- Support realistic linguistic depth OR simplified modes
-- Flexible specs (custom fields, phoneme sets, rules)
-- Advanced features (IPA, etymology, rule patterns)
-
-### 3. **Community** 🤝
-- Easy sharing and collaboration
-- Friend networks and activity tracking
-- Public language repository
-
-### 4. **Intelligence** 🧠
-- Smart translation (dictionary + DeepL fallback)
-- Phonology validation
-- Automated stats & analytics
-
----
-
-## Key Features (MVP - Phase 0-3)
-
-### Phase 1: Core Language Creation (MVP Foundation)
-```
-User can:
-✅ Sign up with Google or email
-✅ Create custom language with specs:
-   - Alphabet & writing direction
-   - Phoneme set (IPA symbols)
-   - Depth level (realistic/simplified)
-   - Word order (SVO, SOV, etc.)
-   - Custom fields
-✅ View language dashboard with stats
-✅ Collaborate with invited users
-```
-
-### Phase 2: Dictionary & Grammar (Core Value)
-```
-User can:
-📅 Add words with:
-   - Translations
-   - IPA pronunciation
-   - Audio files
-   - Etymology notes
-   - Example phrases
-📅 Create grammar rules with examples
-📅 Create and publish flashcard courses
-📅 Track activity with 30-day heatmap
-```
-
-### Phase 3: Social & Translation (Differentiation)
-```
-User can:
-🤝 Invite collaborators with roles (editor/viewer)
-🤝 View friend activity feeds
-🤝 Manage privacy settings
-📄 Upload & translate PDFs
-📄 Export translated content
-```
+**Features:**
+- AI-powered features
+  - Phoneme suggestion based on parameters
+  - Auto-generated example phrases
+  - Translation helper with DeepL API
+  - Grammar anomaly detection
+- Advanced collaboration
+  - Version control / history
+  - Branching for language variants
+  - Commenting and reviews
+- Mobile app (React Native)
+- Offline support (PWA)
+- API for integrations
 
 ---
 
 ## Business Model
 
-### Monetization Strategy (Post-MVP)
+### Revenue Streams
 
-1. **Freemium Model**
-   - Free tier: 1 language, 500 words, basic features
-   - Pro tier ($5-10/month): Unlimited languages, advanced analytics, premium export
+| Stream | Mechanism | Timeline | Projected Revenue |
+|--------|-----------|----------|------------------|
+| **Pro Subscriptions** | $9.99/month for unlimited features | Phase 3 | $15K-$40K MRR at 12 mo |
+| **Course Revenue Share** | 30% platform cut on paid courses | Phase 3 | $5K-$15K MRR at 12 mo |
+| **Enterprise / Teams** | $29.99/month for org accounts (future) | Phase 4+ | $10K+ MRR potential |
+| **API Access** | $99-$299/month for platform API (future) | Phase 4+ | $5K+ MRR potential |
 
-2. **Enterprise Tier (Future)**
-   - For educational institutions
-   - Bulk user management
-   - Custom branding
-   - API access
+### Pricing Strategy
 
-3. **Add-ons**
-   - Premium translation engine access
-   - Voice recording & analysis
-   - Advanced phonology tools
+**Free Tier:**
+- 3 languages
+- 3 collaborators per language
+- Unlimited dictionary/grammar entries
+- 3 courses
+- 1 enrolled student per course (for course preview)
+- Community features (view public languages)
 
-### Revenue Projections
+**Pro Tier ($9.99/month):**
+- Unlimited languages and collaborators
+- Unlimited courses
+- Student enrollment (up to 100 per course free, then $1 per additional)
+- Advanced course analytics
+- Custom course branding
+- Export/backup tools
+- Priority support
 
-| Year | Users | Pro Conversion | Monthly Revenue |
-|------|-------|----------------|-----------------|
-| Year 1 | 1,000 | 5% | $2,500 |
-| Year 2 | 5,000 | 8% | $20,000 |
-| Year 3 | 15,000 | 10% | $75,000 |
+**Pro Course Earnings:**
+- Platform takes 30% of course enrollment fees
+- Creator sets own pricing ($0-$99 per course)
+- Payout monthly via Stripe
 
----
+### Unit Economics (Projected at 12 months)
 
-## Success Metrics
+**Assumptions:**
+- 500 active pro users paying $9.99/month = $80K MRR
+- 5% of pro users create paid courses at avg $15 revenue each = $37.5K MRR
+- Platform takes 30% cut on courses = $11.25K MRR
+- Total projected MRR: ~$91.25K
 
-### User Acquisition
-- Sign-ups per month
-- Organic discovery rate
-- Referral rate
-
-### Engagement
-- Daily active users (DAU)
-- Average session duration
-- Languages created per user
-- Words added per language
-
-### Retention
-- 7-day retention rate (target: >50%)
-- 30-day retention rate (target: >30%)
-- Monthly churn rate (target: <5%)
-
-### Community Health
-- Public vs private languages ratio
-- Collaborative languages count
-- Course enrollment rate
-- Friend connections
-
-### Product Quality
-- Average page load time (target: < 3s)
-- Error rate (target: < 0.1%)
-- User satisfaction score (target: 4+/5)
+**Cost Structure:**
+- Firebase costs: ~$2K-$5K MRR
+- DeepL API: ~$1K-$2K MRR
+- Stripe processing: ~1.5% of revenue = $1.3K MRR
+- DevOps/Infrastructure: ~$1K MRR
+- Marketing/Customer acquisition: ~10% of revenue = $9K MRR
+- **Total costs: ~$15K-$17K MRR**
+- **Gross margin: ~80-84%**
 
 ---
 
-## Technology Decisions
-
-### Why React + Firebase + Tailwind?
-
-**React 18 + TypeScript**
-- ✅ Component reusability
-- ✅ Strong typing prevents bugs
-- ✅ Excellent tooling & community
-- ✅ Fast development iteration
-
-**Firebase (Firestore + Auth)**
-- ✅ No backend DevOps needed
-- ✅ Real-time updates for collaboration
-- ✅ Built-in authentication
-- ✅ Scales automatically
-- ✅ Free tier generous
-
-**Tailwind CSS**
-- ✅ Rapid UI development
-- ✅ Design consistency
-- ✅ Dark mode built-in
-- ✅ Responsive by default
-
-**DeepL API**
-- ✅ Better quality than Google Translate
-- ✅ Excellent for language nuance
-- ✅ Reasonable pricing
-- ✅ Free tier available
-
----
-
-## Competitive Landscape
+## Competitive Analysis
 
 ### Direct Competitors
-- None (language creation is niche)
-- Closest: Scatter vs. Fire (worldbuilding platform with language elements)
+
+| Product | Strengths | Weaknesses | LinguaFabric Advantage |
+|---------|-----------|-----------|----------------------|
+| **Arthaey.com** | Known in conlang community | Static, outdated, no tools | Real-time, collaborative, dynamic |
+| **Wixoss World Builder** | Inspired by conlangs | Not language-specific | Specialized for languages |
+| **Duolingo** | Huge user base, course system | Built for natural languages | Purpose-built for conlangs |
+| **Google Docs** | Everyone knows it | No language-specific UX | Specialized tools, UX |
 
 ### Indirect Competitors
-- Google Docs (used for language documentation)
-- Anki (used for flashcards)
-- Wix/Weebly (for public sharing)
 
-### Competitive Advantages
-- **Purpose-built** for language creation
-- **Community-focused** (vs. solo tools)
-- **Intelligent translation** (dictionary + DeepL)
-- **Collaborative** from day one
-- **Free & accessible** (vs. expensive tools)
+- **Markdown wikis** (Notion, Obsidian) - Note-taking, not designed for language work
+- **Google Sheets** - Spreadsheets, not collaborative for languages
+- **Discord communities** - Social, not structured tools
+
+### LinguaFabric's Competitive Advantages
+
+1. **Specialized for Conlangs** - Purpose-built vs. generic tools
+2. **Collaborative from Day One** - Real-time editing and permissions
+3. **Integrated Ecosystem** - Dictionary + grammar + courses in one platform
+4. **Course Monetization** - Teachers can earn
+5. **Active Community** - Social discovery and sharing
+6. **Modern UX** - Tailwind design, responsive, dark mode
+7. **Accessibility** - Beginner-friendly with expert features
 
 ---
 
 ## Launch Strategy
 
-### MVP Launch (Phase 3 Complete - Mar 20, 2025)
+### Phase 1 MVP Launch (Mar 20, 2026)
 
-**Phase 1: Soft Launch**
-- Beta sign-ups (conlang.org, Reddit)
-- Gather feedback from 100 early users
-- Fix critical bugs
-- Duration: 2 weeks
+**Pre-Launch (Feb 20 - Mar 19):**
+- Beta access for 50 community members (r/conlangs, Conlang Discord)
+- Feedback collection and iteration
+- Onboarding tutorial creation
+- Email list building
 
-**Phase 2: Public Launch**
-- Announce on conlang community forums
-- Product Hunt submission
-- Dev.to & Medium articles
-- Duration: 2 weeks
+**Day 1 Launch:**
+- Post on r/conlangs (50K members)
+- HackerNews Show HN: (target 500-1000 upvotes)
+- Product Hunt submission (target top 5)
+- Blog post about conlang community problem
 
-**Phase 3: Community Building**
-- Feature user languages
-- Host challenges/contests
-- Build ambassador program
-- Duration: Ongoing
+**Weeks 2-4:**
+- Guest posts on language-focused blogs
+- Interviews on conlang podcasts
+- Community Discord outreach
+- YouTube demo video (target 10K views)
 
-### Post-Launch Roadmap
+**Target Metrics (30 days post-launch):**
+- 1,000 signed-up users
+- 200 active language creators
+- 500+ languages created
+- 10,000 dictionary entries
+- 50% weekly retention
 
-- **Month 4-6:** Implement Phase 4 (real-time editing)
-- **Month 7-9:** Mobile app (PWA)
-- **Month 10+:** Community marketplace, advanced tools
+### Phase 2 Collaboration Launch (May 15, 2026)
+
+**Marketing Focus:**
+- Case studies from Phase 1 early adopters
+- Feature announcement on conlang communities
+- Influencer partnerships (conlang YouTubers)
+- Target: 3,000 total users, 10% on pro
+
+### Phase 3 Monetization Launch (Jun 30, 2026)
+
+**Marketing Focus:**
+- Pro value proposition (unlimited courses, collaborators)
+- Course creator success stories
+- Email campaigns to active users
+- Referral program ($10 credit for referrer + referred)
 
 ---
 
-## Risk Analysis
+## Success Metrics
+
+### Acquisition Metrics
+- Monthly user signups
+- Signup-to-creator conversion rate
+- Channel attribution (organic, PH, HN, social, etc.)
+
+### Engagement Metrics
+- DAU / MAU
+- Weekly retention (Day 7, Day 30)
+- Average languages created per user
+- Average words per language
+- Time spent in app
+
+### Monetization Metrics
+- Pro subscription conversion rate (target: 5-10%)
+- ARPU (average revenue per user)
+- MRR growth rate
+- Course enrollment rate
+- Course revenue per creator
+
+### Community Metrics
+- Languages created
+- Dictionary entries
+- Courses published
+- Collaborations initiated
+- User-generated content volume
+
+---
+
+## Risks & Mitigation
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|-----------|
-| Low adoption | Medium | High | Early user research, beta feedback |
-| Competitor emerges | Low | High | Build community lock-in, differentiate |
-| Firebase costs spike | Low | Medium | Implement caching, pagination |
-| User data loss | Very Low | Critical | Daily backups, multi-region replicas |
-| Technical debt | Medium | Medium | Regular refactoring, test coverage |
+| **Low market demand** | Medium | High | User research in Phase 0, early beta feedback |
+| **Firebase costs spike** | Medium | Medium | Cost monitoring, optimize queries, caching |
+| **User churn post-launch** | Medium | High | Engagement features, community building, onboarding |
+| **Collaboration complexity** | High | High | Phased approach (solo first), technical spike in Phase 1 |
+| **Regulatory (GDPR/CCPA)** | Low | High | Legal consultation, privacy-by-design |
+| **Competitor emerges** | Low | Medium | Build fast, strong community moat, monetize early |
 
 ---
 
-## Resource Requirements
+## Timeline Overview
 
-### Team (MVP Phase)
-- **1 Full-stack Developer** (primary: React/Firebase)
-- **1 Designer** (part-time: UI refinement)
-- **1 Community Manager** (part-time: beta testing)
-
-### Infrastructure
-- Firebase project (free tier)
-- Vercel deployment (free tier)
-- DeepL API account (free tier)
-- Domain & SSL (~$12/year)
-
-### Timeline
-- **Phase 0:** 1-2 weeks (setup)
-- **Phase 1:** 2-3 weeks (language creation)
-- **Phase 2:** 2-3 weeks (dictionary)
-- **Phase 3:** 3-4 weeks (collaboration)
-- **Total MVP:** 10-12 weeks (~3 months)
+```
+Dec 27, 2025  │ Phase 0 COMPLETE ✅
+              │
+Jan - Feb 26  │ Phase 1 Development (Language creation core)
+Feb 20-Mar 19 │ Phase 1 Beta testing (50 community members)
+Mar 20, 2026  │ Phase 1 Launch (MVP)
+              │
+Mar 20-May 15 │ Phase 2 Development (Collaboration)
+May 15, 2026  │ Phase 2 Launch (Sharing & collaboration)
+              │
+May 15-Jun 30 │ Phase 3 Development (Monetization)
+Jun 30, 2026  │ Phase 3 Launch (Pro subscriptions)
+              │
+Jul+ 2026     │ Phase 4 (Growth features, mobile, API)
+```
 
 ---
 
-## Definitions
+## Success Criteria for Each Phase
 
-### Constructed Language (Conlang)
-A language created artificially by an individual or small group, as opposed to natural languages that evolve in communities. Examples: Klingon, Elvish, Dothraki.
+### Phase 1 Success (MVP)
+- ✅ 1,000+ signups within 30 days of launch
+- ✅ 200+ active creators (created 1+ language)
+- ✅ 50%+ Day 7 retention
+- ✅ 500+ languages created
+- ✅ Positive qualitative feedback from community
 
-### Linguistic Depth Levels
-- **Realistic:** Follows linguistic principles, suitable for serious creators
-- **Simplified:** Easier to create, warnings about accuracy limitations
+### Phase 2 Success (Collaboration)
+- ✅ 3,000+ total users
+- ✅ 20%+ of languages have 1+ collaborators
+- ✅ 500+ friend connections
+- ✅ Smooth real-time editing experience
 
-### IPA (International Phonetic Alphabet)
-Standard notation for pronunciation of sounds in any language.
-
-### Firestore
-Google's cloud database optimized for real-time, scalable applications.
-
----
-
-## Success Criteria for MVP Launch
-
-✅ **Technical**
-- 0 critical bugs at launch
-- > 95% uptime
-- < 3s page load time
-- Authentication working (Google + email)
-
-✅ **Functional**
-- Users can create language with specs
-- Dictionary management complete
-- Grammar rules system working
-- Course creation functional
-
-✅ **User Experience**
-- Onboarding walkthrough complete
-- Error messages helpful
-- UI responsive on mobile/desktop
-- Dark mode polished
-
-✅ **Community**
-- 100+ beta users
-- 50+ languages created
-- NPS score > 40
-- No major user complaints
+### Phase 3 Success (Monetization)
+- ✅ 5-10% pro conversion rate
+- ✅ $10K+ MRR from subscriptions and courses
+- ✅ 100+ paid courses
+- ✅ $50+ average course revenue
 
 ---
 
-## Conclusion
-
-LinguaFabric addresses a real need in the constructed language community by providing a **purpose-built, collaborative platform** for language creation. With a lean tech stack, generous free tiers, and a phased approach, we can launch an MVP in 12 weeks and build a thriving community of language creators.
-
-The market is untapped, the community is active, and the timing is right. Let's build something amazing. 🚀
-
----
-
-**Project Status:** Planning → Phase 0 Kickoff  
-**Estimated Launch:** March 20, 2025  
-**Last Updated:** December 26, 2025
+**Last Updated:** December 27, 2025
+**Status:** ✅ Complete - Do not modify after creation

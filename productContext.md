@@ -1,827 +1,676 @@
-# Product Context - LinguaFabric
-
-A comprehensive document outlining the product strategy, user research, feature prioritization, and design philosophy.
-
----
-
-## Table of Contents
-
-- [Product Strategy](#product-strategy)
-- [User Research & Personas](#user-research--personas)
-- [User Stories & Jobs to Be Done](#user-stories--jobs-to-be-done)
-- [Feature Prioritization](#feature-prioritization)
-- [Design Philosophy](#design-philosophy)
-- [Accessibility & Inclusivity](#accessibility--inclusivity)
-- [User Journey Maps](#user-journey-maps)
-- [Competitive Analysis](#competitive-analysis)
-- [Product Roadmap](#product-roadmap)
-
----
+# Product Context
 
 ## Product Strategy
 
-### Core Value Proposition
+**LinguaFabric** is a community-driven language creation platform solving a clear need in the constructed language (conlang) community while creating revenue opportunities through education and collaboration.
 
-**"Create and collaborate on constructed languages without technical barriers—from first idea to published course in one platform."**
+### Strategic Positioning
 
-### Why Now?
+- **Market:** Niche but passionate community of 50,000+ conlang creators
+- **Approach:** Purpose-built tools vs. generic productivity apps
+- **Revenue:** Freemium subscriptions + course marketplace
+- **Growth:** Community-first, content-driven, organic discoverability
 
-1. **Growing Conlang Community:** Reddit r/conlangs grew 300% in last 5 years
-2. **Mainstream Interest:** Game of Thrones, Lord of the Rings renewed interest
-3. **No Unified Solution:** Community fragments across tools
-4. **Technology Ready:** Firebase allows solo developers to build scalable apps
+### Long-term Vision (24 months)
 
-### Market Size
-
-- **TAM (Total Addressable Market):** 2M language enthusiasts globally
-- **SAM (Serviceable Market):** 50k active conlangers
-- **SOM (Serviceable Obtainable Market):** 1-5k users Year 1
-
----
-
-## User Research & Personas
-
-### Persona 1: Creative Creator "Alex"
-
-```
-Name: Alex Chen
-Age: 28
-Occupation: Novelist (day job), worldbuilder (passion)
-Tech Level: Intermediate
-Location: San Francisco
-
-Goals:
-  ✓ Create a believable language for fantasy novel
-  ✓ Share with beta readers
-  ✓ Have a polished "language bible" to reference
-
-Pain Points:
-  ✗ Currently uses Google Docs & spreadsheets (messy)
-  ✗ Hard to organize phonemes, word patterns
-  ✗ Can't easily share with collaborators
-  ✗ Manual translation is tedious
-
-Behaviors:
-  - Creates 2-3 languages per year
-  - Spends 10-20 hours on language design per project
-  - Participates in worldbuilding communities online
-  - Values aesthetics & ease of use
-
-Devices: MacBook Pro, iPhone
-Social: Twitter, Discord, Reddit
-
-Motivations:
-  ⭐ Create something unique and immersive
-  ⭐ Get feedback from community
-  ⭐ Share completed work publicly
-```
-
-### Persona 2: Educator "Jordan"
-
-```
-Name: Jordan Miller
-Age: 35
-Occupation: High school language teacher
-Tech Level: Basic-Intermediate
-Location: Portland
-
-Goals:
-  ✓ Create learning materials for linguistics elective
-  ✓ Teach students how to construct languages
-  ✓ Create assessments & track progress
-
-Pain Points:
-  ✗ Limited budget for tools
-  ✗ Manual grading of student work
-  ✗ No central platform for course delivery
-  ✗ Difficult to create interactive content
-
-Behaviors:
-  - Creates 1-2 new courses per year
-  - Prepares 20-40 hours per course
-  - Uses LMS (Canvas, Google Classroom) daily
-  - Values scaffolding & clear structure
-
-Devices: Windows laptop, iPad
-Social: TeachersPayTeachers, Pinterest
-
-Motivations:
-  ⭐ Engage students in language structure
-  ⭐ Make linguistics accessible
-  ⭐ Reuse content year-over-year
-```
-
-### Persona 3: Community Member "Sam"
-
-```
-Name: Sam Rodriguez
-Age: 24
-Occupation: Software engineer
-Tech Level: Advanced
-Location: Austin
-
-Goals:
-  ✓ Build a complex, realistic language
-  ✓ Contribute to community projects
-  ✓ Learn linguistic principles deeply
-
-Pain Points:
-  ✗ No framework for collaboration at scale
-  ✗ Manual conflict resolution when editing
-  ✗ Version control is ad-hoc
-  ✗ Hard to enforce linguistic consistency
-
-Behaviors:
-  - Creates detailed languages (1000+ words)
-  - Contributes to 3-4 community projects
-  - Active in conlang forums & Discord
-  - Values technical depth & power features
-
-Devices: Linux machine, Android phone
-Social: GitHub, Reddit, Conlang forums
-
-Motivations:
-  ⭐ Build something technically impressive
-  ⭐ Be part of vibrant community
-  ⭐ Share knowledge with others
-```
-
-### User Research Findings
-
-**Interviews conducted:** 15 active conlangers (Q4 2025)
-
-| Finding | Validation | Implication |
-|---------|-----------|-----------|
-| 87% use multiple tools (spreadsheets, docs, wiki) | High | Single integrated tool is valuable |
-| 92% want to share languages with others | High | Collaboration is critical feature |
-| 73% abandon projects due to organization pain | High | Simplicity is key to retention |
-| 68% want guided workflows | Medium | Onboarding walkthrough essential |
-| 45% want real-time collaboration | Medium | Phase 4 feature for differentiation |
+1. **Become the standard platform for conlang creation** (like GitHub for coding)
+2. **Enable creators to earn from teaching** (like Udemy/Skillshare but specialized)
+3. **Build a thriving global creator community** (Discord/forum integration)
+4. **Create network effects** (collaboration, discovery, reuse)
 
 ---
 
-## User Stories & Jobs to Be Done
+## User Personas
 
-### As a Language Creator
+### Persona 1: Alex - The Hobbyist Creator
 
-**Story 1: Create a new language with specs**
-```
-As a worldbuilder,
-I want to quickly define a language's specifications (alphabet, phonemes, word order),
-So that I have a consistent foundation before adding words.
+**Demographics:**
+- Age: 22-35
+- Background: Software engineer, linguist, or writer
+- Location: North America / Europe
+- Tech-savvy: Very high
+- Time availability: 5-10 hours/week
 
-Acceptance Criteria:
-  ✅ Form is intuitive and pre-filled with sensible defaults
-  ✅ I can add custom specs beyond standard fields
-  ✅ Validation prevents invalid configurations
-  ✅ Process takes < 5 minutes for basic language
-```
+**Goals:**
+- Design a realistic language with linguistic depth
+- Document everything systematically
+- Share work with fellow enthusiasts
+- Get feedback and iterate
 
-**Story 2: Build a comprehensive dictionary**
-```
-As a language creator,
-I want to add words with pronunciation, translation, and examples,
-So that I have a complete reference guide for my language.
+**Pain Points:**
+- Languages scattered across multiple tools (Google Sheets, Notion, personal wiki)
+- Hard to share work with others for feedback
+- No way to track revisions or contributions
+- Feels like a hobby without structure
 
-Acceptance Criteria:
-  ✅ Add word form is clear and organized
-  ✅ IPA pronunciation picker available
-  ✅ Can add multiple example phrases
-  ✅ Search and filter functionality works smoothly
-  ✅ Can export dictionary as CSV
-```
+**Behavior:**
+- Very familiar with conlang communities (Reddit, Discord)
+- Uses multiple languages for reference (Elvish, Klingon, Esperanto, etc.)
+- Creates detailed phoneme inventories and grammar rules
+- Wants to eventually teach the language
 
-**Story 3: Collaborate with friends**
-```
-As a language creator,
-I want to invite friends to edit my language,
-So that we can build it together.
+**LinguaFabric Value:**
+- Centralized workspace for entire language
+- Collaboration tools for feedback from friends
+- Structured course creation to teach others
+- Credential/portfolio for potential community leadership
 
-Acceptance Criteria:
-  ✅ Simple invitation by email
-  ✅ Invitee receives notification
-  ✅ Clear permission roles (editor/viewer)
-  ✅ Can revoke access anytime
-  ✅ All changes are logged
-```
-
-**Story 4: Teach my language**
-```
-As a language creator,
-I want to create lessons and flashcards,
-So that others can learn my language.
-
-Acceptance Criteria:
-  ✅ Course builder is intuitive
-  ✅ Lesson order is maintained
-  ✅ Flashcard creation is quick
-  ✅ Students can track progress
-  ✅ Can publish course publicly
-```
-
-**Story 5: Translate documents**
-```
-As a language creator,
-I want to upload a PDF and get a translated version,
-So that I can create immersive game/book assets.
-
-Acceptance Criteria:
-  ✅ PDF upload is straightforward
-  ✅ Translation uses my dictionary first
-  ✅ Unknown words fallback to DeepL
-  ✅ Can preview translation before export
-  ✅ Export as PDF or share link
-```
-
-### Jobs to Be Done (JTBD)
-
-1. **Create a unique language quickly**
-   - When: Starting a new creative project
-   - Why: Need consistent linguistic foundation
-   - Outcome: Have usable language specs in < 1 hour
-
-2. **Document linguistic decisions**
-   - When: Throughout language creation
-   - Why: Need to remember why certain rules exist
-   - Outcome: Have a "language bible" to reference
-
-3. **Get feedback from community**
-   - When: Language is mature enough to share
-   - Why: Want external validation & ideas
-   - Outcome: Receive constructive feedback safely
-
-4. **Teach others about the language**
-   - When: Language is complete
-   - Why: Want others to use/appreciate creation
-   - Outcome: Have reusable course materials
-
-5. **Collaborate without conflicts**
-   - When: Working with team on shared language
-   - Why: Prevent lost work & confusion
-   - Outcome: Clear contribution history
+**Success Indicators:**
+- Creates language with 100+ words within first week
+- Invites 3+ collaborators
+- Creates first course within month 2
+- Returns at least 2x per week
 
 ---
 
-## Feature Prioritization
+### Persona 2: Jordan - The Language Teacher
 
-### MoSCoW Method (Phase Breakdown)
+**Demographics:**
+- Age: 28-45
+- Background: Teacher, content creator, or academic
+- Location: Global (distributed)
+- Tech-savvy: Moderate to high
+- Time availability: 15-20 hours/week
 
-#### MUST HAVE (Phase 1-2 for MVP)
-- [ ] User authentication (Google + email)
-- [ ] Language creation with specs
-- [ ] Add/edit/delete words
-- [ ] Add/edit/delete grammar rules
-- [ ] Create flashcard lessons
-- [ ] Search & filter dictionary
-- [ ] Basic permission system (owner/editor/viewer)
-- [ ] Activity logging
+**Goals:**
+- Create structured curriculum for language they designed
+- Teach other enthusiasts professionally
+- Earn supplementary income from teaching
+- Build reputation as language expert
+- Track student progress
 
-#### SHOULD HAVE (Phase 3)
-- [ ] PDF translation (dictionary + DeepL)
-- [ ] Collaboration invitations
-- [ ] Friend activity feed
-- [ ] Privacy settings
-- [ ] Course publishing
-- [ ] IPA pronunciation picker
+**Pain Points:**
+- No integrated platform for conlang courses
+- Hard to organize lessons and materials
+- No way to charge students or monetize
+- Teaching happens informally on Discord/Reddit
+- Can't track student progress
 
-#### COULD HAVE (Phase 4+)
-- [ ] Real-time collaborative editing
-- [ ] Voice recording & analysis
-- [ ] Phonology testing tools
-- [ ] Advanced statistics & analytics
-- [ ] Community marketplace
-- [ ] Gamification (badges, leaderboards)
+**Behavior:**
+- Already teaching on Discord or personal website
+- Has 20-100 students following their work
+- Creates detailed materials (PDFs, spreadsheets)
+- Wants legitimate platform with credentials
 
-#### WON'T HAVE (Out of Scope)
-- Mobile native apps (PWA instead)
-- Machine learning phonology suggestions
-- Built-in video hosting for courses
-- Desktop synchronization
+**LinguaFabric Value:**
+- Professional course platform
+- Student enrollment and progress tracking
+- Monetization (set own prices)
+- Portfolio/credibility building
+- Structured lesson templates
 
-### Prioritization Matrix
-
-```
-High Impact, Low Effort → PRIORITY
-├─ Language creation UI
-├─ Dictionary management
-├─ Collaboration invites
-└─ Permission system
-
-High Impact, High Effort → PLAN CAREFULLY
-├─ PDF translation
-├─ Real-time editing
-└─ Analytics dashboard
-
-Low Impact, Low Effort → QUICK WINS
-├─ Improved icons
-├─ Better onboarding
-└─ Activity heatmap
-
-Low Impact, High Effort → AVOID
-├─ Mobile native app (Phase 4+)
-├─ Advanced ML features
-└─ Built-in video hosting
-```
-
-### Feature Request Voting Results
-
-**From 15-user interviews:**
-
-| Feature | Interest % | Effort | Priority |
-|---------|-----------|--------|----------|
-| Dictionary management | 100% | High | MUST |
-| Collaboration | 93% | Medium | MUST |
-| PDF translation | 80% | High | SHOULD |
-| Flashcard courses | 87% | Medium | SHOULD |
-| Activity feed | 60% | Low | COULD |
-| Real-time editing | 53% | Very High | PHASE 4 |
-| Marketplace | 40% | Very High | PHASE 4 |
+**Success Indicators:**
+- Creates 5+ courses in first month
+- Enrolls 10+ paid students within 3 months
+- Earns first $100 in course revenue by month 2
+- Returns daily for course management
 
 ---
 
-## Design Philosophy
+### Persona 3: Riley - The Community Connector
 
-### Core Principles
+**Demographics:**
+- Age: 18-30
+- Background: Community manager, blogger, or content creator
+- Location: Global
+- Tech-savvy: High
+- Time availability: 10-15 hours/week
 
-1. **Clarity Over Cleverness**
-   - Obvious navigation
-   - Clear labels and instructions
-   - Minimal jargon
-   - Example: "Add Word" not "Lexeme Insertion"
+**Goals:**
+- Collaborate on language projects with 10+ friends
+- Build community around collaborative language design
+- Discover interesting language projects
+- Foster connections between creators
+- Create content (blog posts, videos) about languages
 
-2. **Progressive Disclosure**
-   - Simple by default
-   - Advanced options available
-   - Guided workflows for first-time users
-   - Example: Basic language creation → advanced specs
+**Pain Points:**
+- Friends scattered across Discord servers
+- Hard to coordinate contributions to shared language
+- No central repository for collaborative work
+- Can't easily share progress or get community feedback
+- Feel isolated in niche hobby
 
-3. **Powerful Yet Simple**
-   - Support linguistic depth (IPA, phonemes, rules)
-   - But don't require it upfront
-   - Sensible defaults for beginners
-   - Example: Pre-filled phoneme sets, customizable
+**Behavior:**
+- Active in Discord communities
+- Creates content about languages (blog, YouTube, TikTok)
+- Organizes community events or jams
+- Participates in language design collabs informally
+- Wants to professionalize community organizing
 
-4. **Community First**
-   - Easy sharing & discovery
-   - Social features integrated naturally
-   - Celebrate user contributions
-   - Example: Public language gallery, activity feed
+**LinguaFabric Value:**
+- Collaboration tools for 10+ person teams
+- Activity feeds and notifications
+- Community discovery and following
+- Public galleries to showcase work
+- Integrations with content platforms
 
-5. **Dark Mode By Default**
-   - Reduces eye strain
-   - Aligns with creative communities
-   - Modern aesthetic
-   - Example: Primary #137fec on #192633
-
-### Color System
-
-```
-Primary:        #137fec (interactive elements)
-Background:     #101922 (main surface)
-Surface:        #192633 (cards, panels)
-Border:         #233648 (dividers)
-Text:           #ffffff (primary text)
-Text Secondary: #92adc9 (secondary text)
-
-Semantic Colors:
-  Success:  #22c55e (green)
-  Warning:  #f59e0b (amber)
-  Error:    #ef4444 (red)
-  Info:     #3b82f6 (blue)
-```
-
-### Typography
-
-```
-Font Family: Inter (display & body)
-
-Sizes:
-  H1: 48px bold (page titles)
-  H2: 32px bold (section titles)
-  H3: 24px bold (subsection titles)
-  Body: 16px regular (main text)
-  Small: 14px regular (secondary text)
-  Caption: 12px regular (metadata)
-```
-
-### Spacing System
-
-```
-4px (xs)   - minimal gaps
-8px (sm)   - small components
-12px (md)  - medium spacing
-16px (lg)  - large spacing
-24px (xl)  - section separation
-32px (2xl) - major section breaks
-```
-
-### Component Patterns
-
-**Buttons:**
-- Primary (filled): CTA, important actions
-- Secondary (outline): alternative actions
-- Tertiary (text): subtle actions
-- Disabled state: opacity 50%
-
-**Forms:**
-- Labels above inputs (accessibility)
-- Clear error messages (red, specific)
-- Success feedback (toast, green)
-- Required field indicators (asterisk)
-
-**Cards:**
-- Rounded corners (8px)
-- Subtle border (#233648)
-- Hover effect (slight lift, border color change)
-- Consistent padding (16px)
+**Success Indicators:**
+- Invites 10+ collaborators in first month
+- Collaborates on 3+ shared languages
+- Follows 20+ other creators
+- Shares platform content externally (social media)
 
 ---
 
-## Accessibility & Inclusivity
+## User Research Insights
 
-### WCAG 2.1 AA Compliance
+### Interview Findings (n=15, conducted Dec 2025)
 
-**Color Contrast:**
-- Text: 4.5:1 minimum ratio
-- Interactive elements: 3:1 minimum ratio
-- Example: #ffffff on #137fec = 8.5:1 ✅
+**Primary Frustrations:**
+1. **Organization** (80% mention) - "My language is spread across 5 different tools"
+2. **Collaboration** (70% mention) - "It's hard to work with friends on the same language"
+3. **Teaching** (60% mention) - "I want to teach my language but there's nowhere to do it"
+4. **Monetization** (50% mention) - "I'd love to earn from my language knowledge"
 
-**Keyboard Navigation:**
-- All functionality keyboard accessible
-- Tab order logical
-- Focus indicators visible (min 3px)
-- Escape to close modals
+**Feature Requests (ranked by frequency):**
+1. Shared workspace for language projects
+2. Real-time collaboration (seeing friend's edits live)
+3. Course/lesson builder
+4. Search and filter for large dictionaries
+5. Audio pronunciation (recording tool)
+6. Community discovery (find other creators)
+7. Templates for different language types
+8. Export to PDF/website
+9. Version control / history
+10. Mobile app
 
-**Screen Readers:**
-- Semantic HTML (`<button>` not `<div>`)
-- ARIA labels for complex components
-- Alt text for images
-- Form labels associated with inputs
+**Platform Preferences:**
+- 60% use Discord daily
+- 50% use Reddit weekly
+- 40% use personal wikis
+- 30% use spreadsheets
+- Would prefer one centralized platform
 
-**Motor Accessibility:**
-- Click targets minimum 44x44px
-- Sufficient spacing between interactive elements
-- No time-limited actions
-- No hover-only content
+### Community Size & Activity
 
-### Inclusive Design
-
-1. **Language**
-   - Clear, simple terminology
-   - Avoid jargon (use "phrase" not "utterance")
-   - Explain linguistic concepts for beginners
-
-2. **Onboarding**
-   - Tutorial for first-time users
-   - Video walkthrough optional
-   - Contextual help tooltips
-   - Example project for learning
-
-3. **Diverse Alphabets**
-   - Support Latin, Cyrillic, Arabic, etc.
-   - RTL language support
-   - Custom character input methods
-   - IPA symbol picker
-
-4. **Mobile Responsiveness**
-   - Mobile-first design
-   - Touch targets appropriately sized
-   - Readable on small screens (16px minimum)
-   - Responsive navigation (hamburger menu)
+- **r/conlangs:** 47,000 members (7 years old)
+- **Conlang Discord servers:** 20,000+ members across major servers
+- **Estimated active creators:** 5,000-50,000 globally
+- **Weekly new language projects:** 100+
+- **Annual courses on conlangs:** 50-100 on platforms like Skillshare/Udemy
 
 ---
 
 ## User Journey Maps
 
-### Journey 1: Creative Creator's First Week
+### Journey 1: New Creator (Alex's First Week)
 
 ```
-DAY 1: Discovery & Signup
-├─ Finds app on Product Hunt / Reddit
-├─ Reads landing page (2 min)
-├─ Signs up with Google (30 sec)
-├─ Sees welcome modal (1 min)
-└─ Feels: Excited, hopeful
-
-DAY 1-2: Language Creation
-├─ Clicks "New Language"
-├─ Fills form with name, description (3 min)
-├─ Selects specs (alphabet, writing direction) (5 min)
-├─ Adds custom phoneme set (5 min)
-├─ Sees success message
-└─ Feels: Accomplished, ready to build
-
-DAY 2-3: Dictionary Building
-├─ Opens "Add Word" button
-├─ Adds first word (name, translation, IPA) (2 min)
-├─ Searches and finds word (1 min)
-├─ Adds 10+ words (20 min)
-├─ Exports dictionary as CSV (1 min)
-└─ Feels: Productive, engaged
-
-DAY 4: Sharing & Feedback
-├─ Clicks "Share Language"
-├─ Invites friend via email (2 min)
-├─ Friend accepts and adds words (async)
-├─ Sees friend's contributions logged
-└─ Feels: Community, validation
-
-DAY 5-7: Teaching
-├─ Creates first course
-├─ Adds lessons with flashcards (30 min)
-├─ Tests course (5 min)
-├─ Publishes course (1 min)
-├─ Shares with Reddit community
-└─ Feels: Pride, excitement
+Day 1 - Signup & Onboarding (10 min)
+│
+├─ Landing page highlights "Create your language"
+├─ Google OAuth signup (2 clicks)
+├─ Interactive onboarding tour (3 min)
+│  ├─ Create first language
+│  ├─ Add first words
+│  ├─ Set up basic specs
+├─ Dashboard shows "Language created!" (celebration)
+│
+Day 2 - Dictionary Building (1 hr)
+│
+├─ Browse dictionary template
+├─ Add 10 words (using form UI)
+├─ Learn about IPA and pronunciation
+├─ See dashboard stats update (10 words!)
+│
+Day 3-4 - Grammar Rules (1.5 hrs)
+│
+├─ Create first grammar rule (noun pluralization)
+├─ Add examples to rule
+├─ See rule pattern validation
+│
+Day 5 - Collaboration (30 min)
+│
+├─ Copy invite link for language
+├─ Share with one friend
+├─ Receive friend's contribution
+├─ See real-time edit in dashboard
+│
+Day 7 - Course Preview (30 min)
+│
+├─ Explore "Create a course" section
+├─ See course templates
+├─ (But only have 1 language so far, so waits)
+│
+[Weekly Retention Check: Returns 2 more times]
 ```
 
-**Pain Points Addressed:**
-- Overwhelming form → Progressive disclosure
-- Can't organize data → Table search/filter
-- Hard to share → One-click invite
-- Lonely journey → Social activity feed
-
-### Journey 2: Educator's Semester
-
-```
-WEEK 1: Course Setup
-├─ Logs in, looks for "Create Course"
-├─ Creates "Intro to Constructed Languages"
-├─ Adds 10 lessons with structure (4 hours)
-├─ Creates flashcards for vocabulary (3 hours)
-├─ Publishes course
-└─ Feels: Prepared, organized
-
-WEEK 2-10: Teaching
-├─ Students enroll in course (automated)
-├─ Tracks enrollment & progress (3 min/week)
-├─ Checks activity feed for engagement
-├─ Sees which lessons need help (automated)
-├─ Approves student-created vocabulary (30 min/week)
-└─ Feels: Supported, data-informed
-
-WEEK 11: Assessment
-├─ Reviews student progress stats
-├─ Exports engagement report
-├─ Sends feedback to students
-└─ Feels: Validated, impactful
-
-AFTER COURSE: Reuse
-├─ Saves course as template
-├─ Archives for next year
-├─ Students can continue learning
-└─ Feels: Efficient, sustainable
-```
-
-**Pain Points Addressed:**
-- Manual grading → Automated progress tracking
-- Version control confusion → One source of truth
-- Limited reusability → Template system
+**Success Outcomes:**
+- 50+ words in dictionary
+- 3+ grammar rules
+- 1 collaborator invited
+- Positive feedback received
 
 ---
 
-## Competitive Analysis
-
-### Direct Competitors
-**None truly competitive (niche market)**
-
-Closest adjacent tools:
-- Conlang Bulletin Board (forum, not tool)
-- Scatter (worldbuilding, language is secondary)
-
-### Indirect Competitors
-
-| Tool | Strengths | Weaknesses | Our Advantage |
-|------|-----------|-----------|---------------|
-| Google Docs | Free, collaborative | Not designed for languages, messy | Purpose-built UI |
-| Excel | Powerful, familiar | Not social, complex for non-techies | Simpler, community-focused |
-| Anki | Great for flashcards | Not for language creation, limited collaboration | Integrated creation + learning |
-| Wix/Weebly | Easy publishing | No collaborative features, language tools limited | Purpose-built + collaborative |
-
-### Market Differentiation
+### Journey 2: Course Creator (Jordan's First Month)
 
 ```
-┌──────────────────────────────────────────────┐
-│                LinguaFabric                  │
-├──────────────────────────────────────────────┤
-│ ✅ Purpose-built for conlangs                │
-│ ✅ Collaborative from day one                │
-│ ✅ Integrated dictionary + courses + rules   │
-│ ✅ Community sharing                         │
-│ ✅ Smart translation (dictionary + DeepL)   │
-│ ✅ Free & accessible                         │
-├──────────────────────────────────────────────┤
-│ Unique: ONLY all-in-one collaborative       │
-│         conlang platform with teaching       │
-└──────────────────────────────────────────────┘
+Week 1 - Language Setup (2 hrs)
+│
+├─ Migrate existing language to LinguaFabric
+├─ Create detailed specs (phonemes, word order)
+├─ Bulk import dictionary (CSV from spreadsheet)
+├─ Dashboard shows "500 words, 20 rules"
+│
+Week 2 - Course Planning (3 hrs)
+│
+├─ Click "Create Course"
+├─ Browse course templates (beginner, intermediate)
+├─ Create course outline (5 lessons)
+├─ Preview course as student
+│
+Week 2-3 - Content Creation (8 hrs)
+│
+├─ Write lesson 1: Introduction to phonemes
+├─ Add flashcards for lesson 1
+├─ Record pronunciation audio
+├─ Create quiz with 10 questions
+├─ (Repeat for lessons 2-5)
+│
+Week 3 - Publishing & Monetization (1 hr)
+│
+├─ Set course price ($19.99)
+├─ Write course description (SEO optimized)
+├─ Upload course cover image
+├─ Publish to "Public Courses"
+├─ Share on Reddit/Discord communities
+│
+Week 4 - Student Management (2 hrs)
+│
+├─ First student enrolls!
+├─ Monitor student progress
+├─ Review student feedback
+├─ Iterate on lesson content
+│
+[Monthly Revenue Check: $150 (7 students × $19.99, after 30% cut)]
 ```
+
+**Success Outcomes:**
+- Course published with 5 lessons
+- 7+ students enrolled
+- First revenue generated
+- Clear feedback loop with students
 
 ---
 
-## Product Roadmap
+### Journey 3: Community Organizer (Riley's Collaboration)
 
-### Q1 2025: MVP Foundation
 ```
-Phase 0 (Jan 1-9): Setup
-  └─ Firebase, auth, schema
-
-Phase 1 (Jan 10-30): Language Creation
-  └─ Create languages with specs
-
-Phase 2 (Jan 31-Feb 20): Dictionary
-  └─ Add words, rules, courses
-
-Phase 3 (Feb 21-Mar 20): Collaboration
-  └─ Invites, activity, PDF translation
-
-Result: MVP ready for launch
-```
-
-### Q2 2025: Market Validation
-```
-Mar 20: Public launch
-Mar-May: Beta community feedback
-- Fix bugs
-- Improve UX based on feedback
-- Grow to 500+ users
-
-Target: 80% user satisfaction (NPS > 40)
-```
-
-### Q3 2025: Phase 4 Features
-```
-Jun-Aug: Real-time editing
-  └─ WebSockets, operational transform
-
-Extend course system:
-  └─ Quizzes, assessments, gradebook
-
-Analytics dashboard:
-  └─ Language stats, learner metrics
-
-Target: 1,000+ active users
-```
-
-### Q4 2025: Scale & Polish
-```
-Sep-Dec: Performance optimization
-  └─ Caching, pagination, lazy loading
-
-Mobile app (PWA):
-  └─ Offline support, installable
-
-Community tools:
-  └─ Forums, featured languages
-
-Target: 2,000+ active users, $5k MRR (pro tier)
+Week 1 - Community Discovery (2 hrs)
+│
+├─ Browse public language gallery
+├─ Find 5 interesting languages
+├─ Follow creators
+├─ Send friend requests to language creators
+│
+Week 2 - Collaboration Setup (1 hr)
+│
+├─ Coordinate with friends about "new collaborative language"
+├─ Create "Proto-Aurellian" language in LinguaFabric
+├─ Invite 4 friends as editors
+├─ Set permissions (all can edit dictionary/grammar)
+│
+Week 2-3 - Active Collaboration (5 hrs)
+│
+├─ Friend 1 adds phoneme set (see real-time)
+├─ Riley adds 20 core words
+├─ Friend 2 creates grammar rules
+├─ Riley reviews and approves contributions
+├─ Activity feed shows all changes
+├─ Community sees it trending in gallery
+│
+Week 3 - Content & Community (2 hrs)
+│
+├─ Create blog post: "How we designed Proto-Aurellian"
+├─ Share language on Reddit (100+ upvotes)
+├─ Host Discord "design jam" for other creators
+├─ Invite other creators to collaborate
+│
+Week 4 - Course Collaboration (1.5 hrs)
+│
+├─ Brainstorm course outline with collaborators
+├─ Divide lesson creation work
+├─ Publish collaborative course
+├─ Share revenue with contributors
+│
+[Community Impact: 30 people follow, 50 join Discord, 15 attempt language]
 ```
 
-### 2026+: Advanced Features
-```
-Year 2 Vision:
-  - Language marketplace
-  - AI-powered suggestions
-  - Advanced phonology tools
-  - Mobile native apps (React Native)
-  - Enterprise tier for institutions
-  - $100k+ ARR
-```
+**Success Outcomes:**
+- 10+ collaborators on shared language
+- Community growth around project
+- Public recognition (trending gallery)
+- Educational content (blog + course)
 
 ---
 
-## Success Definition
+## Feature Prioritization Matrix
 
-### Phase 0 Success
-- ✅ Firebase initialized and tested
-- ✅ Auth working (Google + email)
-- ✅ Database schema in place
+### Impact vs. Effort (MoSCoW Method)
 
-### Phase 1 Success
-- ✅ 50+ languages created in beta
-- ✅ Users report language specs easy to configure
-- ✅ Dashboard loads < 2 seconds
+```
+HIGH IMPACT
+     │
+     │ MUST HAVE          │ SHOULD HAVE
+     │ - Language creator │ - Templates
+     │ - Dictionary mgmt  │ - Voice recording
+     │ - Basic courses    │ - Version history
+     │ - Auth             │ - Advanced search
+     │ - Invite collab    │ - Theme customization
+     │
+     ├──────────────────────────────────────
+     │
+     │ NICE TO HAVE       │ WON'T HAVE NOW
+     │ - Mobile app       │ - Blockchain integration
+     │ - API              │ - AI spell check
+     │ - Advanced analytics
+     │ - Offline support
+     │
+LOW  IMPACT
+```
 
-### Phase 2 Success
-- ✅ 500+ words added across test languages
-- ✅ 20+ grammar rules created
-- ✅ Course creation intuitive (no support requests)
+### Phased Rollout
 
-### Phase 3 (MVP) Success
-- ✅ 100+ beta users
-- ✅ 50+ public languages
-- ✅ 10+ collaborative languages
-- ✅ NPS > 40 (promoter recommendation)
-- ✅ < 0.1% error rate
-- ✅ 7-day retention > 50%
-- ✅ Average session > 15 minutes
+**Phase 1 (MVP):**
+- ✅ Language creation
+- ✅ Dictionary management
+- ✅ Basic grammar rules
+- ✅ Single-user courses
+- ✅ Basic authentication
+- ✅ Basic dashboard
 
-### Year 1 Success
-- ✅ 1,000+ active users
-- ✅ 500+ public languages
-- ✅ 80% 7-day retention
-- ✅ $2,500+ MRR
-- ✅ Featured in conlang community
+**Phase 2:**
+- ✅ Real-time collaboration
+- ✅ Friend system
+- ✅ Activity feeds
+- ✅ Public gallery
+- ✅ Notifications
+
+**Phase 3:**
+- ✅ Monetization (Pro + courses)
+- ✅ Advanced analytics
+- ✅ Revenue dashboard
+- ✅ Referral system
+
+**Phase 4+:**
+- ✅ Mobile (React Native)
+- ✅ Voice recording
+- ✅ Version history
+- ✅ API
+- ✅ AI features
 
 ---
 
-## Key Decisions & Tradeoffs
+## UX/Design Philosophy
 
-### Decision 1: Freemium Model
+### Design Principles
 
-**Option A:** Free forever (no monetization)
-- **Pros:** Lower barrier to entry, community goodwill
-- **Cons:** No revenue, can't sustain
+1. **Minimize Friction** - Get to creating in under 2 minutes
+2. **Delight in Details** - Celebrate milestones (word count, streak)
+3. **Clarity Over Cleverness** - Intuitive, not creative UI
+4. **Accessibility First** - WCAG AA standard for all pages
+5. **Dark Mode Native** - Not an afterthought
+6. **Responsive Design** - Perfect on desktop, tablet, mobile
 
-**Option B:** Freemium (free + paid pro tier)
-- **Pros:** Revenue model, free tier keeps growth
-- **Cons:** Premium feature design complexity
+### Color Palette
 
-**Decision:** ✅ Go with Freemium  
-**Rationale:** Need revenue to sustain, but free tier is essential for community growth
+- **Primary:** #137FEC (Bright blue, energy)
+- **Background Dark:** #0F1419 (Near-black for dark mode)
+- **Surface Dark:** #192633 (Darker gray for cards)
+- **Border Dark:** #233648 (Subtle borders)
+- **Success:** #10B981 (Green for confirms)
+- **Warning:** #F59E0B (Amber for caution)
+- **Error:** #EF4444 (Red for errors)
 
-### Decision 2: Realistic vs. Simplified
+### Typography
 
-**Option A:** Only realistic depth (linguistically accurate)
-- **Pros:** Appeals to serious creators
-- **Cons:** Overwhelming for beginners, smaller market
+- **Headers:** Inter (Google Fonts) - 18/24/32/48px
+- **Body:** Inter - 14/16px
+- **Mono:** JetBrains Mono - for code/IPA
 
-**Option B:** Simplified only (easier, less accurate)
-- **Pros:** Lower barrier, wider market
-- **Cons:** Loses linguists, reputation risk
+### Spacing System
 
-**Option C:** Both with toggle
-- **Pros:** Serves both markets, flexible
-- **Cons:** More complex development
+- Base unit: 4px
+- Padding: 8, 12, 16, 24, 32, 48px
+- Gap/margin: 8, 12, 16, 24, 32px
 
-**Decision:** ✅ Go with Both  
-**Rationale:** "Simplified" warning ensures reputation, attracts beginners
+### Component Hierarchy
 
-### Decision 3: Real-time Collaboration
-
-**Option A:** Launch with it (MVP delay)
-- **Pros:** Major differentiator, powerful feature
-- **Cons:** Complex, risky, delays MVP by 2 months
-
-**Option B:** Launch without, add Phase 4
-- **Pros:** Faster MVP, focus on core, less risk
-- **Cons:** Not immediately differentiated
-
-**Decision:** ✅ Phase 4 (post-MVP)  
-**Rationale:** Core features more important, real-time adds technical complexity
+1. **Micro** - Button, Input, Badge, Icon
+2. **Macro** - Card, Modal, Form, Table
+3. **Page** - Dashboard, Language Editor, Course Builder
+4. **Layout** - Header, Sidebar, PageShell
 
 ---
 
-## Metrics & Analytics
+## Accessibility Guidelines
 
-### Core Metrics
+### Compliance Target
+- **WCAG 2.1 AA** for all public pages
+- **ARIA labels** for all interactive elements
+- **Keyboard navigation** for all features
+- **Color contrast** min 4.5:1 for text
 
-**Acquisition**
-```
-signup_rate: Users/week
-source_breakdown: Direct, organic, paid
-cost_per_acquisition: $ (post-payment phase)
-```
+### Key Practices
+- Semantic HTML (use native form elements)
+- Alt text for all images and icons
+- Focus indicators on all buttons
+- Error messages near form fields
+- Logical tab order
+- Screen reader tested
 
-**Activation**
-```
-onboarding_completion: % completing tutorial
-first_language_creation: % creating first language
-time_to_value: Hours until user creates first language
-```
-
-**Retention**
-```
-day_1_retention: % returning next day
-day_7_retention: Target > 50%
-day_30_retention: Target > 30%
-monthly_churn: Target < 5%
-```
-
-**Engagement**
-```
-languages_per_user: Average languages created
-words_per_language: Average words in dictionary
-dau/mau: Daily/monthly active users
-session_duration: Average session length
-```
-
-**Revenue**
-```
-free_to_paid_conversion: % upgrading
-lifetime_value: $ per user
-churn_rate: % canceling subscription
-```
+### Testing Tools
+- axe DevTools (automated)
+- Screen readers (NVDA, JAWS)
+- Keyboard-only navigation
+- Color contrast checker
 
 ---
 
-## Conclusion
+## Design System Components
 
-This document defines LinguaFabric's **product direction, target users, feature priorities, and success metrics**. It guides decision-making from MVP through year 1 and beyond.
+### Input Components
+- Text Input (single line)
+- Textarea (multi-line)
+- Select Dropdown
+- Multi-select
+- Checkbox
+- Radio Button
+- Toggle Switch
+- Slider
+- Date Picker
+- Autocomplete
 
-Key Takeaway: **Purpose-built tools for niche communities win by serving deeply.**
+### Display Components
+- Card
+- Badge (status labels)
+- Avatar
+- Icon
+- Tooltip
+- Loading Skeleton
+- Empty State
+
+### Feedback Components
+- Toast notification
+- Alert banner
+- Modal dialog
+- Popover
+- Inline error
+- Loading spinner
+
+### Navigation Components
+- Button (primary, secondary, tertiary, danger)
+- Link
+- Breadcrumb
+- Tabs
+- Pagination
+- Sidebar navigation
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** December 26, 2025  
-**Next Review:** After Phase 1 launch (Feb 2025)
+## Competitive Feature Comparison
+
+| Feature | LinguaFabric | Arthaey.com | Wixoss | Google Docs |
+|---------|--------------|-------------|--------|------------|
+| Language Creator | ✅ | ✅ | Limited | - |
+| Dictionary | ✅ | ✅ | Limited | - |
+| Grammar Rules | ✅ | Basic | - | - |
+| Real-time Collab | ✅ | - | - | ✅ |
+| Courses | ✅ | - | - | - |
+| Monetization | ✅ | - | - | - |
+| Community Features | ✅ | - | - | - |
+| Mobile App | (Phase 4) | Web only | - | ✅ |
+| Offline | (Phase 4) | - | - | ✅ |
+| API | (Phase 4) | - | - | ✅ |
+
+---
+
+## Market Opportunity Analysis
+
+### Total Addressable Market (TAM)
+
+**Direct:** Conlang creator community
+- Estimated size: 5,000-50,000 active creators globally
+- Even 1,000 at $120/year = $120K revenue
+
+**Indirect:** Language learning / teaching
+- $20B+ language learning market
+- Duolingo alone: $250M+ revenue
+- Even 0.1% = $20M potential
+
+### Serviceable Addressable Market (SAM)
+
+- English-speaking conlang creators: ~30,000
+- Willing to pay for tools: 10-20%
+- Realistic SAM: 3,000-6,000 users
+- At $120/year per user: $360K-$720K potential
+
+### Serviceable Obtainable Market (SOM)
+
+**Year 1:** 
+- Target: 1,000-2,000 paying users
+- Revenue: $120K-$240K
+
+**Year 2:**
+- Target: 5,000-10,000 paying users
+- Revenue: $600K-$1.2M
+
+---
+
+## Roadmap (Detailed)
+
+### Q1 2026 (Phase 1: MVP)
+- Week 1-8: Core development (language creator, dictionary, basic grammar)
+- Week 9: Beta testing with 50 community members
+- Week 10: Launch, Day 1 marketing blitz
+- Week 12: Iterate on feedback, stabilize
+
+**Success Metrics:**
+- 1,000+ signups
+- 100+ languages created
+- 50%+ Day 7 retention
+
+### Q2 2026 (Phase 2: Collaboration)
+- Week 1-6: Collaboration system (real-time editing, permissions)
+- Week 6-8: Friend system, activity feeds, public gallery
+- Week 9: Beta with collaborators
+- Week 10: Launch, growth marketing
+- Week 12: Integrate feedback
+
+**Success Metrics:**
+- 3,000+ total users
+- 20% of languages have collaborators
+- 500+ friend connections
+
+### Q2-Q3 2026 (Phase 3: Monetization)
+- Week 1-4: Pro subscription setup (Stripe)
+- Week 5-6: Advanced features for Pro
+- Week 7-8: Course monetization infrastructure
+- Week 9: Launch, pricing communication
+- Week 12: Optimize conversion funnels
+
+**Success Metrics:**
+- 5-10% pro conversion
+- $10K+ MRR
+- 100+ paid courses
+
+### Q3-Q4 2026+ (Phase 4: Growth)
+- AI-powered features (suggestions, corrections)
+- Mobile app (React Native)
+- PWA with offline support
+- Advanced collaboration (version control, branching)
+- API for integrations
+- Enterprise tier
+
+---
+
+## Success Stories (Target)
+
+### 6-Month Success Story
+
+"I've taught 20 students my language 'Thalassan' for $19.99 each. LinguaFabric made it so easy to organize lessons and track progress. I'm earning $200/month from teaching now, and the community feedback has been amazing. I plan to create 2 more courses."
+
+### 12-Month Success Story
+
+"Our collaborative team of 8 people designed 'Valtharon' together on LinguaFabric. We published 3 courses, attracted 100+ students, and earned $5,000 in revenue in the first 6 months. The collaboration features are incredible - we can all edit simultaneously and track who contributed what. It's transformed how we think about collaborative creation."
+
+---
+
+## Metrics Dashboard (What We Track)
+
+### Acquisition
+- Weekly signups
+- Signup source (organic, PH, HN, social, etc.)
+- Creator conversion (signup → first language)
+
+### Engagement
+- DAU / MAU
+- Day 1, 7, 30 retention
+- Words created per user
+- Time in app
+
+### Monetization
+- Pro subscribers
+- Pro conversion rate
+- MRR
+- ARPU
+- Course enrollments
+- Course revenue
+
+### Community
+- Collaborations active
+- Friend connections
+- Public languages
+- Trending languages
+- User-generated content
+
+---
+
+## Post-Launch Feedback Loops
+
+### Week 1 Post-Launch
+- Daily standup with support team
+- Track all support tickets
+- Read all user feedback
+- Monitor error logs
+- Identify quick wins
+
+### Month 1 Post-Launch
+- Weekly surveys (What's missing? What's confusing?)
+- Community manager engagement on Reddit/Discord
+- Interview 10+ early users
+- Usage analytics deep dive
+- Retention cohort analysis
+
+### Quarterly
+- User research interviews (n=20)
+- Feature prioritization review
+- Competitive landscape scan
+- Community calls with creators
+- Revenue analysis and forecasting
+
+---
+
+**Last Updated:** December 27, 2025
+**Status:** ✅ Complete - Do not modify after creation

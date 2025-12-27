@@ -51,104 +51,42 @@ LinguaFabric follows a **layered architecture** pattern:
 ```
 src/
 ├── components/                 # Reusable UI components
-│   ├── auth/
-│   │   ├── LoginForm.tsx      # Login form component
-│   │   ├── SignupForm.tsx     # Signup form component
-│   │   └── ProtectedRoute.tsx # Route guard component
-│   ├── layout/
-│   │   ├── Sidebar.tsx        # Main navigation
-│   │   ├── Header.tsx         # Top header
-│   │   └── PageShell.tsx      # Common layout wrapper
-│   ├── language/
-│   │   ├── LanguageCard.tsx   # Language preview card
-│   │   ├── LanguageForm.tsx   # Create/edit language form
-│   │   └── SpecsEditor.tsx    # Language specs configuration
-│   ├── dictionary/
-│   │   ├── DictionaryTable.tsx # Words table
-│   │   ├── WordForm.tsx       # Add/edit word form
-│   │   └── WordSearch.tsx     # Search & filter bar
-│   ├── grammar/
-│   │   ├── RuleList.tsx       # Grammar rules list
-│   │   ├── RuleForm.tsx       # Add/edit rule form
-│   │   └── RuleCard.tsx       # Rule preview card
-│   ├── common/
-│   │   ├── Button.tsx         # Reusable button
-│   │   ├── Modal.tsx          # Modal wrapper
-│   │   ├── Input.tsx          # Reusable input
-│   │   ├── Select.tsx         # Dropdown select
-│   │   ├── TextArea.tsx       # Text area input
-│   │   ├── Loading.tsx        # Loading spinner
-│   │   └── ErrorBoundary.tsx  # Error boundary wrapper
-│   └── icons/
-│       └── MaterialIcon.tsx   # Material Symbols wrapper
+│   ├── Header.tsx             # Top header
+│   ├── Sidebar.tsx            # Main navigation
+│   ├── PageShell.tsx          # Common layout wrapper
+│   └── index.ts               # Component exports
 │
 ├── pages/                      # Page-level components (routed)
-│   ├── Dashboard.tsx          # Home/dashboard page
-│   ├── LanguageList.tsx       # Languages list page
-│   ├── LanguageDetail.tsx     # Language detail/editor page
+│   ├── Home.tsx               # Home/dashboard page
+│   ├── Languages.tsx          # Languages list page
 │   ├── Dictionary.tsx         # Dictionary management page
 │   ├── Grammar.tsx            # Grammar rules page
 │   ├── Courses.tsx            # Courses list page
-│   ├── CourseBuilder.tsx      # Course creator page
-│   ├── CourseLearn.tsx        # Course learner page
-│   ├── Activity.tsx           # Activity feed page
-│   ├── Friends.tsx            # Friends management page
-│   ├── Settings.tsx           # User settings page
-│   ├── Translate.tsx          # PDF translation page
-│   ├── Login.tsx              # Login page
-│   ├── Signup.tsx             # Signup page
-│   ├── NotFound.tsx           # 404 page
-│   └── Error.tsx              # Error page
+│   └── index.ts               # Page exports
 │
-├── hooks/                      # Custom React hooks
+├── hooks/                      # Custom React hooks (to be created)
 │   ├── useAuth.ts             # Authentication hook
 │   ├── useLanguage.ts         # Language data hook
-│   ├── useLanguages.ts        # Languages list hook
-│   ├── useDictionary.ts       # Dictionary hook
-│   ├── useGrammar.ts          # Grammar rules hook
-│   ├── useCourses.ts          # Courses hook
-│   ├── useActivity.ts         # Activity hook
-│   ├── useFriends.ts          # Friends hook
-│   ├── useForm.ts             # Form state hook
-│   ├── useLocalStorage.ts     # Local storage hook
-│   ├── useAsync.ts            # Async data hook
-│   └── useDebounce.ts         # Debounce hook
+│   └── useForm.ts             # Form state hook
 │
-├── services/                   # Business logic & API calls
+├── services/                   # Business logic & API calls (to be created)
 │   ├── authService.ts         # Firebase auth operations
 │   ├── languageService.ts     # Language CRUD
-│   ├── dictionaryService.ts   # Dictionary word CRUD
-│   ├── grammarService.ts      # Grammar rules CRUD
-│   ├── courseService.ts       # Courses CRUD
-│   ├── activityService.ts     # Activity logging
-│   ├── friendService.ts       # Friend management
-│   ├── translationService.ts  # Translation engine (DeepL + dict)
-│   ├── pdfService.ts          # PDF extraction & export
 │   └── firebaseService.ts     # Firebase utilities
 │
-├── context/                    # React context providers
+├── context/                    # React context providers (to be created)
 │   ├── AuthContext.tsx        # Auth state provider
-│   ├── LanguageContext.tsx    # Language state provider
-│   ├── useAuthContext.ts      # Auth context hook
-│   └── useLanguageContext.ts  # Language context hook
+│   └── LanguageContext.tsx    # Language state provider
 │
-├── types/                      # TypeScript type definitions
-│   ├── index.ts               # Barrel export for all types
-│   ├── firebase.ts            # Firebase collection types
-│   ├── forms.ts               # Form state types
-│   ├── errors.ts              # Error types
-│   └── api.ts                 # API response types
+├── types/                      # TypeScript type definitions (to be created)
+│   └── index.ts               # Type exports
 │
-├── utils/                      # Utility functions
+├── utils/                      # Utility functions (to be created)
 │   ├── formatters.ts          # Format dates, text, etc.
-│   ├── validators.ts          # Form validation functions
-│   ├── constants.ts           # App-wide constants
-│   ├── mappers.ts             # Data transformation
-│   └── errors.ts              # Error utilities
+│   └── validators.ts          # Form validation functions
 │
-├── config/                     # Configuration
-│   ├── firebase.ts            # Firebase initialization
-│   └── deepl.ts               # DeepL API config
+├── config/                     # Configuration (to be created)
+│   └── firebase.ts            # Firebase initialization
 │
 ├── styles/                     # Global styles
 │   └── globals.css            # Tailwind + custom CSS
@@ -340,7 +278,7 @@ export default MyComponent;
 **All Firebase operations** should be in service files, not components:
 
 ```typescript
-// ✅ Good - Fire base operation in service
+// ✅ Good - Firebase operation in service
 // services/languageService.ts
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/config/firebase';
@@ -517,30 +455,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-```
-
-```typescript
-// hooks/useAuthContext.ts
-import { useContext } from 'react';
-import { AuthContext } from '@/context/AuthContext';
-
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within AuthProvider');
-  }
-  return context;
-};
-
-// In component
-const Dashboard = () => {
-  const { user, loading } = useAuthContext();
-
-  if (loading) return <Loading />;
-  if (!user) return <Redirect to="/login" />;
-
-  return <div>Welcome, {user.displayName}</div>;
 };
 ```
 
@@ -786,36 +700,6 @@ describe('useLanguage', () => {
 });
 ```
 
-### 2. Component Test Structure
-
-```typescript
-// components/language/__tests__/LanguageCard.test.tsx
-import { render, screen } from '@testing-library/react';
-import { LanguageCard } from '@/components/language/LanguageCard';
-
-describe('LanguageCard', () => {
-  const mockLanguage = {
-    id: '1',
-    name: 'Elvish',
-    stats: { totalWords: 100 },
-  };
-
-  it('should render language name', () => {
-    render(<LanguageCard language={mockLanguage} />);
-    expect(screen.getByText('Elvish')).toBeInTheDocument();
-  });
-
-  it('should call onSelect when clicked', () => {
-    const onSelect = jest.fn();
-    const { getByRole } = render(
-      <LanguageCard language={mockLanguage} onSelect={onSelect} />
-    );
-    getByRole('button').click();
-    expect(onSelect).toHaveBeenCalledWith('1');
-  });
-});
-```
-
 ---
 
 ## Naming Conventions Summary
@@ -858,4 +742,5 @@ Example:
 
 ---
 
-**Last Updated:** December 26, 2025
+**Last Updated:** December 27, 2025
+**Status:** ✅ Complete - Do not modify after creation
