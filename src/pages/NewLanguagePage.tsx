@@ -170,7 +170,7 @@ export const NewLanguagePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background-dark flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-background-dark flex flex-col">
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto p-6">
           {/* Header */}
