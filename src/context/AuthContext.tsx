@@ -3,8 +3,7 @@ import { supabase } from '@/services/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
 interface AuthUser {
-  id: string; // This will be the internal users.id (UUID from users table), not auth.users.id
-  authId?: string; // This is the auth.users.id for reference
+  id: string; // This is auth.users.id (Supabase authentication user ID)
   email: string;
   displayName?: string;
 }
@@ -44,10 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isMounted) {
           if (authUser) {
             console.log('[AuthContext] Auth user found:', authUser.id);
-            // Set user with auth ID - will update with internal ID in next effect
+            // Set user directly with auth.users.id (no need for separate users table)
             setUser({
               id: authUser.id,
-              authId: authUser.id,
               email: authUser.email || '',
               displayName: authUser.user_metadata?.display_name,
             });
@@ -78,10 +76,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (newSession?.user) {
             console.log('[AuthContext] User logged in:', newSession.user.id);
-            // Set user immediately with auth ID - internal ID will be resolved later
+            // Set user directly with auth.users.id
             setUser({
               id: newSession.user.id,
-              authId: newSession.user.id,
               email: newSession.user.email || '',
               displayName: newSession.user.user_metadata?.display_name,
             });
@@ -99,95 +96,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Step 2: Ensure user exists in users table (only after auth is confirmed)
-  // This is a secondary operation that should not block auth flow
-  useEffect(() => {
-    if (!user) {
-      console.log('[AuthContext] Skipping ensureUserExists - no authenticated user');
-      return;
-    }
-
-    let isMounted = true;
-
-    const ensureUserExistsInDB = async () => {
-      try {
-        console.log('[AuthContext] Ensuring user exists in DB...');
-        
-        // Check if user already exists
-        const { data: existing, error: checkError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_id', user.authId || user.id)
-          .single();
-
-        if (checkError && checkError.code !== 'PGRST116') {
-          // PGRST116 = no rows found, which is expected
-          console.error('[AuthContext] Error checking for existing user:', checkError);
-          // Don't throw - just log and continue
-          return;
-        }
-
-        if (existing && isMounted) {
-          console.log('[AuthContext] User already exists in DB. Internal ID:', existing.id);
-          // Update user.id to internal database ID
-          setUser((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  id: existing.id,
-                }
-              : null
-          );
-          return;
-        }
-
-        // User doesn't exist in DB, create them
-        console.log('[AuthContext] Creating user record in DB...');
-        const { data: newUser, error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              auth_id: user.authId || user.id,
-              email: user.email,
-              display_name: user.displayName || user.email.split('@')[0],
-              activity_permissions: 'friends_only',
-              theme: 'dark',
-              default_language_depth: 'realistic',
-            },
-          ])
-          .select('id')
-          .single();
-
-        if (insertError) {
-          console.error('[AuthContext] Error creating user record:', insertError);
-          // Don't throw - user can still use app with auth ID
-          return;
-        }
-
-        if (newUser && isMounted) {
-          console.log('[AuthContext] User record created. Internal ID:', newUser.id);
-          // Update user.id to internal database ID
-          setUser((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  id: newUser.id,
-                }
-              : null
-          );
-        }
-      } catch (err) {
-        console.error('[AuthContext] Unexpected error in ensureUserExistsInDB:', err);
-        // Don't throw - non-critical operation
-      }
-    };
-
-    ensureUserExistsInDB();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user?.authId, user?.email]);
+  // Note: No second useEffect needed for user records
+  // languages.owner_id now references auth.users(id) directly
+  // User is authenticated and ready to create languages immediately
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
