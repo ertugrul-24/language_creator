@@ -1,52 +1,82 @@
-# LinguaFabric - Memory Bank & Architecture
+# LinguaFabric - Architecture & Learning Guide
 
 ## Project Vision
-**LinguaFabric** is a collaborative language creation platform where users design custom languages by specifying linguistic parameters, build dictionaries and grammar rules, create courses to teach others, and collaborate with friends through invitations and activity tracking.
+
+**LinguaFabric** serves two purposes:
+
+1. **Functional Application:** A collaborative platform where users design custom languages, build dictionaries and grammar rules, create courses, and collaborate with friends.
+
+2. **Educational Project:** Demonstrates professional full-stack web development with modern tools. Learn by building a real-world application that scales from free tier ($0/month) to enterprise production.
+
+This project teaches architecture decisions through dual-backend support (Supabase for learning, Firebase for production), showing how the same codebase adapts to different infrastructure.
 
 ---
 
-## Core Decisions
+## Core Architectural Decisions
 
-### Project Philosophy
-**LinguaFabric is open-source software** for the global conlang community. Anyone can:
-- ✅ Fork and self-host for free
-- ✅ Contribute code, docs, translations
-- ✅ Deploy on Firebase (paid) or Supabase (free)
-- ✅ Build commercial services on top
+### Philosophy
+- **Open-Source First:** MIT license, community-driven development
+- **Educational Focus:** Clear patterns for learning, well-documented
+- **Flexible Deployment:** Works on free tier ($0) or production ($25-75+/month)
+- **Type-Safe:** Full TypeScript strict mode for reliability
+- **Scalable:** From hobby project to enterprise application
 
-### 1. Tech Stack (Dual Backend Support)
+### Design Principle: Backend Abstraction
 
-**Frontend (Required):**
-| Component | Choice | Reason |
-|-----------|--------|--------|
-| **Framework** | React 18 + TypeScript | Component-based, scalable, strong typing |
-| **Styling** | Tailwind CSS + Material Symbols | Pre-built dark mode theme, responsive design |
-| **State Management** | React Context / Zustand | Works with both Firebase and Supabase |
-| **Routing** | React Router 6 | Client-side navigation, SEO-friendly |
-| **Hosting** | Vercel (Free tier) | Zero-config deployment, automatic CI/CD |
+The codebase abstracts backend differences, enabling:
+```
+Same React Code → Supabase Backend (Free) → $0/month
+Same React Code → Firebase Backend (Paid) → $25-75/month
+```
 
-**Backend Option A: Firebase (Paid - Enterprise)**
-- **Cost:** $25-75/month (scales with usage)
-- **Database:** Firestore (NoSQL, real-time)
-- **Auth:** Google OAuth, Email/Password
-- **Best for:** Production apps with paying users
-- **Who:** Teams with budget
+Choose backend based on needs, not code changes.
 
-**Backend Option B: Supabase (Free - Open-Source) ⭐ Default for GitHub**
-- **Cost:** FREE tier includes 500MB storage, unlimited API calls
-- **Database:** PostgreSQL (SQL, real-time with LISTEN/NOTIFY)
+---
+
+## Technology Stack: Why These Choices?
+
+## Technology Stack: Why These Choices?
+
+### Frontend Architecture
+
+| Component | Choice | Why | Learning Value |
+|-----------|--------|-----|-----------------|
+| **Language** | TypeScript (strict mode) | Type safety prevents bugs | Learn static typing benefits |
+| **Framework** | React 18 | Component-based, hooks, large ecosystem | Industry standard |
+| **Styling** | Tailwind CSS | Utility-first, responsive, dark mode built-in | CSS efficiency, design systems |
+| **Routing** | React Router 6 | Client-side SPA routing | Modern web app patterns |
+| **Build Tool** | Vite 5 | Fast HMR, optimized production builds | Next-gen tooling |
+| **Deployment** | Vercel | Automatic CI/CD, free tier, git integration | Modern DevOps workflows |
+
+**Educational Outcome:** Learn modern frontend development with professional tools used by top companies.
+
+### Backend Options (Choose Based on Need)
+
+#### Option A: Supabase (Free/Learning Path)
+- **Cost:** $0/month (free tier includes 500MB storage)
+- **Database:** PostgreSQL (SQL, ACID transactions)
+- **Real-time:** LISTEN/NOTIFY subscriptions
 - **Auth:** Email, Google, GitHub OAuth
-- **Self-hosting:** Docker support included
-- **Best for:** Open-source, community-driven projects
-- **Who:** Individual developers, GitHub contributors
+- **Self-hosting:** Docker Compose included
+- **Educational Value:** 
+  - Learn SQL databases (vs NoSQL)
+  - Understand relational design
+  - Real-time data patterns
+  - Open-source infrastructure
 
-**Translation Engine (Developer's Choice):**
-- **Paid:** DeepL API ($10-20/month) - Highest quality
-- **Free:** Hugging Face Inference - Open-source ML
-- **Self-hosted:** LibreTranslate - Run locally
-- **Simple:** Google Translate - Easy integration
+#### Option B: Firebase (Production Path)
+- **Cost:** $25-75+/month at typical scale
+- **Database:** Firestore (NoSQL, schemaless)
+- **Real-time:** WebSocket subscriptions
+- **Auth:** Google, Email, Phone, etc.
+- **Infrastructure:** Google Cloud (automatic scaling)
+- **Educational Value:**
+  - Learn NoSQL databases (vs SQL)
+  - Document-oriented design
+  - Scaling considerations
+  - Enterprise architecture patterns
 
-**Future: PWA** | Service Workers | Offline support, installable app |
+**Key Learning:** Same application code, different backend. Demonstrates abstraction layers and architecture flexibility.
 
 ---
 

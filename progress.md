@@ -1,95 +1,139 @@
-# LinguaFabric - Project Progress & Phases
+# LinguaFabric - Development Roadmap
 
-## 📋 Documentation Status
+## Project Mission
 
-**All documentation files recovered and in place (Dec 27, 2025):**
-- ✅ AGENTS.md - Architecture & tech decisions
-- ✅ systemPatterns.md - Code patterns & conventions
-- ✅ projectbrief.md - Business strategy & roadmap
-- ✅ productContext.md - User research & UX design
-- ✅ README.md - GitHub documentation
-- ✅ progress.md - This file (phase tracking)
+LinguaFabric is an open-source educational project demonstrating full-stack development for building a constructed language creation platform. This project serves two audiences:
 
-**Important:** These files will NOT be modified during future phase implementations per user request.
+1. **End Users:** Create, share, and teach constructed languages
+2. **Developers:** Learn how to build similar platforms with modern tech stack
+
+## Deployment Paths
+
+This project supports two deployment scenarios to demonstrate flexibility:
+
+### Path A: Free/Open-Source (Recommended for Learning)
+- **Frontend:** Vercel (free tier)
+- **Backend:** Supabase (free tier - 500MB storage, unlimited API calls)
+- **Cost:** $0/month
+- **Perfect for:** Students, learning, community projects
+
+### Path B: Paid/Production (Enterprise)
+- **Frontend:** Vercel (paid tier or custom domain)
+- **Backend:** Firebase (pay-as-you-go, $25-75/month typical)
+- **Cost:** $25-75+/month
+- **Perfect for:** Commercial deployments, scale
+
+Both paths use identical code. Choose based on your needs.
 
 ## Overview
-This document tracks project phases, milestones, and task completion. Each phase has clear success criteria and subtasks.
+This document tracks development phases with clear milestones. Each phase includes subtasks with completion criteria for both free and paid deployments.
 
 ---
 
 ## Phase 0: Foundation & Setup ⚙️
 
-**Goal:** Set up project infrastructure with dual backend support (Firebase + Supabase)  
-**Duration:** 1-2 weeks  
-**Status:** 🟨 In Progress  
-**GitHub Focus:** Professional open-source project structure
+**Goal:** Set up project infrastructure with support for both free (Supabase) and paid (Firebase) deployments
 
-### GitHub Open-Source Requirements
-- ✅ Professional README with dual setup instructions
-- ✅ CONTRIBUTING.md for developers
-- ✅ MIT License file
-- ✅ Setup guides for Firebase (paid) and Supabase (free)
-- ✅ Docker Compose for local development
-- ✅ GitHub Actions for CI/CD
-- ✅ Comprehensive architecture docs
+**Duration:** 1-2 weeks
+
+**Status:** 🟩 In Progress (P0.1 Complete, P0.2-P0.6 In Progress)
+
+**Learning Outcomes:**
+- Full-stack JavaScript project setup
+- React + TypeScript best practices
+- CSS-in-JS with Tailwind
+- Backend architecture design patterns
+- Database schema design
+- Authentication system implementation
+- Deployment options and trade-offs
+
+### Dual Deployment Support
+
+#### Free Path (Supabase)
+- PostgreSQL database
+- Real-time subscriptions
+- 500MB free storage
+- Perfect for: Learning, prototyping, open-source
+
+#### Paid Path (Firebase)
+- Firestore NoSQL database
+- Google Cloud infrastructure
+- Enterprise SLA
+- Perfect for: Production, scaling, commercial
 
 ### Phase 0 Subtasks
 
-- [x] **P0.1** Initialize React project with Vite
+- [x] **P0.1** Initialize React project with Vite ✅ COMPLETE
   - [x] Create React + TypeScript project
   - [x] Install dependencies: Tailwind, Material Symbols, React Router
   - [x] Set up folder structure: `/components`, `/pages`, `/hooks`, `/services`, `/types`
   - [x] Configure Tailwind dark mode + custom colors
-  - [x] Create base layout (Sidebar + Header template from design)
+  - [x] Create base layout (Sidebar + Header template)
+  - [x] Professional documentation (README, SETUP, CONTRIBUTING)
 
-- [ ] **P0.2** Set up Firebase project
+- [ ] **P0.2** Choose & Configure Backend (Choose One)
+
+  **Option A: Supabase (Free - Recommended for Learning)**
+  - [ ] Create Supabase project at supabase.com (free tier)
+  - [ ] Configure authentication (Email, Google OAuth)
+  - [ ] Initialize database schema
+  - [ ] Set environment variables
+  - [ ] Test real-time subscriptions
+  - Learning: PostgreSQL, real-time data, authentication patterns
+
+  **Option B: Firebase (Paid - Production Ready)**
   - [ ] Create Firebase project (console.firebase.google.com)
-  - [ ] Enable Firestore Database (production mode)
-  - [ ] Enable Firebase Authentication (Google OAuth + Email/Password)
-  - [ ] Download Firebase config and add to `.env.local`
-  - [ ] Create Firestore security rules file
+  - [ ] Enable Firestore Database
+  - [ ] Enable Firebase Authentication
+  - [ ] Configure security rules
+  - [ ] Set environment variables
+  - [ ] Test data persistence
+  - Learning: NoSQL design, Google Cloud, enterprise patterns
 
-- [ ] **P0.3** Implement authentication system
-  - [ ] Create Firebase auth service (`/services/authService.ts`)
-  - [ ] Build login page (email + Google OAuth)
-  - [ ] Build signup page (with email verification)
-  - [ ] Create auth context/state management
-  - [ ] Implement route protection (PrivateRoute component)
+- [ ] **P0.3** Implement Authentication System
+  - [ ] Create backend-agnostic auth service
+  - [ ] Build login page (email + OAuth)
+  - [ ] Build signup page
+  - [ ] Create auth context
+  - [ ] Implement route protection
   - [ ] Add logout functionality
+  - Learning: Authentication patterns, state management, security
 
-- [ ] **P0.4** Design & implement Firestore schema
-  - [ ] Create Firestore collections (users, languages, collaborationInvites, friendships)
-  - [ ] Set up subcollections (dictionaries, grammarRules, courses, activity)
-  - [ ] Write Firestore security rules
-  - [ ] Create TypeScript types/interfaces for all collections
-  - [ ] Test database structure with sample data
+- [ ] **P0.4** Design Database Schema
+  - [ ] Define collections/tables (Users, Languages, Dictionaries, etc.)
+  - [ ] Create security rules/permissions
+  - [ ] Write TypeScript types for all data models
+  - [ ] Test with sample data
+  - Learning: Data modeling, schema design, permissions
 
-- [ ] **P0.5** Set up development environment
-  - [ ] Create `.env.local` template with Firebase config
-  - [ ] Set up ESLint + Prettier
-  - [ ] Configure Git repository
-  - [ ] Create `.gitignore`
-  - [ ] Add GitHub Actions workflow for basic linting
-
-- [ ] **P0.6** Deploy base infrastructure
-  - [ ] Deploy Firebase project
-  - [ ] Set up Vercel deployment for frontend (optional for P0)
-  - [ ] Test auth flow end-to-end
-
-**P0 Success Criteria:**
-✅ Users can sign up/login with Google or email  
-✅ Firebase Firestore is initialized and secured  
-✅ User data persists in Firestore  
-✅ Dashboard shell loads after login  
+**P0 Success Criteria (Both Paths):**
+- ✅ React + TypeScript application running locally
+- ✅ Backend initialized (Supabase OR Firebase)
+- ✅ Authentication working (email + OAuth)
+- ✅ Database connected and schema verified
+- ✅ User can sign up/login
+- ✅ Dashboard shell loads after login
+- ✅ All files deployed successfully  
 
 ---
 
 ## Phase 1: Core Language Creation 🗣️
 
-**Goal:** Users can create languages with full specs, view/edit language details  
-**Duration:** 2-3 weeks  
-**Status:** ⏳ Not Started  
+**Goal:** Users can create and manage languages with full specifications
+
+**Duration:** 2-3 weeks (Jan 10-30)
+
+**Status:** ⏳ Not Started
+
 **Dependencies:** Phase 0 complete
+
+**Learning Outcomes:**
+- Complex form handling and validation
+- File uploads and image processing
+- Real-time database operations
+- Complex state management
+- UI/UX design patterns
+- Performance optimization
 
 ### Phase 1 Subtasks
 
