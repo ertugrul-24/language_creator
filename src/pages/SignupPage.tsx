@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp, signInWithGoogle } = useAuth();
+  const { user, loading: authLoading, signUp, signInWithGoogle } = useAuth();
+
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
   
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -12,7 +19,7 @@ export const SignupPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,18 +43,18 @@ export const SignupPage: React.FC = () => {
       return;
     }
 
-    setLoading(true);
+    setIsSubmitting(true);
 
     try {
       await signUp(email, password, displayName);
       setSuccess('✅ Signup successful! Check your email to verify your account.');
       
       // Redirect to login after 2 seconds
-      setTimeout(() => navigate('/auth/login'), 2000);
+      setTimeout(() => navigate('/auth/login', { replace: true }), 2000);
     } catch (err: any) {
       setError(err.message || 'Signup failed. Please try again.');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -57,7 +64,7 @@ export const SignupPage: React.FC = () => {
 
     try {
       await signInWithGoogle();
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Google sign-up failed. Please try again.');
     } finally {
@@ -152,10 +159,10 @@ export const SignupPage: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             className="w-full py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white font-medium rounded-lg transition-colors duration-200"
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {isSubmitting ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 

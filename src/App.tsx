@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Home, Languages, Dictionary, Grammar, Courses } from '@/pages';
+import { Home, Languages, Dictionary, Grammar, Courses, Settings } from '@/pages';
 import { LoginPage } from '@/pages/LoginPage';
 import { SignupPage } from '@/pages/SignupPage';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -85,9 +85,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Catch all - redirect to login for unauthenticated users */}
+          <Route path="*" element={<Navigate to="/auth/login" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

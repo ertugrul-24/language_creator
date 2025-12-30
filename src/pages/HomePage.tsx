@@ -58,6 +58,13 @@ export const HomePage: React.FC = () => {
                 <span className="material-symbols-outlined">school</span>
                 <span className="text-sm font-medium">Courses</span>
               </a>
+              <a
+                href="/settings"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined">settings</span>
+                <span className="text-sm font-medium">Settings</span>
+              </a>
             </nav>
           </div>
 
@@ -220,47 +227,8 @@ export const HomePage: React.FC = () => {
                       <h3 className="text-lg font-bold text-white">Activity</h3>
                       <span className="text-xs text-text-secondary">Last 30 days</span>
                     </div>
-                    <div className="bg-surface-dark border border-border-dark rounded-xl p-4">
-                      <div className="grid grid-cols-7 gap-1.5">
-                        <div className="aspect-square rounded-sm bg-primary/20"></div>
-                        <div className="aspect-square rounded-sm bg-primary/40"></div>
-                        <div className="aspect-square rounded-sm bg-primary/80"></div>
-                        <div className="aspect-square rounded-sm bg-primary"></div>
-                        <div className="aspect-square rounded-sm bg-primary/30"></div>
-                        <div className="aspect-square rounded-sm bg-background-dark border border-white/5"></div>
-                        <div className="aspect-square rounded-sm bg-primary/60"></div>
-                        <div className="aspect-square rounded-sm bg-primary/50"></div>
-                        <div className="aspect-square rounded-sm bg-background-dark border border-white/5"></div>
-                        <div className="aspect-square rounded-sm bg-primary/20"></div>
-                        <div className="aspect-square rounded-sm bg-primary/90"></div>
-                        <div className="aspect-square rounded-sm bg-primary/40"></div>
-                        <div className="aspect-square rounded-sm bg-primary/10"></div>
-                        <div className="aspect-square rounded-sm bg-primary/70"></div>
-                        <div className="aspect-square rounded-sm bg-background-dark border border-white/5"></div>
-                        <div className="aspect-square rounded-sm bg-primary/30"></div>
-                        <div className="aspect-square rounded-sm bg-primary/50"></div>
-                        <div className="aspect-square rounded-sm bg-background-dark border border-white/5"></div>
-                        <div className="aspect-square rounded-sm bg-primary/80"></div>
-                        <div className="aspect-square rounded-sm bg-primary/20"></div>
-                        <div className="aspect-square rounded-sm bg-primary/40"></div>
-                        <div className="aspect-square rounded-sm bg-primary/60"></div>
-                        <div className="aspect-square rounded-sm bg-primary/10"></div>
-                        <div className="aspect-square rounded-sm bg-primary"></div>
-                        <div className="aspect-square rounded-sm bg-primary/50"></div>
-                        <div className="aspect-square rounded-sm bg-primary/30"></div>
-                        <div className="aspect-square rounded-sm bg-background-dark border border-white/5"></div>
-                        <div className="aspect-square rounded-sm bg-primary/90"></div>
-                      </div>
-                      <div className="flex items-center gap-2 mt-3 text-[10px] text-text-secondary justify-end">
-                        <span>Less</span>
-                        <div className="flex gap-1">
-                          <div className="size-2 rounded-sm bg-background-dark border border-white/5"></div>
-                          <div className="size-2 rounded-sm bg-primary/30"></div>
-                          <div className="size-2 rounded-sm bg-primary/60"></div>
-                          <div className="size-2 rounded-sm bg-primary"></div>
-                        </div>
-                        <span>More</span>
-                      </div>
+                    <div className="bg-surface-dark border border-border-dark rounded-xl p-4 text-center py-8">
+                      <p className="text-text-secondary text-sm">No activity yet. Start creating languages to see your activity here!</p>
                     </div>
                   </div>
                 </div>

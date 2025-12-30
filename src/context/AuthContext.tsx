@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/services/supabaseClient';
+import type { Session } from '@supabase/supabase-js';
 
 interface AuthUser {
   id: string;
@@ -9,7 +10,7 @@ interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null;
-  session: any; // Supabase Session type
+  session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -24,52 +25,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check session on mount
+  // Check session on mount and listen for auth changes
   useEffect(() => {
-    const getSession = async () => {
+    let isMounted = true;
+
+    const initializeAuth = async () => {
       try {
+        // Get existing session from Supabase
         const { data } = await supabase.auth.getSession();
-        setSession(data.session);
         
-        if (data.session?.user) {
-          setUser({
-            id: data.session.user.id,
-            email: data.session.user.email || '',
-            displayName: data.session.user.user_metadata?.display_name,
-          });
+        if (isMounted) {
+          setSession(data.session);
+          
+          if (data.session?.user) {
+            setUser({
+              id: data.session.user.id,
+              email: data.session.user.email || '',
+              displayName: data.session.user.user_metadata?.display_name,
+            });
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
         }
       } catch (error) {
-        console.error('Failed to get session:', error);
-      } finally {
-        setLoading(false);
+        console.error('Failed to initialize auth:', error);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    getSession();
+    initializeAuth();
 
-    // Listen to auth changes
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
+    // Listen to auth state changes (login, logout, session refresh)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        if (isMounted) {
+          setSession(newSession);
 
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          displayName: session.user.user_metadata?.display_name,
-        });
-      } else {
-        setUser(null);
+          if (newSession?.user) {
+            setUser({
+              id: newSession.user.id,
+              email: newSession.user.email || '',
+              displayName: newSession.user.user_metadata?.display_name,
+            });
+          } else {
+            // Clear user when logged out
+            setUser(null);
+          }
+        }
       }
-    });
+    );
 
     return () => {
-      data.subscription?.unsubscribe();
+      isMounted = false;
+      authListener.subscription?.unsubscribe();
     };
   }, []);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -90,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -106,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
       });
 
