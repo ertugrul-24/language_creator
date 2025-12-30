@@ -17,53 +17,38 @@ export const createLanguage = async (
 ): Promise<Language> => {
   try {
     // Check if language name is unique for this user
-    const { data: existing, error: checkError } = await supabase
+    const { data: existing } = await supabase
       .from('languages')
       .select('id')
       .eq('owner_id', userId)
-      .eq('name', input.name)
-      .single();
+      .eq('name', input.name);
 
-    if (existing && !checkError) {
+    if (existing && existing.length > 0) {
       throw new Error('You already have a language with this name');
     }
 
-    // Prepare language data
+    // Prepare language data - matching the database schema
     const languageData = {
       owner_id: userId,
-      name: input.name,
-      description: input.description,
-      visibility: 'private' as const,
-      specs: {
-        alphabetScript: 'Latin',
-        writingDirection: 'ltr' as const,
-        phonemeSet: [],
-        depthLevel: 'realistic' as const,
-        wordOrder: 'SVO',
-        caseSensitive: true,
-        vowelCount: 0,
-        consonantCount: 0,
-        customSpecs: {},
-      },
-      stats: {
-        totalWords: 0,
-        totalRules: 0,
-        totalContributors: 1,
-        lastModified: new Date().toISOString(),
-      },
-      metadata: {
-        icon: input.icon,
-        coverImage: input.coverImage || null,
-        tags: [],
-      },
-      collaborators: [
-        {
-          userId,
-          role: 'owner' as const,
-        },
-      ],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      name: input.name.trim(),
+      description: input.description.trim(),
+      visibility: 'private',
+      // Language Specifications
+      alphabet_script: 'Latin',
+      writing_direction: 'ltr',
+      depth_level: 'realistic',
+      word_order: 'SVO',
+      case_sensitive: false,
+      vowel_count: 0,
+      consonant_count: 0,
+      // Metadata
+      icon_url: input.icon,
+      cover_image_url: input.coverImage || null,
+      tags: [],
+      // Stats
+      total_words: 0,
+      total_rules: 0,
+      total_contributors: 1,
     };
 
     // Insert into database
@@ -74,11 +59,28 @@ export const createLanguage = async (
       .single();
 
     if (error) {
+      console.error('Insert error:', error);
       throw error;
     }
 
     if (!data) {
-      throw new Error('Failed to create language');
+      throw new Error('Failed to create language - no data returned');
+    }
+
+    // Add the user as owner in the collaborators table
+    const { error: collabError } = await supabase
+      .from('language_collaborators')
+      .insert([
+        {
+          language_id: data.id,
+          user_id: userId,
+          role: 'owner',
+        },
+      ]);
+
+    if (collabError) {
+      console.error('Collaborator insert error:', collabError);
+      throw collabError;
     }
 
     return data as Language;

@@ -188,7 +188,10 @@ export const HomePage: React.FC = () => {
                   <div className="bg-surface-dark rounded-xl border border-border-dark p-8 text-center">
                     <span className="material-symbols-outlined text-4xl text-text-secondary mb-3 block">language</span>
                     <p className="text-text-secondary">No projects yet. Create your first language to get started!</p>
-                    <button className="mt-4 bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                    <button 
+                      onClick={() => navigate('/languages/new')}
+                      className="mt-4 bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                    >
                       Create Language
                     </button>
                   </div>
