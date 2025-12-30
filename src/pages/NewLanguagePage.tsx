@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { createLanguage } from '@/services/languageService';
+import { PageShell } from '@/components';
 
 interface FormData {
   name: string;
@@ -170,24 +171,23 @@ export const NewLanguagePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background-dark flex flex-col">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl mx-auto p-6">
-          {/* Header */}
-          <div className="mb-8">
-            <button
-              onClick={() => navigate('/languages')}
-              className="flex items-center gap-2 text-text-secondary hover:text-white mb-4 transition"
-            >
-              <span className="material-symbols-outlined">arrow_back</span>
-              Back to Languages
-            </button>
-            <h1 className="text-4xl font-bold text-white mb-2">Create New Language</h1>
-            <p className="text-text-secondary">Design your constructed language with specifications</p>
-          </div>
+    <PageShell title="Create Language">
+      <div className="max-w-2xl">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/languages')}
+            className="flex items-center gap-2 text-text-secondary hover:text-white mb-4 transition"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+            Back to Languages
+          </button>
+          <h1 className="text-4xl font-bold text-white mb-2">Create New Language</h1>
+          <p className="text-text-secondary">Design your constructed language with specifications</p>
+        </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="bg-surface-dark rounded-lg border border-border-dark p-8 space-y-6 mb-8">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="bg-surface-dark rounded-lg border border-border-dark p-8 space-y-6 mb-8">
             {/* Error Alert */}
             {submitError && (
               <div className="p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300">
@@ -321,8 +321,7 @@ export const NewLanguagePage: React.FC = () => {
               </button>
             </div>
           </form>
-        </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
