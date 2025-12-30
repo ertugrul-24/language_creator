@@ -47,14 +47,13 @@ export const createLanguage = async (
 
     console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
-    // Prepare language data - Phase 1 fields only
-    // Phase 1.2+ specs will be added in future phases
+    // Prepare language data - Phase 1 fields ONLY
+    // owner_id, name, description, icon
     const languageData = {
       owner_id: userId,
       name: input.name.trim(),
       description: input.description.trim(),
-      visibility: 'private',
-      icon_url: input.icon,
+      icon: input.icon,
     };
 
     console.log('[createLanguage] Inserting language data:', languageData);
