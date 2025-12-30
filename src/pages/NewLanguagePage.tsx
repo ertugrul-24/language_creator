@@ -8,14 +8,12 @@ interface FormData {
   name: string;
   description: string;
   icon: string;
-  coverImage: File | null;
 }
 
 interface FormErrors {
   name?: string;
   description?: string;
   icon?: string;
-  coverImage?: string;
 }
 
 /**
@@ -30,7 +28,6 @@ export const NewLanguagePage: React.FC = () => {
     name: '',
     description: '',
     icon: '🌍',
-    coverImage: null,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -61,16 +58,6 @@ export const NewLanguagePage: React.FC = () => {
       newErrors.icon = 'Icon is required';
     }
 
-    if (formData.coverImage) {
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (formData.coverImage.size > maxSize) {
-        newErrors.coverImage = 'Cover image must be less than 5MB';
-      }
-      if (!formData.coverImage.type.startsWith('image/')) {
-        newErrors.coverImage = 'Cover image must be an image file';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -89,22 +76,6 @@ export const NewLanguagePage: React.FC = () => {
       setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name as keyof FormErrors];
-        return newErrors;
-      });
-    }
-  };
-
-  // Handle file upload
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData((prev) => ({
-      ...prev,
-      coverImage: file,
-    }));
-    if (errors.coverImage) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.coverImage;
         return newErrors;
       });
     }
@@ -137,21 +108,12 @@ export const NewLanguagePage: React.FC = () => {
 
       console.log('[handleSubmit] User authenticated:', user.id);
 
-      // Convert cover image to base64 if provided
-      let coverImageBase64: string | undefined;
-      if (formData.coverImage) {
-        console.log('[handleSubmit] Converting image to base64...');
-        coverImageBase64 = await fileToBase64(formData.coverImage);
-        console.log('[handleSubmit] Image converted, size:', coverImageBase64.length, 'bytes');
-      }
-
       console.log('[handleSubmit] Calling createLanguage...');
       // Create language
       const newLanguage = await createLanguage(user.id, {
         name: formData.name.trim(),
         description: formData.description.trim(),
         icon: formData.icon,
-        coverImage: coverImageBase64,
       });
 
       console.log('[handleSubmit] Language created successfully:', newLanguage.id);
@@ -165,16 +127,6 @@ export const NewLanguagePage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Helper function to convert File to base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   };
 
   return (
@@ -277,36 +229,6 @@ export const NewLanguagePage: React.FC = () => {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Cover Image Upload */}
-            <div>
-              <label htmlFor="coverImage" className="block text-sm font-medium text-text-primary mb-2">
-                Cover Image <span className="text-text-secondary">(optional)</span>
-              </label>
-              <div className="border-2 border-dashed border-border-dark rounded-lg p-6 text-center hover:border-text-secondary transition cursor-pointer">
-                <input
-                  type="file"
-                  id="coverImage"
-                  name="coverImage"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <label
-                  htmlFor="coverImage"
-                  className="cursor-pointer block"
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <span className="material-symbols-outlined text-3xl text-text-secondary">image</span>
-                    <p className="text-text-primary font-medium">
-                      {formData.coverImage ? formData.coverImage.name : 'Click to upload or drag and drop'}
-                    </p>
-                    <p className="text-xs text-text-secondary">PNG, JPG, GIF up to 5MB</p>
-                  </div>
-                </label>
-              </div>
-              {errors.coverImage && <p className="text-sm text-red-400 mt-2">{errors.coverImage}</p>}
             </div>
 
             {/* Form Actions */}

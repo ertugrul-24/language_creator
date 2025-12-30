@@ -5,7 +5,6 @@ interface CreateLanguageInput {
   name: string;
   description: string;
   icon: string;
-  coverImage?: string; // base64 encoded
 }
 
 /**
@@ -56,7 +55,6 @@ export const createLanguage = async (
       description: input.description.trim(),
       visibility: 'private',
       icon_url: input.icon,
-      cover_image_url: input.coverImage || null,
     };
 
     console.log('[createLanguage] Inserting language data:', languageData);
