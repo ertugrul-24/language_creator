@@ -1,10 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageShell } from '@/components';
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * Home - Dashboard home page
  */
 export const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/auth/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <PageShell title="Dashboard">
       <div className="flex flex-col gap-8">
@@ -12,16 +26,24 @@ export const Home: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              Welcome back
+              Welcome back, {user?.displayName || user?.email}
             </h2>
             <p className="text-text-secondary text-lg">
               Ready to define a new world today?
             </p>
           </div>
-          <button className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95">
-            <span className="material-symbols-outlined">add</span>
-            <span>New Language</span>
-          </button>
+          <div className="flex gap-2">
+            <button className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95">
+              <span className="material-symbols-outlined">add</span>
+              <span>New Language</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg transition-all active:scale-95"
+            >
+              <span className="material-symbols-outlined">logout</span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Overview */}
