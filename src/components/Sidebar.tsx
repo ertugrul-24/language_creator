@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * Sidebar - Main navigation sidebar
  */
 export const Sidebar: React.FC = () => {
   const location = useLocation();
+  const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -66,10 +68,10 @@ export const Sidebar: React.FC = () => {
           {/* User Profile */}
           <div className="flex items-center gap-3 px-3 py-4 border-t border-border-dark mt-2">
             <div className="size-8 rounded-full bg-cover bg-center" style={{
-              backgroundImage: "url('https://lh3.googleusercontent.com/a/default-user=s40')"
+              backgroundImage: `url('https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}')`
             }}></div>
             <div className="flex flex-col">
-              <p className="text-white text-sm font-medium">Guest User</p>
+              <p className="text-white text-sm font-medium">{user?.displayName || user?.email || 'User'}</p>
               <p className="text-text-secondary text-xs">Free Plan</p>
             </div>
           </div>

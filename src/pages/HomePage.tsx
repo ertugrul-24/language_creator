@@ -70,13 +70,6 @@ export const HomePage: React.FC = () => {
 
           {/* Bottom Actions */}
           <div className="flex flex-col gap-2">
-            <a
-              href="#"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined">settings</span>
-              <span className="text-sm font-medium">Settings</span>
-            </a>
             <div className="flex items-center gap-3 px-3 py-4 border-t border-border-dark mt-2">
               <div
                 className="size-8 rounded-full bg-cover bg-center"
@@ -85,8 +78,8 @@ export const HomePage: React.FC = () => {
                 }}
               />
               <div className="flex flex-col">
-                <p className="text-white text-sm font-medium">{user?.user_metadata?.display_name || 'Alex Chen'}</p>
-                <p className="text-text-secondary text-xs">Pro Plan</p>
+                <p className="text-white text-sm font-medium">{user?.displayName || user?.email || 'User'}</p>
+                <p className="text-text-secondary text-xs">Free Plan</p>
               </div>
             </div>
           </div>
@@ -136,7 +129,7 @@ export const HomePage: React.FC = () => {
               {/* Page Heading */}
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Welcome back, {user?.user_metadata?.display_name || 'Alex'}</h2>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Welcome back, {user?.displayName || user?.email || 'User'}</h2>
                   <p className="text-text-secondary text-lg">Ready to define a new world today?</p>
                 </div>
                 <button className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95">
