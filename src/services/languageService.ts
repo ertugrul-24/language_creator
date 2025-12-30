@@ -16,16 +16,37 @@ export const createLanguage = async (
   input: CreateLanguageInput
 ): Promise<Language> => {
   try {
+    console.log('[createLanguage] Starting with userId:', userId, 'name:', input.name);
+    
+    // Validate inputs
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    if (!input.name || input.name.trim().length === 0) {
+      throw new Error('Language name is required');
+    }
+    if (!input.description || input.description.trim().length === 0) {
+      throw new Error('Language description is required');
+    }
+
     // Check if language name is unique for this user
-    const { data: existing } = await supabase
+    console.log('[createLanguage] Checking for duplicate names...');
+    const { data: existing, error: checkError } = await supabase
       .from('languages')
       .select('id')
       .eq('owner_id', userId)
-      .eq('name', input.name);
+      .eq('name', input.name.trim());
+
+    if (checkError) {
+      console.error('[createLanguage] Error checking for duplicates:', checkError);
+      throw new Error(`Duplicate check failed: ${checkError.message}`);
+    }
 
     if (existing && existing.length > 0) {
       throw new Error('You already have a language with this name');
     }
+
+    console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
     // Prepare language data - matching the database schema
     const languageData = {
@@ -51,6 +72,8 @@ export const createLanguage = async (
       total_contributors: 1,
     };
 
+    console.log('[createLanguage] Inserting language data:', languageData);
+
     // Insert into database
     const { data, error } = await supabase
       .from('languages')
@@ -59,15 +82,24 @@ export const createLanguage = async (
       .single();
 
     if (error) {
-      console.error('Insert error:', error);
-      throw error;
+      console.error('[createLanguage] Insert error:', error);
+      console.error('[createLanguage] Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      throw new Error(`Failed to create language: ${error.message}`);
     }
 
     if (!data) {
-      throw new Error('Failed to create language - no data returned');
+      throw new Error('Failed to create language - no data returned from server');
     }
 
+    console.log('[createLanguage] Language inserted successfully. ID:', data.id);
+
     // Add the user as owner in the collaborators table
+    console.log('[createLanguage] Adding user as collaborator...');
     const { error: collabError } = await supabase
       .from('language_collaborators')
       .insert([
@@ -79,14 +111,25 @@ export const createLanguage = async (
       ]);
 
     if (collabError) {
-      console.error('Collaborator insert error:', collabError);
-      throw collabError;
+      console.error('[createLanguage] Collaborator insert error:', collabError);
+      console.error('[createLanguage] Error details:', {
+        message: collabError.message,
+        code: collabError.code,
+        details: collabError.details,
+        hint: collabError.hint,
+      });
+      // Note: We continue even if collaborator insert fails, as the language was created
+      console.warn('[createLanguage] Warning: Could not add user as collaborator, but language was created');
+    } else {
+      console.log('[createLanguage] Collaborator added successfully');
     }
 
+    console.log('[createLanguage] Complete! Returning language data');
     return data as Language;
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to create language';
-    console.error('Create language error:', err);
+    console.error('[createLanguage] Exception caught:', message);
+    console.error('[createLanguage] Full error:', err);
     throw new Error(message);
   }
 };

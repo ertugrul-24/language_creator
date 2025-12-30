@@ -3,7 +3,8 @@ import { supabase } from '@/services/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
 interface AuthUser {
-  id: string;
+  id: string; // This will be the internal users.id (UUID from users table), not auth.users.id
+  authId?: string; // This is the auth.users.id for reference
   email: string;
   displayName?: string;
 }
@@ -25,6 +26,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Ensure user exists in users table (called on every login) and return their internal user ID
+  const ensureUserExists = async (authId: string, email: string): Promise<string> => {
+    try {
+      // Check if user already exists
+      const { data: existing } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authId)
+        .single();
+
+      if (existing) {
+        console.log('[ensureUserExists] User already exists. Internal ID:', existing.id);
+        return existing.id;
+      }
+
+      // User doesn't exist, create them
+      console.log('[ensureUserExists] Creating new user record for auth_id:', authId);
+      const { data: newUser, error } = await supabase
+        .from('users')
+        .insert([
+          {
+            auth_id: authId,
+            email: email,
+            display_name: email.split('@')[0], // Use email prefix as default display name
+            activity_permissions: 'friends_only',
+            theme: 'dark',
+            default_language_depth: 'realistic',
+          },
+        ])
+        .select('id')
+        .single();
+
+      if (error) {
+        console.error('[ensureUserExists] Error creating user record:', error);
+        throw error;
+      }
+
+      if (!newUser) {
+        throw new Error('Failed to create user record');
+      }
+
+      console.log('[ensureUserExists] User record created. Internal ID:', newUser.id);
+      return newUser.id;
+    } catch (err) {
+      console.error('[ensureUserExists] Exception:', err);
+      throw err;
+    }
+  };
+
   // Check session on mount and listen for auth changes
   useEffect(() => {
     let isMounted = true;
@@ -38,8 +88,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSession(data.session);
           
           if (data.session?.user) {
+            // Ensure user exists in users table and get their internal ID
+            const internalUserId = await ensureUserExists(data.session.user.id, data.session.user.email || '');
+            
             setUser({
-              id: data.session.user.id,
+              id: internalUserId,
+              authId: data.session.user.id,
               email: data.session.user.email || '',
               displayName: data.session.user.user_metadata?.display_name,
             });
@@ -60,13 +114,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen to auth state changes (login, logout, session refresh)
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
+      async (_event, newSession) => {
         if (isMounted) {
           setSession(newSession);
 
           if (newSession?.user) {
+            // When user logs in, ensure they have a record in the users table
+            const internalUserId = await ensureUserExists(newSession.user.id, newSession.user.email || '');
+            
             setUser({
-              id: newSession.user.id,
+              id: internalUserId,
+              authId: newSession.user.id,
               email: newSession.user.email || '',
               displayName: newSession.user.user_metadata?.display_name,
             });

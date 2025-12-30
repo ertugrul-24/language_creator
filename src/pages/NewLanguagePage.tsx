@@ -135,12 +135,17 @@ export const NewLanguagePage: React.FC = () => {
         throw new Error('User not authenticated');
       }
 
+      console.log('[handleSubmit] User authenticated:', user.id);
+
       // Convert cover image to base64 if provided
       let coverImageBase64: string | undefined;
       if (formData.coverImage) {
+        console.log('[handleSubmit] Converting image to base64...');
         coverImageBase64 = await fileToBase64(formData.coverImage);
+        console.log('[handleSubmit] Image converted, size:', coverImageBase64.length, 'bytes');
       }
 
+      console.log('[handleSubmit] Calling createLanguage...');
       // Create language
       const newLanguage = await createLanguage(user.id, {
         name: formData.name.trim(),
@@ -149,12 +154,14 @@ export const NewLanguagePage: React.FC = () => {
         coverImage: coverImageBase64,
       });
 
+      console.log('[handleSubmit] Language created successfully:', newLanguage.id);
       // Navigate to the language detail page
       navigate(`/languages/${newLanguage.id}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create language';
+      console.error('[handleSubmit] Error:', message);
+      console.error('[handleSubmit] Full error:', err);
       setSubmitError(message);
-      console.error('Language creation error:', err);
     } finally {
       setIsSubmitting(false);
     }
