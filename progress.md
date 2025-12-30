@@ -71,14 +71,15 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Create base layout (Sidebar + Header template)
   - [x] Professional documentation (README, SETUP, CONTRIBUTING)
 
-- [ ] **P0.2** Choose & Configure Backend (Choose One)
-
-  **Option A: Supabase (Free - Recommended for Learning)**
-  - [ ] Create Supabase project at supabase.com (free tier)
-  - [ ] Configure authentication (Email, Google OAuth)
-  - [ ] Initialize database schema
-  - [ ] Set environment variables
-  - [ ] Test real-time subscriptions
+- [x] **P0.2** Choose & Configure Backend ✅ SUPABASE CHOSEN & CONFIGURED
+  
+  **Option A: Supabase (Free - Recommended for Learning)** ✅ SELECTED
+  - [x] Create Supabase project at supabase.com (free tier) ✅ DONE
+  - [x] Set environment variables in .env.local ✅ DONE
+  - [x] Initialize database schema ✅ SQL FILE READY (`docs/supabase_schema.sql`)
+  - [ ] Run SQL schema in Supabase SQL Editor (manual step - see SUPABASE_READY.md)
+  - [ ] Configure authentication (Email, Google OAuth) - Email ready, Google optional
+  - [ ] Test real-time subscriptions (after schema is initialized)
   - Learning: PostgreSQL, real-time data, authentication patterns
 
   **Option B: Firebase (Paid - Production Ready)**
