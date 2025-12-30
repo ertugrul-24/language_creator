@@ -170,156 +170,158 @@ export const NewLanguagePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background-dark p-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/languages')}
-            className="flex items-center gap-2 text-text-secondary hover:text-white mb-4 transition"
-          >
-            <span className="material-symbols-outlined">arrow_back</span>
-            Back to Languages
-          </button>
-          <h1 className="text-4xl font-bold text-white mb-2">Create New Language</h1>
-          <p className="text-text-secondary">Design your constructed language with specifications</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-surface-dark rounded-lg border border-border-dark p-8 space-y-6">
-          {/* Error Alert */}
-          {submitError && (
-            <div className="p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300">
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-red-500 mt-0.5">error</span>
-                <div>
-                  <p className="font-semibold">Error</p>
-                  <p className="text-sm mt-1">{submitError}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Language Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
-              Language Name <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="e.g., Elvish, Klingon, Esperanto"
-              maxLength={50}
-              className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition ${
-                errors.name ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
-              }`}
-            />
-            {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name}</p>}
-            <p className="text-xs text-text-secondary mt-1">{formData.name.length}/50 characters</p>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-text-primary mb-2">
-              Description <span className="text-red-400">*</span>
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Describe your language (10-500 characters)"
-              maxLength={500}
-              rows={4}
-              className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition resize-none ${
-                errors.description ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
-              }`}
-            />
-            {errors.description && <p className="text-sm text-red-400 mt-1">{errors.description}</p>}
-            <p className="text-xs text-text-secondary mt-1">{formData.description.length}/500 characters</p>
-          </div>
-
-          {/* Icon Selection */}
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Language Icon <span className="text-red-400">*</span>
-            </label>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="text-4xl">{formData.icon}</div>
-              <div className="text-sm text-text-secondary">
-                Current selection: {formData.icon}
-              </div>
-            </div>
-            <div className="grid grid-cols-5 gap-3">
-              {emojis.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => handleEmojiSelect(emoji)}
-                  className={`text-3xl p-3 rounded-lg border-2 transition ${
-                    formData.icon === emoji
-                      ? 'border-blue-500 bg-blue-500/20'
-                      : 'border-border-dark hover:border-text-secondary'
-                  }`}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Cover Image Upload */}
-          <div>
-            <label htmlFor="coverImage" className="block text-sm font-medium text-text-primary mb-2">
-              Cover Image <span className="text-text-secondary">(optional)</span>
-            </label>
-            <div className="border-2 border-dashed border-border-dark rounded-lg p-6 text-center hover:border-text-secondary transition cursor-pointer">
-              <input
-                type="file"
-                id="coverImage"
-                name="coverImage"
-                onChange={handleFileChange}
-                accept="image/*"
-                className="hidden"
-              />
-              <label
-                htmlFor="coverImage"
-                className="cursor-pointer block"
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <span className="material-symbols-outlined text-3xl text-text-secondary">image</span>
-                  <p className="text-text-primary font-medium">
-                    {formData.coverImage ? formData.coverImage.name : 'Click to upload or drag and drop'}
-                  </p>
-                  <p className="text-xs text-text-secondary">PNG, JPG, GIF up to 5MB</p>
-                </div>
-              </label>
-            </div>
-            {errors.coverImage && <p className="text-sm text-red-400 mt-2">{errors.coverImage}</p>}
-          </div>
-
-          {/* Form Actions */}
-          <div className="flex gap-3 pt-4 border-t border-border-dark">
+    <div className="min-h-screen bg-background-dark flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto p-6">
+          {/* Header */}
+          <div className="mb-8">
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium rounded-lg transition flex items-center justify-center gap-2"
-            >
-              {isSubmitting && <span className="material-symbols-outlined animate-spin">hourglass_empty</span>}
-              {isSubmitting ? 'Creating...' : 'Create Language'}
-            </button>
-            <button
-              type="button"
               onClick={() => navigate('/languages')}
-              className="flex-1 px-6 py-3 bg-surface-dark hover:bg-background-dark text-text-primary font-medium rounded-lg border border-border-dark transition"
+              className="flex items-center gap-2 text-text-secondary hover:text-white mb-4 transition"
             >
-              Cancel
+              <span className="material-symbols-outlined">arrow_back</span>
+              Back to Languages
             </button>
+            <h1 className="text-4xl font-bold text-white mb-2">Create New Language</h1>
+            <p className="text-text-secondary">Design your constructed language with specifications</p>
           </div>
-        </form>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="bg-surface-dark rounded-lg border border-border-dark p-8 space-y-6 mb-8">
+            {/* Error Alert */}
+            {submitError && (
+              <div className="p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300">
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-red-500 mt-0.5">error</span>
+                  <div>
+                    <p className="font-semibold">Error</p>
+                    <p className="text-sm mt-1">{submitError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Language Name */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
+                Language Name <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="e.g., Elvish, Klingon, Esperanto"
+                maxLength={50}
+                className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition ${
+                  errors.name ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
+                }`}
+              />
+              {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name}</p>}
+              <p className="text-xs text-text-secondary mt-1">{formData.name.length}/50 characters</p>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-text-primary mb-2">
+                Description <span className="text-red-400">*</span>
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe your language (10-500 characters)"
+                maxLength={500}
+                rows={4}
+                className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition resize-none ${
+                  errors.description ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
+                }`}
+              />
+              {errors.description && <p className="text-sm text-red-400 mt-1">{errors.description}</p>}
+              <p className="text-xs text-text-secondary mt-1">{formData.description.length}/500 characters</p>
+            </div>
+
+            {/* Icon Selection */}
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Language Icon <span className="text-red-400">*</span>
+              </label>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="text-4xl">{formData.icon}</div>
+                <div className="text-sm text-text-secondary">
+                  Current selection: {formData.icon}
+                </div>
+              </div>
+              <div className="grid grid-cols-5 gap-3">
+                {emojis.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => handleEmojiSelect(emoji)}
+                    className={`text-3xl p-3 rounded-lg border-2 transition ${
+                      formData.icon === emoji
+                        ? 'border-blue-500 bg-blue-500/20'
+                        : 'border-border-dark hover:border-text-secondary'
+                    }`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cover Image Upload */}
+            <div>
+              <label htmlFor="coverImage" className="block text-sm font-medium text-text-primary mb-2">
+                Cover Image <span className="text-text-secondary">(optional)</span>
+              </label>
+              <div className="border-2 border-dashed border-border-dark rounded-lg p-6 text-center hover:border-text-secondary transition cursor-pointer">
+                <input
+                  type="file"
+                  id="coverImage"
+                  name="coverImage"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <label
+                  htmlFor="coverImage"
+                  className="cursor-pointer block"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="material-symbols-outlined text-3xl text-text-secondary">image</span>
+                    <p className="text-text-primary font-medium">
+                      {formData.coverImage ? formData.coverImage.name : 'Click to upload or drag and drop'}
+                    </p>
+                    <p className="text-xs text-text-secondary">PNG, JPG, GIF up to 5MB</p>
+                  </div>
+                </label>
+              </div>
+              {errors.coverImage && <p className="text-sm text-red-400 mt-2">{errors.coverImage}</p>}
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex gap-3 pt-4 border-t border-border-dark">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium rounded-lg transition flex items-center justify-center gap-2"
+              >
+                {isSubmitting && <span className="material-symbols-outlined animate-spin">hourglass_empty</span>}
+                {isSubmitting ? 'Creating...' : 'Create Language'}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/languages')}
+                className="flex-1 px-6 py-3 bg-surface-dark hover:bg-background-dark text-text-primary font-medium rounded-lg border border-border-dark transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
