@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   return (
@@ -132,7 +134,10 @@ export const HomePage: React.FC = () => {
                   <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Welcome back, {user?.displayName || user?.email || 'User'}</h2>
                   <p className="text-text-secondary text-lg">Ready to define a new world today?</p>
                 </div>
-                <button className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95">
+                <button 
+                  onClick={() => navigate('/languages/new')}
+                  className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg shadow-primary/20 flex items-center gap-2 transition-all active:scale-95"
+                >
                   <span className="material-symbols-outlined">add</span>
                   <span>New Language</span>
                 </button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Home, Languages, Dictionary, Grammar, Courses, Settings } from '@/pages';
+import { Home, Languages, NewLanguagePage, Dictionary, Grammar, Courses, Settings } from '@/pages';
 import { LoginPage } from '@/pages/LoginPage';
 import { SignupPage } from '@/pages/SignupPage';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -58,6 +58,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Languages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/languages/new"
+            element={
+              <ProtectedRoute>
+                <NewLanguagePage />
               </ProtectedRoute>
             }
           />
