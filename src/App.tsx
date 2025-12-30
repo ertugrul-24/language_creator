@@ -28,71 +28,67 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Routes - Application routes
- */
-function Routes_() {
-  return (
-    <Routes>
-      {/* Auth Routes */}
-      <Route path="/auth/login" element={<LoginPage />} />
-      <Route path="/auth/signup" element={<SignupPage />} />
-
-      {/* Protected Routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/languages"
-        element={
-          <ProtectedRoute>
-            <Languages />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dictionary"
-        element={
-          <ProtectedRoute>
-            <Dictionary />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/grammar"
-        element={
-          <ProtectedRoute>
-            <Grammar />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/courses"
-        element={
-          <ProtectedRoute>
-            <Courses />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Catch all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
-}
-
-/**
  * App - Main application component with routing and auth
  */
 function App() {
+  // Apply dark mode on mount
+  React.useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
-        <Routes_ />
+        <Routes>
+          {/* Auth Routes */}
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/signup" element={<SignupPage />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/languages"
+            element={
+              <ProtectedRoute>
+                <Languages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dictionary"
+            element={
+              <ProtectedRoute>
+                <Dictionary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grammar"
+            element={
+              <ProtectedRoute>
+                <Grammar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses"
+            element={
+              <ProtectedRoute>
+                <Courses />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );

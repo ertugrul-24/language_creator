@@ -1,4 +1,4 @@
-export { Home } from './Home';
+export { HomePage as Home } from './HomePage';
 export { Languages } from './Languages';
 export { Dictionary } from './Dictionary';
 export { Grammar } from './Grammar';
