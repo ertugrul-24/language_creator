@@ -36,7 +36,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Duration:** 1-2 weeks
 
-**Status:** 🟩 In Progress (P0.1 Complete, P0.2-P0.6 In Progress)
+**Status:** 🟩 Complete (P0.1-P0.4 All Complete)
 
 **Learning Outcomes:**
 - Full-stack JavaScript project setup
@@ -91,12 +91,12 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Add logout functionality ✅ (Home page logout button)
   - Learning: Authentication patterns, state management, security
 
-- [ ] **P0.4** Design Database Schema
-  - [ ] Define collections/tables (Users, Languages, Dictionaries, etc.)
-  - [ ] Create security rules/permissions
-  - [ ] Write TypeScript types for all data models
-  - [ ] Test with sample data
-  - Learning: Data modeling, schema design, permissions
+- [ ] **P0.4** Design Database Schema ✅ COMPLETE
+  - [x] Define collections/tables (Users, Languages, Dictionaries, etc.) ✅ Created in supabase_schema.sql
+  - [x] Create security rules/permissions ✅ Comprehensive RLS policies in supabase_rls_policies.sql
+  - [x] Write TypeScript types for all data models ✅ Complete types in src/types/database.ts
+  - [x] Test with sample data ✅ Sample data generator in src/data/sampleData.ts
+  - Learning: Data modeling, schema design, permissions ✅
 
 **P0 Success Criteria (Both Paths):**
 - ✅ React + TypeScript application running locally
@@ -480,9 +480,9 @@ This document tracks development phases with clear milestones. Each phase includ
 
 ## Current Status
 
-**Last Updated:** December 27, 2025  
-**Current Phase:** Phase 0.1 ✅ Complete  
-**Next Milestone:** Phase 0.2 - Firebase Setup & Authentication  
+**Last Updated:** December 30, 2025  
+**Current Phase:** Phase 0 ✅ Complete  
+**Next Milestone:** Phase 1 - Core Language Creation  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -492,11 +492,15 @@ This document tracks development phases with clear milestones. Each phase includ
 - ✅ Placeholder pages for all main sections
 - ✅ React Router configured
 - ✅ Path aliases (@/) set up
+- ✅ Authentication system (login, signup, logout, protected routes)
+- ✅ Supabase backend configured (PostgreSQL, auth)
+- ✅ Database schema designed with 12 tables
+- ✅ TypeScript types for all data models (src/types/database.ts)
+- ✅ Row Level Security (RLS) policies for all tables
+- ✅ Sample data generator for testing
 
 ### What's Next
-- 🔄 Phase 0.2: Firebase project setup
-- 🔄 Phase 0.3: Authentication system
-- 🔄 Phase 0.4: Firestore schema & types
+- 🔄 Phase 1: Core Language Creation (language forms, specs, UI)
 
 ---
 
