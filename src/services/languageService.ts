@@ -48,28 +48,15 @@ export const createLanguage = async (
 
     console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
-    // Prepare language data - matching the database schema
+    // Prepare language data - Phase 1 fields only
+    // Phase 1.2+ specs will be added in future phases
     const languageData = {
       owner_id: userId,
       name: input.name.trim(),
       description: input.description.trim(),
       visibility: 'private',
-      // Language Specifications
-      alphabet_script: 'Latin',
-      writing_direction: 'ltr',
-      depth_level: 'realistic',
-      word_order: 'SVO',
-      case_sensitive: false,
-      vowel_count: 0,
-      consonant_count: 0,
-      // Metadata
       icon_url: input.icon,
       cover_image_url: input.coverImage || null,
-      tags: [],
-      // Stats
-      total_words: 0,
-      total_rules: 0,
-      total_contributors: 1,
     };
 
     console.log('[createLanguage] Inserting language data:', languageData);
