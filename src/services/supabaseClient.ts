@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Test connection
 export const testConnection = async () => {
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { error } = await supabase.auth.getSession();
     if (error) throw error;
     console.log('✅ Supabase connected');
     return true;

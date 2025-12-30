@@ -8,7 +8,7 @@ interface HeaderProps {
 /**
  * Header - Top navigation and page title bar
  */
-export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
+export const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <header className="h-16 flex items-center justify-between border-b border-border-dark px-6 bg-background-dark/80 backdrop-blur-md z-10 shrink-0">
       <div className="flex items-center gap-4">

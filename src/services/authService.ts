@@ -1,4 +1,3 @@
-import { Session } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
 
 export interface AuthUser {
@@ -131,7 +130,7 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
  * Listen to auth state changes
  */
 export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => {
-  const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+  const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
     if (session?.user) {
       callback({
         id: session.user.id,
