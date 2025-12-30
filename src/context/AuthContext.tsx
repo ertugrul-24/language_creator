@@ -26,84 +26,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Ensure user exists in users table (called on every login) and return their internal user ID
-  const ensureUserExists = async (authId: string, email: string): Promise<string> => {
-    try {
-      // Check if user already exists
-      const { data: existing } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', authId)
-        .single();
-
-      if (existing) {
-        console.log('[ensureUserExists] User already exists. Internal ID:', existing.id);
-        return existing.id;
-      }
-
-      // User doesn't exist, create them
-      console.log('[ensureUserExists] Creating new user record for auth_id:', authId);
-      const { data: newUser, error } = await supabase
-        .from('users')
-        .insert([
-          {
-            auth_id: authId,
-            email: email,
-            display_name: email.split('@')[0], // Use email prefix as default display name
-            activity_permissions: 'friends_only',
-            theme: 'dark',
-            default_language_depth: 'realistic',
-          },
-        ])
-        .select('id')
-        .single();
-
-      if (error) {
-        console.error('[ensureUserExists] Error creating user record:', error);
-        throw error;
-      }
-
-      if (!newUser) {
-        throw new Error('Failed to create user record');
-      }
-
-      console.log('[ensureUserExists] User record created. Internal ID:', newUser.id);
-      return newUser.id;
-    } catch (err) {
-      console.error('[ensureUserExists] Exception:', err);
-      throw err;
-    }
-  };
-
-  // Check session on mount and listen for auth changes
+  // Step 1: Initialize auth state (get session, set user from auth.users)
   useEffect(() => {
     let isMounted = true;
 
     const initializeAuth = async () => {
       try {
-        // Get existing session from Supabase
-        const { data } = await supabase.auth.getSession();
+        console.log('[AuthContext] Initializing auth...');
         
+        // Use getUser() to ensure auth is fully resolved
+        const { data: { user: authUser }, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.log('[AuthContext] No authenticated user (expected on first load)');
+        }
+
         if (isMounted) {
-          setSession(data.session);
-          
-          if (data.session?.user) {
-            // Ensure user exists in users table and get their internal ID
-            const internalUserId = await ensureUserExists(data.session.user.id, data.session.user.email || '');
-            
+          if (authUser) {
+            console.log('[AuthContext] Auth user found:', authUser.id);
+            // Set user with auth ID - will update with internal ID in next effect
             setUser({
-              id: internalUserId,
-              authId: data.session.user.id,
-              email: data.session.user.email || '',
-              displayName: data.session.user.user_metadata?.display_name,
+              id: authUser.id,
+              authId: authUser.id,
+              email: authUser.email || '',
+              displayName: authUser.user_metadata?.display_name,
             });
           } else {
+            console.log('[AuthContext] No authenticated user');
             setUser(null);
           }
+          // Auth check complete - stop loading
           setLoading(false);
         }
       } catch (error) {
-        console.error('Failed to initialize auth:', error);
+        console.error('[AuthContext] Auth initialization error:', error);
         if (isMounted) {
           setLoading(false);
         }
@@ -112,24 +68,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
-    // Listen to auth state changes (login, logout, session refresh)
+    // Listen to auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
+      (_event, newSession) => {
+        console.log('[AuthContext] Auth state changed:', _event);
+        
         if (isMounted) {
           setSession(newSession);
 
           if (newSession?.user) {
-            // When user logs in, ensure they have a record in the users table
-            const internalUserId = await ensureUserExists(newSession.user.id, newSession.user.email || '');
-            
+            console.log('[AuthContext] User logged in:', newSession.user.id);
+            // Set user immediately with auth ID - internal ID will be resolved later
             setUser({
-              id: internalUserId,
+              id: newSession.user.id,
               authId: newSession.user.id,
               email: newSession.user.email || '',
               displayName: newSession.user.user_metadata?.display_name,
             });
           } else {
-            // Clear user when logged out
+            console.log('[AuthContext] User logged out');
             setUser(null);
           }
         }
@@ -141,6 +98,96 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       authListener.subscription?.unsubscribe();
     };
   }, []);
+
+  // Step 2: Ensure user exists in users table (only after auth is confirmed)
+  // This is a secondary operation that should not block auth flow
+  useEffect(() => {
+    if (!user) {
+      console.log('[AuthContext] Skipping ensureUserExists - no authenticated user');
+      return;
+    }
+
+    let isMounted = true;
+
+    const ensureUserExistsInDB = async () => {
+      try {
+        console.log('[AuthContext] Ensuring user exists in DB...');
+        
+        // Check if user already exists
+        const { data: existing, error: checkError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user.authId || user.id)
+          .single();
+
+        if (checkError && checkError.code !== 'PGRST116') {
+          // PGRST116 = no rows found, which is expected
+          console.error('[AuthContext] Error checking for existing user:', checkError);
+          // Don't throw - just log and continue
+          return;
+        }
+
+        if (existing && isMounted) {
+          console.log('[AuthContext] User already exists in DB. Internal ID:', existing.id);
+          // Update user.id to internal database ID
+          setUser((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  id: existing.id,
+                }
+              : null
+          );
+          return;
+        }
+
+        // User doesn't exist in DB, create them
+        console.log('[AuthContext] Creating user record in DB...');
+        const { data: newUser, error: insertError } = await supabase
+          .from('users')
+          .insert([
+            {
+              auth_id: user.authId || user.id,
+              email: user.email,
+              display_name: user.displayName || user.email.split('@')[0],
+              activity_permissions: 'friends_only',
+              theme: 'dark',
+              default_language_depth: 'realistic',
+            },
+          ])
+          .select('id')
+          .single();
+
+        if (insertError) {
+          console.error('[AuthContext] Error creating user record:', insertError);
+          // Don't throw - user can still use app with auth ID
+          return;
+        }
+
+        if (newUser && isMounted) {
+          console.log('[AuthContext] User record created. Internal ID:', newUser.id);
+          // Update user.id to internal database ID
+          setUser((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  id: newUser.id,
+                }
+              : null
+          );
+        }
+      } catch (err) {
+        console.error('[AuthContext] Unexpected error in ensureUserExistsInDB:', err);
+        // Don't throw - non-critical operation
+      }
+    };
+
+    ensureUserExistsInDB();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.authId, user?.email]);
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
