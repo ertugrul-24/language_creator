@@ -111,13 +111,18 @@ This document tracks development phases with clear milestones. Each phase includ
 
 ## Phase 1: Core Language Creation 🗣️
 
-**Goal:** Users can create and manage languages with full specifications
+**Deployment Path:** 🟦 **FREE SUPABASE** (PostgreSQL) - This is your chosen path  
+**Cost:** $0/month (free tier)
+
+**Goal:** Users can create and manage languages with full specifications in Supabase
 
 **Duration:** 2-3 weeks (Jan 10-30)
 
 **Status:** 🟨 In Progress (P1.1-P1.2 Complete, P1.3-P1.7 Not Started)
 
 **Dependencies:** Phase 0 complete
+
+**⚠️ Important Note:** All Phase 1 tasks use **Supabase free tier**. Firebase is an optional alternative for paid deployments (Phase 1.4+ future work).
 
 **Learning Outcomes:**
 - Complex form handling and validation
@@ -149,16 +154,22 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Form validation (minimum phoneme count, etc.)
   - Learning: Complex component composition, form validation, IPA notation ✅
 
-- [ ] **P1.3** Create language in Firestore
-  - [ ] Write `createLanguage()` Firebase function
-  - [ ] Store language specs in Firestore
-  - [ ] Generate unique languageId
-  - [ ] Set owner and collaborators array
-  - [ ] Initialize stats object
-  - [ ] Handle errors gracefully
+- [ ] **P1.3** Create language in Supabase (Store to Database)
+  - [ ] Verify Supabase connection works
+  - [ ] Test `createLanguage()` function end-to-end
+  - [ ] Verify language record created in `languages` table
+  - [ ] Verify collaborator entry created in `language_collaborators`
+  - [ ] Test error scenarios (duplicate names, invalid data)
+  - [ ] Verify database entries match form data
+  - [ ] Check logs show helpful debugging information
+  
+  **Database:** PostgreSQL in Supabase  
+  **Cost:** Free tier ($0/month)  
+  **Reference:** See [docs/P1.3_IMPLEMENTATION_GUIDE.md](docs/P1.3_IMPLEMENTATION_GUIDE.md)
 
 - [ ] **P1.4** Build language dashboard/detail page
   - [ ] Create `/languages/{languageId}` page
+  - [ ] Fetch language data from Supabase
   - [ ] Display language header: name, icon, owner, creation date
   - [ ] Show language stats: total words, total rules, contributors count
   - [ ] Create tabs: Overview | Dictionary | Rules | Courses
@@ -187,18 +198,22 @@ This document tracks development phases with clear milestones. Each phase includ
   - [ ] Quick action buttons (Add Word, New Rule, etc.) - non-functional placeholders
   - [ ] Activity heatmap placeholder
 
-**P1 Success Criteria:**
+**P1 Success Criteria (Supabase Free Path):**
 ✅ Users can create a language with all specs  
 ✅ Language details page displays correctly  
 ✅ Users can see list of their languages  
-✅ Specs are stored and retrievable from Firestore  
+✅ Specs are stored and retrievable from Supabase  
 ✅ Edit language works for owner/editors  
+✅ Database operations work on free tier  
+✅ No cost ($0/month)  
 
 ---
 
 ## Phase 2: Dictionary & Grammar Rules 📚
 
-**Goal:** Users can add words, define rules, create flashcard courses  
+**Deployment Path:** 🟦 **SUPABASE** (same as Phase 1)
+
+**Goal:** Users can add words, define rules, create flashcard courses in Supabase  
 **Duration:** 2-3 weeks  
 **Status:** ⏳ Not Started  
 **Dependencies:** Phase 1 complete
@@ -225,10 +240,10 @@ This document tracks development phases with clear milestones. Each phase includ
   - [ ] Form validation (all required fields, IPA format check)
   - [ ] Success notification
 
-- [ ] **P2.3** Implement word CRUD in Firestore
-  - [ ] Write `addWord()` Firebase function
-  - [ ] Write `updateWord()` Firebase function
-  - [ ] Write `deleteWord()` Firebase function
+- [ ] **P2.3** Implement word CRUD in Supabase
+  - [ ] Write `addWord()` Supabase function
+  - [ ] Write `updateWord()` Supabase function
+  - [ ] Write `deleteWord()` Supabase function
   - [ ] Write `getWords()` query (paginated, searchable)
   - [ ] Update language stats (totalWords) on add/delete
   - [ ] Only owner/editor can delete words
@@ -236,7 +251,7 @@ This document tracks development phases with clear milestones. Each phase includ
 - [ ] **P2.4** Build inline word editing
   - [ ] Edit button on each word row → opens modal
   - [ ] Form pre-fills with existing data
-  - [ ] Save changes to Firestore
+  - [ ] Save changes to Supabase
   - [ ] Show "edited by [user]" timestamp
   - [ ] Undo/History (optional for P2)
 
@@ -256,8 +271,8 @@ This document tracks development phases with clear milestones. Each phase includ
     - [ ] Examples (dynamic: multiple input/output/explanation triplets)
   - [ ] Validation (at least 3 examples, pattern required)
 
-- [ ] **P2.7** Implement rule CRUD in Firestore
-  - [ ] Write Firebase functions for add/update/delete/get
+- [ ] **P2.7** Implement rule CRUD in Supabase
+  - [ ] Write Supabase functions for add/update/delete/get
   - [ ] Update language stats (totalRules)
   - [ ] Enforce permissions (owner/editor only)
 
@@ -280,8 +295,8 @@ This document tracks development phases with clear milestones. Each phase includ
   - [ ] Preview course
   - [ ] Publish course
 
-- [ ] **P2.10** Implement course CRUD in Firestore
-  - [ ] Write Firebase functions for create/update/delete
+- [ ] **P2.10** Implement course CRUD in Supabase
+  - [ ] Write Supabase functions for create/update/delete
   - [ ] Create subcollection structure for lessons
   - [ ] Store flashcards in lesson subdocuments
 
