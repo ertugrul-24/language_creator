@@ -115,7 +115,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Duration:** 2-3 weeks (Jan 10-30)
 
-**Status:** 🟨 In Progress (P1.1 Complete, P1.2-P1.7 Not Started)
+**Status:** 🟨 In Progress (P1.1-P1.2 Complete, P1.3-P1.7 Not Started)
 
 **Dependencies:** Phase 0 complete
 
@@ -136,17 +136,18 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Test form submission flow ✅ (Form ready, service functions tested)
   - Learning: Form validation patterns, file uploads, state management ✅
 
-- [ ] **P1.2** Implement language specs configuration
-  - [ ] Build specs form section with fields:
-    - [ ] Alphabet/Script (dropdown: Latin, Cyrillic, Custom)
-    - [ ] Writing Direction (dropdown: LTR, RTL, Boustrophedon)
-    - [ ] Phoneme Set (dynamic input for IPA symbols)
-    - [ ] Depth Level (toggle: Realistic ↔ Simplified + warning modal)
-    - [ ] Word Order (dropdown: SVO, SOV, VSO, etc.)
-    - [ ] Case Sensitivity (toggle)
-    - [ ] Custom Specs (key-value dynamic inputs)
-  - [ ] Phoneme IPA input with audio file upload support
-  - [ ] Form validation (minimum phoneme count, etc.)
+- [x] **P1.2** Implement language specs configuration ✅ COMPLETE
+  - [x] Build specs form section with fields:
+    - [x] Alphabet/Script (dropdown: Latin, Cyrillic, Custom)
+    - [x] Writing Direction (dropdown: LTR, RTL, Boustrophedon)
+    - [x] Phoneme Set (dynamic input for IPA symbols)
+    - [x] Depth Level (toggle: Realistic ↔ Simplified + warning modal)
+    - [x] Word Order (dropdown: SVO, SOV, VSO, etc.)
+    - [x] Case Sensitivity (toggle)
+    - [x] Custom Specs (key-value dynamic inputs)
+  - [x] Phoneme IPA input with audio file upload support
+  - [x] Form validation (minimum phoneme count, etc.)
+  - Learning: Complex component composition, form validation, IPA notation ✅
 
 - [ ] **P1.3** Create language in Firestore
   - [ ] Write `createLanguage()` Firebase function
@@ -481,9 +482,8 @@ This document tracks development phases with clear milestones. Each phase includ
 
 ## Current Status
 
-**Last Updated:** December 30, 2025  
-**Current Phase:** Phase 0 ✅ Complete  
-**Next Milestone:** Phase 1 - Core Language Creation  
+**Last Updated:** December 31, 2025  
+**Current Phase:** Phase 1 (P1.2 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -499,9 +499,22 @@ This document tracks development phases with clear milestones. Each phase includ
 - ✅ TypeScript types for all data models (src/types/database.ts)
 - ✅ Row Level Security (RLS) policies for all tables
 - ✅ Sample data generator for testing
+- ✅ P1.1: Language creation form with validation
+- ✅ P1.2: Comprehensive language specs form
+  - ✅ LanguageSpecsForm component with all spec fields
+  - ✅ PhonemeSetInput component with dynamic phoneme management
+  - ✅ DepthLevelWarningModal for simplified language depth warning
+  - ✅ Phoneme audio file upload support
+  - ✅ Form validation utilities (minimum phonemes, required fields, etc.)
+  - ✅ Tabbed interface in NewLanguagePage (Basic Info | Language Specs)
 
 ### What's Next
-- 🔄 Phase 1: Core Language Creation (language forms, specs, UI)
+- 🔄 Phase 1: Core Language Creation (P1.3-P1.7)
+  - P1.3: Create language in Supabase
+  - P1.4: Build language dashboard/detail page
+  - P1.5: Build languages list page
+  - P1.6: Implement language editing
+  - P1.7: Update dashboard home page
 
 ---
 
