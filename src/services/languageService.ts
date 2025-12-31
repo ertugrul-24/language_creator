@@ -9,10 +9,40 @@ interface CreateLanguageInput {
 }
 
 /**
+ * Initialize default stats for a new language
+ * Used by both Supabase and Firebase implementations
+ */
+export const initializeLanguageStats = () => ({
+  totalWords: 0,
+  totalRules: 0,
+  totalContributors: 1, // Creator is the first contributor
+  lastModified: new Date().toISOString(),
+});
+
+/**
  * Create a new language
- * @param userId - The user ID creating the language
+ * 
+ * DUAL-BACKEND SUPPORT:
+ * This function is designed to work with both Supabase and Firebase.
+ * Currently uses Supabase; Firebase version will follow the same pattern.
+ * 
+ * @param userId - The user ID creating the language (from auth.users.id)
  * @param input - Basic language information (name, description, icon)
  * @param specs - Optional language specifications (Phase 1.2+ feature)
+ * 
+ * @returns Created language object with all metadata
+ * 
+ * @throws Error if validation fails or database operation fails
+ * 
+ * Process:
+ * 1. Validate inputs (required fields, length limits)
+ * 2. Check for duplicate language names (per user)
+ * 3. Generate unique languageId (automatic via database)
+ * 4. Create language record in database
+ * 5. Add user as owner in collaborators table
+ * 6. Initialize language stats
+ * 7. Log activity (future: Phase 1.3+)
+ * 8. Return complete language object
  */
 export const createLanguage = async (
   userId: string,
@@ -22,18 +52,29 @@ export const createLanguage = async (
   try {
     console.log('[createLanguage] Starting with userId:', userId, 'name:', input.name);
     
-    // Validate inputs
+    // ========================================================================
+    // STEP 1: VALIDATE INPUTS
+    // ========================================================================
     if (!userId) {
       throw new Error('User ID is required');
     }
     if (!input.name || input.name.trim().length === 0) {
       throw new Error('Language name is required');
     }
+    if (input.name.length > 50) {
+      throw new Error('Language name must be less than 50 characters');
+    }
     if (!input.description || input.description.trim().length === 0) {
       throw new Error('Language description is required');
     }
+    if (input.description.length > 500) {
+      throw new Error('Language description must be less than 500 characters');
+    }
 
-    // Check if language name is unique for this user
+    // ========================================================================
+    // STEP 2: CHECK FOR DUPLICATE LANGUAGE NAMES
+    // Ensure unique (owner_id, name) pair per database constraint
+    // ========================================================================
     console.log('[createLanguage] Checking for duplicate names...');
     const { data: existing, error: checkError } = await supabase
       .from('languages')
@@ -50,25 +91,43 @@ export const createLanguage = async (
       throw new Error('You already have a language with this name');
     }
 
+    // ========================================================================
+    // STEP 3: PREPARE LANGUAGE DATA
+    // Phase 1: Store basic fields only
+    // Phase 1.2+: Will also store specs, stats, metadata in JSONB columns
+    // ========================================================================
     console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
-    // Prepare language data - Phase 1 fields
-    // For Phase 1: owner_id, name, description, icon
-    // Specs will be stored in future phases
     const languageData = {
       owner_id: userId,
       name: input.name.trim(),
       description: input.description.trim(),
       icon: input.icon,
+      // Phase 1.2+ will add:
+      // specs: specs || null,
+      // stats: initializeLanguageStats(),
+      // metadata: initializeLanguageMetadata(),
     };
 
     if (specs) {
-      console.log('[createLanguage] Specs provided (will be used in Phase 1.2+):', specs);
+      console.log('[createLanguage] Specs provided:', {
+        alphabetScript: specs.alphabetScript,
+        writingDirection: specs.writingDirection,
+        phonemeCount: specs.phonemeSet?.length || 0,
+        depthLevel: specs.depthLevel,
+        wordOrder: specs.wordOrder,
+        caseSensitive: specs.caseSensitive,
+      });
+      console.log('[createLanguage] Note: Specs will be stored in Phase 1.2+ database schema');
     }
 
+    // ========================================================================
+    // STEP 4: CREATE LANGUAGE RECORD IN DATABASE
+    // Supabase: PostgreSQL INSERT returns auto-generated UUID
+    // Firebase: Firestore auto-generates document ID
+    // ========================================================================
     console.log('[createLanguage] Inserting language data:', languageData);
 
-    // Insert into database
     const { data, error } = await supabase
       .from('languages')
       .insert([languageData])
@@ -77,12 +136,13 @@ export const createLanguage = async (
 
     if (error) {
       console.error('[createLanguage] Insert error:', error);
-      console.error('[createLanguage] Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
+      // Map Supabase errors to user-friendly messages
+      if (error.code === '23505') {
+        throw new Error('A language with this name already exists');
+      }
+      if (error.code === '23502') {
+        throw new Error('Missing required language information');
+      }
       throw new Error(`Failed to create language: ${error.message}`);
     }
 
@@ -90,15 +150,21 @@ export const createLanguage = async (
       throw new Error('Failed to create language - no data returned from server');
     }
 
-    console.log('[createLanguage] Language inserted successfully. ID:', data.id);
+    const languageId = data.id;
+    console.log('[createLanguage] Language inserted successfully. ID:', languageId);
 
-    // Add the user as owner in the collaborators table
+    // ========================================================================
+    // STEP 5: ADD USER AS OWNER IN COLLABORATORS TABLE
+    // Creates entry in language_collaborators junction table
+    // Supabase: INSERT into language_collaborators
+    // Firebase: Add to subcollection languages/{id}/collaborators
+    // ========================================================================
     console.log('[createLanguage] Adding user as collaborator...');
     const { error: collabError } = await supabase
       .from('language_collaborators')
       .insert([
         {
-          language_id: data.id,
+          language_id: languageId,
           user_id: userId,
           role: 'owner',
         },
@@ -106,18 +172,34 @@ export const createLanguage = async (
 
     if (collabError) {
       console.error('[createLanguage] Collaborator insert error:', collabError);
-      console.error('[createLanguage] Error details:', {
-        message: collabError.message,
-        code: collabError.code,
-        details: collabError.details,
-        hint: collabError.hint,
-      });
-      // Note: We continue even if collaborator insert fails, as the language was created
       console.warn('[createLanguage] Warning: Could not add user as collaborator, but language was created');
+      // Note: We continue even if collaborator insert fails
+      // User can recover from this state by manually adding as owner
     } else {
       console.log('[createLanguage] Collaborator added successfully');
     }
 
+    // ========================================================================
+    // STEP 6: INITIALIZE LANGUAGE STATS (Future: Phase 1.3 extension)
+    // Will be stored in stats JSONB column or nested object
+    // ========================================================================
+    const initialStats = initializeLanguageStats();
+    console.log('[createLanguage] Initial stats prepared:', initialStats);
+    console.log('[createLanguage] Note: Stats will be persisted in Phase 1.3 database update');
+
+    // ========================================================================
+    // STEP 7: LOG ACTIVITY (Future: Phase 1.3 extension)
+    // Create entry in user activity log
+    // ========================================================================
+    console.log('[createLanguage] Activity logging deferred to Phase 1.3');
+    // Will implement in Phase 1.3:
+    // - Create entry in user's activity subcollection
+    // - Activity type: "language_created"
+    // - Store: languageId, language name, timestamp
+
+    // ========================================================================
+    // STEP 8: RETURN COMPLETE LANGUAGE OBJECT
+    // ========================================================================
     console.log('[createLanguage] Complete! Returning language data');
     return data as Language;
   } catch (err) {
@@ -129,7 +211,15 @@ export const createLanguage = async (
 };
 
 /**
- * Get all languages for the current user
+ * Get all languages owned by a user
+ * 
+ * DUAL-BACKEND SUPPORT:
+ * - Supabase: SELECT * FROM languages WHERE owner_id = ?
+ * - Firebase: Query /languages collection with owner_id filter
+ * 
+ * @param userId - The user ID to fetch languages for
+ * @returns Array of Language objects, sorted by creation date (newest first)
+ * @throws Error if query fails
  */
 export const getUserLanguages = async (userId: string) => {
   try {
@@ -143,42 +233,47 @@ export const getUserLanguages = async (userId: string) => {
 
     if (error) {
       console.error('[getUserLanguages] Query error:', error);
-      console.error('[getUserLanguages] Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
-      throw error;
+      throw new Error(`Failed to fetch languages: ${error.message}`);
     }
 
     console.log('[getUserLanguages] Query successful, received:', data?.length || 0, 'languages');
-    if (data) {
-      console.log('[getUserLanguages] Languages:', data.map(l => ({ id: l.id, name: l.name, owner_id: l.owner_id })));
-    }
-
     return data as Language[];
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Get user languages error';
     console.error('[getUserLanguages]', message);
-    console.error('[getUserLanguages] Full error:', err);
     throw err;
   }
 };
 
 /**
  * Get a single language by ID
+ * 
+ * DUAL-BACKEND SUPPORT:
+ * - Supabase: SELECT * FROM languages WHERE id = ?
+ * - Firebase: GET /languages/{languageId}
+ * 
+ * @param languageId - The ID of the language to fetch
+ * @returns Language object with full details
+ * @throws Error if language not found or query fails
  */
 export const getLanguage = async (languageId: string) => {
   try {
+    console.log('[getLanguage] Fetching language:', languageId);
+
     const { data, error } = await supabase
       .from('languages')
       .select('*')
       .eq('id', languageId)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        throw new Error('Language not found');
+      }
+      throw new Error(`Failed to fetch language: ${error.message}`);
+    }
 
+    console.log('[getLanguage] Successfully fetched language:', languageId);
     return data as Language;
   } catch (err) {
     console.error('Get language error:', err);
@@ -188,12 +283,23 @@ export const getLanguage = async (languageId: string) => {
 
 /**
  * Update a language
+ * 
+ * DUAL-BACKEND SUPPORT:
+ * - Supabase: UPDATE languages SET ... WHERE id = ?
+ * - Firebase: UPDATE /languages/{languageId}
+ * 
+ * @param languageId - The ID of the language to update
+ * @param updates - Partial Language object with fields to update
+ * @returns Updated Language object
+ * @throws Error if language not found or update fails
  */
 export const updateLanguage = async (
   languageId: string,
   updates: Partial<CreateLanguageInput>
 ) => {
   try {
+    console.log('[updateLanguage] Updating language:', languageId);
+
     const { data, error } = await supabase
       .from('languages')
       .update({
@@ -204,8 +310,11 @@ export const updateLanguage = async (
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw new Error(`Failed to update language: ${error.message}`);
+    }
 
+    console.log('[updateLanguage] Successfully updated language:', languageId);
     return data as Language;
   } catch (err) {
     console.error('Update language error:', err);
@@ -215,15 +324,31 @@ export const updateLanguage = async (
 
 /**
  * Delete a language
+ * 
+ * DUAL-BACKEND SUPPORT:
+ * - Supabase: DELETE FROM languages WHERE id = ?
+ * - Firebase: DELETE /languages/{languageId}
+ * 
+ * NOTE: This operation should be restricted to language owner only.
+ * Check permissions before calling this function!
+ * 
+ * @param languageId - The ID of the language to delete
+ * @throws Error if language not found or deletion fails
  */
 export const deleteLanguage = async (languageId: string) => {
   try {
+    console.log('[deleteLanguage] Deleting language:', languageId);
+
     const { error } = await supabase
       .from('languages')
       .delete()
       .eq('id', languageId);
 
-    if (error) throw error;
+    if (error) {
+      throw new Error(`Failed to delete language: ${error.message}`);
+    }
+
+    console.log('[deleteLanguage] Successfully deleted language:', languageId);
   } catch (err) {
     console.error('Delete language error:', err);
     throw err;
