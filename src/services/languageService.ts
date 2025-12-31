@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import type { Language } from '@/types/database';
+import type { LanguageSpecs } from '@/components/LanguageSpecsForm';
 
 interface CreateLanguageInput {
   name: string;
@@ -9,10 +10,14 @@ interface CreateLanguageInput {
 
 /**
  * Create a new language
+ * @param userId - The user ID creating the language
+ * @param input - Basic language information (name, description, icon)
+ * @param specs - Optional language specifications (Phase 1.2+ feature)
  */
 export const createLanguage = async (
   userId: string,
-  input: CreateLanguageInput
+  input: CreateLanguageInput,
+  specs?: Partial<LanguageSpecs>
 ): Promise<Language> => {
   try {
     console.log('[createLanguage] Starting with userId:', userId, 'name:', input.name);
@@ -47,14 +52,19 @@ export const createLanguage = async (
 
     console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
-    // Prepare language data - Phase 1 fields ONLY
-    // owner_id, name, description, icon
+    // Prepare language data - Phase 1 fields
+    // For Phase 1: owner_id, name, description, icon
+    // Specs will be stored in future phases
     const languageData = {
       owner_id: userId,
       name: input.name.trim(),
       description: input.description.trim(),
       icon: input.icon,
     };
+
+    if (specs) {
+      console.log('[createLanguage] Specs provided (will be used in Phase 1.2+):', specs);
+    }
 
     console.log('[createLanguage] Inserting language data:', languageData);
 

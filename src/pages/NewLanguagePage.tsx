@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { createLanguage } from '@/services/languageService';
-import { PageShell } from '@/components';
+import { PageShell, LanguageSpecsForm } from '@/components';
+import { validateLanguageSpecs } from '@/utils/specsValidation';
+import type { LanguageSpecs } from '@/components/LanguageSpecsForm';
 
 interface FormData {
   name: string;
@@ -14,6 +16,15 @@ interface FormErrors {
   name?: string;
   description?: string;
   icon?: string;
+}
+
+interface SpecsErrors extends Record<string, string | undefined> {
+  alphabetScript?: string;
+  writingDirection?: string;
+  phonemeSet?: string;
+  depthLevel?: string;
+  wordOrder?: string;
+  customSpecs?: string;
 }
 
 /**
@@ -30,9 +41,21 @@ export const NewLanguagePage: React.FC = () => {
     icon: '🌍',
   });
 
+  const [specs, setSpecs] = useState<Partial<LanguageSpecs>>({
+    alphabetScript: '',
+    writingDirection: 'ltr',
+    phonemeSet: [],
+    depthLevel: 'realistic',
+    wordOrder: 'SVO',
+    caseSensitive: false,
+    customSpecs: {},
+  });
+
   const [errors, setErrors] = useState<FormErrors>({});
+  const [specsErrors, setSpecsErrors] = useState<SpecsErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<'basic' | 'specs'>('basic');
 
   // Validation
   const validateForm = (): boolean => {
@@ -59,6 +82,13 @@ export const NewLanguagePage: React.FC = () => {
     }
 
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Validate specs
+  const validateSpecs = (): boolean => {
+    const newErrors = validateLanguageSpecs(specs);
+    setSpecsErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -94,7 +124,15 @@ export const NewLanguagePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    // Validate both sections
+    const basicValid = validateForm();
+    const specsValid = validateSpecs();
+
+    if (!basicValid || !specsValid) {
+      // Show specs tab if specs has errors
+      if (!specsValid) {
+        setActiveSection('specs');
+      }
       return;
     }
 
@@ -109,12 +147,12 @@ export const NewLanguagePage: React.FC = () => {
       console.log('[handleSubmit] User authenticated:', user.id);
 
       console.log('[handleSubmit] Calling createLanguage...');
-      // Create language
+      // Create language with specs
       const newLanguage = await createLanguage(user.id, {
         name: formData.name.trim(),
         description: formData.description.trim(),
         icon: formData.icon,
-      });
+      }, specs);
 
       console.log('[handleSubmit] Language created successfully:', newLanguage.id);
       // Navigate to the language detail page
@@ -131,7 +169,7 @@ export const NewLanguagePage: React.FC = () => {
 
   return (
     <PageShell title="Create Language">
-      <div className="max-w-2xl">
+      <div className="max-w-4xl">
         {/* Header */}
         <div className="mb-8">
           <button
@@ -145,111 +183,151 @@ export const NewLanguagePage: React.FC = () => {
           <p className="text-text-secondary">Design your constructed language with specifications</p>
         </div>
 
+        {/* Section Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-border-dark">
+          <button
+            onClick={() => setActiveSection('basic')}
+            className={`px-4 py-3 font-medium transition border-b-2 ${
+              activeSection === 'basic'
+                ? 'border-blue-500 text-white'
+                : 'border-transparent text-text-secondary hover:text-white'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">info</span>
+              Basic Info
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveSection('specs')}
+            className={`px-4 py-3 font-medium transition border-b-2 ${
+              activeSection === 'specs'
+                ? 'border-blue-500 text-white'
+                : 'border-transparent text-text-secondary hover:text-white'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">settings</span>
+              Language Specs
+            </span>
+          </button>
+        </div>
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-surface-dark rounded-lg border border-border-dark p-8 space-y-6 mb-8">
-            {/* Error Alert */}
-            {submitError && (
-              <div className="p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-red-500 mt-0.5">error</span>
-                  <div>
-                    <p className="font-semibold">Error</p>
-                    <p className="text-sm mt-1">{submitError}</p>
+          {/* Error Alert */}
+          {submitError && (
+            <div className="p-4 bg-red-900/20 border border-red-700 rounded-lg text-red-300">
+              <div className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-red-500 mt-0.5">error</span>
+                <div>
+                  <p className="font-semibold">Error</p>
+                  <p className="text-sm mt-1">{submitError}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Basic Info Section */}
+          {activeSection === 'basic' && (
+            <div className="space-y-6">
+              {/* Language Name */}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
+                  Language Name <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Elvish, Klingon, Esperanto"
+                  maxLength={50}
+                  className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition ${
+                    errors.name ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
+                  }`}
+                />
+                {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name}</p>}
+                <p className="text-xs text-text-secondary mt-1">{formData.name.length}/50 characters</p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-text-primary mb-2">
+                  Description <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Describe your language (10-500 characters)"
+                  maxLength={500}
+                  rows={4}
+                  className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition resize-none ${
+                    errors.description ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
+                  }`}
+                />
+                {errors.description && <p className="text-sm text-red-400 mt-1">{errors.description}</p>}
+                <p className="text-xs text-text-secondary mt-1">{formData.description.length}/500 characters</p>
+              </div>
+
+              {/* Icon Selection */}
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-2">
+                  Language Icon <span className="text-red-400">*</span>
+                </label>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-4xl">{formData.icon}</div>
+                  <div className="text-sm text-text-secondary">
+                    Current selection: {formData.icon}
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Language Name */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
-                Language Name <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="e.g., Elvish, Klingon, Esperanto"
-                maxLength={50}
-                className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition ${
-                  errors.name ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
-                }`}
-              />
-              {errors.name && <p className="text-sm text-red-400 mt-1">{errors.name}</p>}
-              <p className="text-xs text-text-secondary mt-1">{formData.name.length}/50 characters</p>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-text-primary mb-2">
-                Description <span className="text-red-400">*</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe your language (10-500 characters)"
-                maxLength={500}
-                rows={4}
-                className={`w-full px-4 py-2 bg-background-dark border rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 transition resize-none ${
-                  errors.description ? 'border-red-500 focus:ring-red-500' : 'border-border-dark focus:ring-blue-500'
-                }`}
-              />
-              {errors.description && <p className="text-sm text-red-400 mt-1">{errors.description}</p>}
-              <p className="text-xs text-text-secondary mt-1">{formData.description.length}/500 characters</p>
-            </div>
-
-            {/* Icon Selection */}
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Language Icon <span className="text-red-400">*</span>
-              </label>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">{formData.icon}</div>
-                <div className="text-sm text-text-secondary">
-                  Current selection: {formData.icon}
+                <div className="grid grid-cols-5 gap-3">
+                  {emojis.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => handleEmojiSelect(emoji)}
+                      className={`text-3xl p-3 rounded-lg border-2 transition ${
+                        formData.icon === emoji
+                          ? 'border-blue-500 bg-blue-500/20'
+                          : 'border-border-dark hover:border-text-secondary'
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
                 </div>
               </div>
-              <div className="grid grid-cols-5 gap-3">
-                {emojis.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => handleEmojiSelect(emoji)}
-                    className={`text-3xl p-3 rounded-lg border-2 transition ${
-                      formData.icon === emoji
-                        ? 'border-blue-500 bg-blue-500/20'
-                        : 'border-border-dark hover:border-text-secondary'
-                    }`}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
             </div>
+          )}
 
-            {/* Form Actions */}
-            <div className="flex gap-3 pt-4 border-t border-border-dark">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium rounded-lg transition flex items-center justify-center gap-2"
-              >
-                {isSubmitting && <span className="material-symbols-outlined animate-spin">hourglass_empty</span>}
-                {isSubmitting ? 'Creating...' : 'Create Language'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/languages')}
-                className="flex-1 px-6 py-3 bg-surface-dark hover:bg-background-dark text-text-primary font-medium rounded-lg border border-border-dark transition"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+          {/* Specs Section */}
+          {activeSection === 'specs' && (
+            <LanguageSpecsForm data={specs} onChange={setSpecs} errors={specsErrors} />
+          )}
+
+          {/* Form Actions */}
+          <div className="flex gap-3 pt-4 border-t border-border-dark">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 text-white font-medium rounded-lg transition flex items-center justify-center gap-2"
+            >
+              {isSubmitting && <span className="material-symbols-outlined animate-spin">hourglass_empty</span>}
+              {isSubmitting ? 'Creating...' : 'Create Language'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/languages')}
+              className="flex-1 px-6 py-3 bg-surface-dark hover:bg-background-dark text-text-primary font-medium rounded-lg border border-border-dark transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </PageShell>
   );

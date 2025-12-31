@@ -32,7 +32,6 @@
 import type {
   User,
   Language,
-  LanguageSpecs,
   DictionaryEntry,
   GrammarRule,
   Course,
@@ -74,7 +73,7 @@ export const sampleUsers = (): Partial<User>[] => [
 ];
 
 // ============================================================================
-// LANGUAGES WITH SPECS
+// LANGUAGES - Phase 1 (simplified, specs will be added in Phase 1.2+)
 // ============================================================================
 
 export const sampleLanguages = (): Partial<Language>[] => [
@@ -82,115 +81,19 @@ export const sampleLanguages = (): Partial<Language>[] => [
     owner_id: SAMPLE_USER_IDS.alice,
     name: 'Elvish (Sindarin)',
     description: 'Inspired by Tolkien\'s Elvish languages. Features flowing vowel harmony and Celtic-influenced phonology.',
-    visibility: 'public',
-    specs: {
-      alphabetScript: 'Latin',
-      writingDirection: 'ltr',
-      phonemeSet: [
-        { symbol: 'a', ipa: 'a', type: 'vowel' },
-        { symbol: 'e', ipa: 'e', type: 'vowel' },
-        { symbol: 'i', ipa: 'i', type: 'vowel' },
-        { symbol: 'o', ipa: 'o', type: 'vowel' },
-        { symbol: 'u', ipa: 'u', type: 'vowel' },
-        { symbol: 'th', ipa: 'θ', type: 'consonant' },
-        { symbol: 'dh', ipa: 'ð', type: 'consonant' },
-        { symbol: 'sh', ipa: 'ʃ', type: 'consonant' },
-        { symbol: 'l', ipa: 'l', type: 'consonant' },
-      ],
-      depthLevel: 'realistic',
-      wordOrder: 'VSO',
-      caseSensitive: false,
-      vowelCount: 5,
-      consonantCount: 9,
-      customSpecs: {
-        'dialectInfluences': ['Celtic', 'Romantic'],
-        'culturalContext': 'Fantasy/Literary',
-      },
-    } as LanguageSpecs,
-    stats: {
-      totalWords: 150,
-      totalRules: 8,
-      totalContributors: 1,
-      lastModified: new Date().toISOString(),
-    },
-    metadata: {
-      icon: 'language',
-      tags: ['fantasy', 'elvish', 'tolkien-inspired', 'constructed-language'],
-    },
+    icon: '🧝',
   },
   {
     owner_id: SAMPLE_USER_IDS.bob,
     name: 'Klingon (tlhIngan Hol)',
     description: 'Warrior language with harsh consonants. Perfect for understanding aggressive phonology.',
-    visibility: 'public',
-    specs: {
-      alphabetScript: 'Latin with diacritics',
-      writingDirection: 'ltr',
-      phonemeSet: [
-        { symbol: 'a', ipa: 'a', type: 'vowel' },
-        { symbol: 'e', ipa: 'e', type: 'vowel' },
-        { symbol: 'i', ipa: 'i', type: 'vowel' },
-        { symbol: 'o', ipa: 'o', type: 'vowel' },
-        { symbol: 'u', ipa: 'u', type: 'vowel' },
-        { symbol: 'q', ipa: 'q', type: 'consonant' },
-        { symbol: 'Q', ipa: 'qʰ', type: 'consonant' },
-        { symbol: 'H', ipa: 'x', type: 'consonant' },
-      ],
-      depthLevel: 'realistic',
-      wordOrder: 'OVS',
-      caseSensitive: true,
-      vowelCount: 5,
-      consonantCount: 8,
-      customSpecs: {
-        'culturalContext': 'Science Fiction',
-        'speakerPopulation': 'Very small (enthusiasts only)',
-      },
-    } as LanguageSpecs,
-    stats: {
-      totalWords: 200,
-      totalRules: 12,
-      totalContributors: 1,
-      lastModified: new Date().toISOString(),
-    },
-    metadata: {
-      icon: 'language',
-      tags: ['scifi', 'klingon', 'star-trek', 'constructed-language'],
-    },
+    icon: '⚔️',
   },
   {
     owner_id: SAMPLE_USER_IDS.alice,
     name: 'Esperanto Variant',
     description: 'Simplified version of Esperanto for learning purposes.',
-    visibility: 'private',
-    specs: {
-      alphabetScript: 'Latin',
-      writingDirection: 'ltr',
-      phonemeSet: [
-        { symbol: 'a', ipa: 'a', type: 'vowel' },
-        { symbol: 'e', ipa: 'e', type: 'vowel' },
-        { symbol: 'i', ipa: 'i', type: 'vowel' },
-        { symbol: 'o', ipa: 'o', type: 'vowel' },
-        { symbol: 'u', ipa: 'u', type: 'vowel' },
-      ],
-      depthLevel: 'simplified',
-      wordOrder: 'SVO',
-      caseSensitive: false,
-      vowelCount: 5,
-      consonantCount: 15,
-      customSpecs: {
-        'culturalContext': 'Constructed Auxiliary Language',
-      },
-    } as LanguageSpecs,
-    stats: {
-      totalWords: 75,
-      totalRules: 5,
-      totalContributors: 1,
-      lastModified: new Date().toISOString(),
-    },
-    metadata: {
-      icon: 'language',
-      tags: ['learning', 'simplified', 'auxiliary-language'],
-    },
+    icon: '🌍',
   },
 ];
 
