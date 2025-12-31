@@ -123,17 +123,35 @@ export const createLanguage = async (
  */
 export const getUserLanguages = async (userId: string) => {
   try {
+    console.log('[getUserLanguages] Starting query with userId:', userId);
+
     const { data, error } = await supabase
       .from('languages')
       .select('*')
       .eq('owner_id', userId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[getUserLanguages] Query error:', error);
+      console.error('[getUserLanguages] Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      throw error;
+    }
+
+    console.log('[getUserLanguages] Query successful, received:', data?.length || 0, 'languages');
+    if (data) {
+      console.log('[getUserLanguages] Languages:', data.map(l => ({ id: l.id, name: l.name, owner_id: l.owner_id })));
+    }
 
     return data as Language[];
   } catch (err) {
-    console.error('Get user languages error:', err);
+    const message = err instanceof Error ? err.message : 'Get user languages error';
+    console.error('[getUserLanguages]', message);
+    console.error('[getUserLanguages] Full error:', err);
     throw err;
   }
 };

@@ -38,51 +38,19 @@ export interface UserProfile extends Omit<User, 'auth_id'> {
 // ============================================================================
 // LANGUAGES TABLE
 // ============================================================================
+// LANGUAGES TABLE - Phase 1
+// ============================================================================
+// Phase 1 includes only core fields: id, owner_id, name, description, icon, created_at, updated_at
+// Phase 1.2+ will add: visibility, specs, stats, metadata columns
 
 export interface Language {
   id: string; // UUID - Primary key
-  owner_id: string; // FK to users.id
+  owner_id: string; // FK to auth.users.id
   name: string; // Language name (required)
   description: string; // Long-form description
+  icon: string; // Language icon (emoji)
   created_at: string; // ISO 8601 timestamp
   updated_at: string; // ISO 8601 timestamp
-  visibility: 'private' | 'friends' | 'public'; // Visibility level
-  specs: LanguageSpecs; // JSONB - Language specifications
-  stats: LanguageStats; // JSONB - Aggregated statistics
-  metadata: LanguageMetadata; // JSONB - UI metadata
-}
-
-export interface LanguageSpecs {
-  alphabetScript: string; // e.g., "Latin", "Cyrillic", "Custom"
-  writingDirection: 'ltr' | 'rtl' | 'boustrophedon'; // Writing direction
-  phonemeSet: Phoneme[]; // Array of phonemes
-  depthLevel: 'realistic' | 'simplified'; // Realism level
-  wordOrder: string; // e.g., "SVO", "SOV", "VSO"
-  caseSensitive: boolean; // Case matters in language
-  vowelCount: number; // Number of vowel phonemes
-  consonantCount: number; // Number of consonant phonemes
-  customSpecs: Record<string, unknown>; // User-defined key-value pairs
-}
-
-export interface Phoneme {
-  symbol: string; // Character/symbol for phoneme
-  ipa: string; // IPA notation
-  audioUrl?: string; // Optional audio file URL
-  type?: 'vowel' | 'consonant'; // Phoneme classification
-}
-
-export interface LanguageStats {
-  totalWords: number; // Total dictionary entries
-  totalRules: number; // Total grammar rules
-  totalContributors: number; // Number of collaborators
-  lastModified: string; // ISO 8601 timestamp of last edit
-}
-
-export interface LanguageMetadata {
-  icon: string; // Material Symbols icon name
-  coverImage?: string; // Cover image URL
-  tags: string[]; // User tags (e.g., "constructed", "inspired-by-elvish")
-  backgroundColor?: string; // Tailwind color for UI
 }
 
 // ============================================================================
