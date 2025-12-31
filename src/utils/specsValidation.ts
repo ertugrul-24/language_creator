@@ -1,6 +1,6 @@
 import type { LanguageSpecs } from '@/components/LanguageSpecsForm';
 
-export interface SpecsValidationErrors {
+export interface SpecsValidationErrors extends Record<string, string | undefined> {
   alphabetScript?: string;
   writingDirection?: string;
   phonemeSet?: string;

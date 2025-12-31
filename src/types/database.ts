@@ -47,10 +47,33 @@ export interface Language {
   id: string; // UUID - Primary key
   owner_id: string; // FK to auth.users.id
   name: string; // Language name (required)
-  description: string; // Long-form description
-  icon: string; // Language icon (emoji)
+  description?: string; // Long-form description
+  icon?: string; // Language icon (emoji) - deprecated, use icon_url
+  icon_url?: string; // Language icon (emoji)
+  cover_image_url?: string; // Cover image URL
+  visibility?: 'private' | 'friends' | 'public'; // Privacy level
+  specs?: LanguageSpecs; // Language specifications
+  total_words?: number; // Count of words
+  total_rules?: number; // Count of grammar rules
+  total_contributors?: number; // Count of collaborators
+  phoneme_count?: number | null; // Total number of phonemes
+  case_sensitive?: boolean; // Is case sensitive
   created_at: string; // ISO 8601 timestamp
   updated_at: string; // ISO 8601 timestamp
+}
+
+export interface LanguageSpecs {
+  alphabetScript?: string; // Alphabet script (Latin, Cyrillic, etc.)
+  writingDirection?: 'ltr' | 'rtl' | 'boustrophedon'; // Writing direction
+  wordOrder?: string; // Word order (SVO, SOV, etc.)
+  depthLevel?: 'realistic' | 'simplified'; // Language complexity level
+  phonemeSet?: Phoneme[]; // List of phonemes
+}
+
+export interface Phoneme {
+  symbol: string; // Phoneme symbol
+  ipa: string; // IPA notation
+  audio_url?: string; // Optional audio file URL
 }
 
 // ============================================================================

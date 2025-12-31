@@ -49,9 +49,68 @@ export const createLanguage = async (
   input: CreateLanguageInput,
   specs?: Partial<LanguageSpecs>
 ): Promise<Language> => {
+
+  console.error("🔥 CREATE LANGUAGE FUNCTION IS RUNNING 🔥");
+  alert("CREATE LANGUAGE CALLED");
+
+  console.log("SUPABASE URL:", import.meta.env.VITE_SUPABASE_URL);
+  console.log(
+    "SUPABASE KEY:",
+    import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 10)
+  );
+
   try {
     console.log('[createLanguage] Starting with userId:', userId, 'name:', input.name);
+
     
+    // ========================================================================
+    // STEP 0: ENSURE USER EXISTS IN USERS TABLE
+    // This is CRITICAL for RLS policies to work correctly.
+    // Supabase doesn't automatically create a public.users row when someone 
+    // signs up via auth - there's a trigger to handle this, but we check here
+    // as a safety measure to ensure the user exists before creating language.
+    // ========================================================================
+    console.log('[createLanguage] ⚠️  Ensuring user exists in users table...');
+    const { data: userCheck, error: userCheckError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', userId)
+      .single();
+
+    if (userCheckError) {
+      if (userCheckError.code === 'PGRST116') {
+        // User not found in public.users table
+        console.warn('[createLanguage] User not found in users table - attempting to create entry...');
+        
+        // Try to get email from auth context if available
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        
+        const { error: insertUserError } = await supabase
+          .from('users')
+          .insert([
+            {
+              auth_id: userId,
+              email: authUser?.email || `user-${userId}@placeholder.com`,
+              display_name: authUser?.user_metadata?.display_name || 'User',
+            },
+          ]);
+
+        if (insertUserError) {
+          console.error('[createLanguage] ⚠️  Failed to create user entry:', insertUserError);
+          // Don't throw - the trigger may have already handled this
+          // or the user may already exist (race condition)
+        } else {
+          console.log('[createLanguage] ✅ User entry created successfully');
+        }
+      } else {
+        // Other error occurred
+        console.error('[createLanguage] Unexpected error checking user:', userCheckError);
+        throw new Error(`User check failed: ${userCheckError.message}`);
+      }
+    } else {
+      console.log('[createLanguage] ✅ User already exists in users table:', userCheck?.id);
+    }
+
     // ========================================================================
     // STEP 1: VALIDATE INPUTS
     // ========================================================================
@@ -93,22 +152,30 @@ export const createLanguage = async (
 
     // ========================================================================
     // STEP 3: PREPARE LANGUAGE DATA
-    // Phase 1: Store basic fields only
-    // Phase 1.2+: Will also store specs, stats, metadata in JSONB columns
+    // CRITICAL: Must insert ALL spec fields + visibility to avoid NULL values
+    // NULL values cause "Unspecified" display and persistence issues
     // ========================================================================
     console.log('[createLanguage] No duplicates found. Preparing insert data...');
 
-    const languageData = {
+    const languageData: any = {
       owner_id: userId,
       name: input.name.trim(),
       description: input.description.trim(),
-      icon: input.icon,
-      // Phase 1.2+ will add:
-      // specs: specs || null,
-      // stats: initializeLanguageStats(),
-      // metadata: initializeLanguageMetadata(),
+      icon_url: input.icon || '🌍',
+      visibility: 'private', // Default: only owner can see
+      
+      // SPEC FIELDS: Must be set to avoid NULL values
+      alphabet_script: specs?.alphabetScript || null,
+      writing_direction: specs?.writingDirection || 'ltr',
+      word_order: specs?.wordOrder || null,
+      case_sensitive: specs?.caseSensitive ?? false,
+      phoneme_count: specs?.phonemeSet?.length || null,
+      depth_level: specs?.depthLevel || 'realistic',
     };
 
+    console.log('[createLanguage] ⚠️  FULL INSERT PAYLOAD (all fields):');
+    console.log(JSON.stringify(languageData, null, 2));
+    
     if (specs) {
       console.log('[createLanguage] Specs provided:', {
         alphabetScript: specs.alphabetScript,
@@ -116,9 +183,8 @@ export const createLanguage = async (
         phonemeCount: specs.phonemeSet?.length || 0,
         depthLevel: specs.depthLevel,
         wordOrder: specs.wordOrder,
-        caseSensitive: specs.caseSensitive,
       });
-      console.log('[createLanguage] Note: Specs will be stored in Phase 1.2+ database schema');
+      console.log('[createLanguage] ✅ Specs WILL be persisted to database (not deferred)');
     }
 
     // ========================================================================
@@ -135,7 +201,10 @@ export const createLanguage = async (
       .single();
 
     if (error) {
-      console.error('[createLanguage] Insert error:', error);
+      console.error('[createLanguage] ❌ Language insert error:', error);
+      console.error('[createLanguage] Error code:', error.code);
+      console.error('[createLanguage] Error message:', error.message);
+      
       // Map Supabase errors to user-friendly messages
       if (error.code === '23505') {
         throw new Error('A language with this name already exists');
@@ -151,32 +220,56 @@ export const createLanguage = async (
     }
 
     const languageId = data.id;
-    console.log('[createLanguage] Language inserted successfully. ID:', languageId);
+    console.log('[createLanguage] ✅ Language inserted successfully. ID:', languageId);
 
     // ========================================================================
     // STEP 5: ADD USER AS OWNER IN COLLABORATORS TABLE
-    // Creates entry in language_collaborators junction table
-    // Supabase: INSERT into language_collaborators
-    // Firebase: Add to subcollection languages/{id}/collaborators
+    // CRITICAL: language_collaborators.user_id references public.users.id
+    // NOT auth.users.id, so we must fetch the correct user ID first
     // ========================================================================
-    console.log('[createLanguage] Adding user as collaborator...');
-    const { error: collabError } = await supabase
+    console.log('[createLanguage] Fetching correct user ID from public.users...');
+    const { data: dbUser, error: dbUserError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', userId)
+      .single();
+
+    if (dbUserError || !dbUser) {
+      console.error('[createLanguage] ❌ CRITICAL: User not found in public.users table');
+      console.error('[createLanguage] Error:', dbUserError?.message);
+      console.error('[createLanguage] auth_id searched:', userId);
+      console.warn('[createLanguage] ⚠️  Language was created successfully, but cannot add collaborator');
+      console.warn('[createLanguage] User must exist in public.users table');
+      // Still return the language - it was created successfully
+      return data as Language;
+    }
+
+    console.log('[createLanguage] ✅ Found user in public.users. ID:', dbUser.id);
+    
+    console.log('[createLanguage] Adding user as collaborator with role="owner"...');
+    const { data: collabData, error: collabError } = await supabase
       .from('language_collaborators')
       .insert([
         {
           language_id: languageId,
-          user_id: userId,
+          user_id: userId,  // Use auth.uid, NOT (public.users.id)
           role: 'owner',
         },
-      ]);
+      ])
+      .select()
+      .single();
 
     if (collabError) {
-      console.error('[createLanguage] Collaborator insert error:', collabError);
-      console.warn('[createLanguage] Warning: Could not add user as collaborator, but language was created');
-      // Note: We continue even if collaborator insert fails
-      // User can recover from this state by manually adding as owner
+      console.error('[createLanguage] ❌ Collaborator insert error:', collabError);
+      console.error('[createLanguage] Error code:', collabError.code);
+      console.error('[createLanguage] Error message:', collabError.message);
+      console.error('[createLanguage] Language still created successfully at ID:', languageId);
+      console.error('[createLanguage] But collaborator entry failed - this may affect dashboard visibility');
+      // Do NOT throw - language was created successfully
+      // Collaborator insert failure is not fatal
     } else {
-      console.log('[createLanguage] Collaborator added successfully');
+      console.log('[createLanguage] ✅ Collaborator added successfully');
+      console.log('[createLanguage] Collaborator row:', collabData);
     }
 
     // ========================================================================
@@ -200,11 +293,11 @@ export const createLanguage = async (
     // ========================================================================
     // STEP 8: RETURN COMPLETE LANGUAGE OBJECT
     // ========================================================================
-    console.log('[createLanguage] Complete! Returning language data');
+    console.log('[createLanguage] ✅ COMPLETE! Language creation finished successfully');
     return data as Language;
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to create language';
-    console.error('[createLanguage] Exception caught:', message);
+    console.error('[createLanguage] ❌ EXCEPTION CAUGHT:', message);
     console.error('[createLanguage] Full error:', err);
     throw new Error(message);
   }
@@ -256,10 +349,132 @@ export const getUserLanguages = async (userId: string) => {
  * @returns Language object with full details
  * @throws Error if language not found or query fails
  */
+/**
+ * Map database columns to Language type with nested specs
+ * Database stores specs as individual columns; API returns nested object
+ */
+/**
+ * REVERSE MAPPER: Convert Language type to database update payload
+ * 
+ * This is the inverse of mapDatabaseLanguageToLanguage().
+ * It converts from TypeScript Language type with nested specs
+ * to flat database columns with snake_case names.
+ * 
+ * Example:
+ * Input: { name: "French", specs: { alphabetScript: "Latin" } }
+ * Output: { name: "French", alphabet_script: "Latin" }
+ */
+const mapLanguageToDatabaseUpdate = (
+  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean }>
+): Record<string, any> => {
+  const dbUpdates: any = {
+    updated_at: new Date().toISOString(),
+  };
+
+  console.log('[mapLanguageToDatabaseUpdate] Input updates:', updates);
+
+  // Map simple fields (name, description, icon, visibility, case_sensitive)
+  if ('name' in updates && updates.name !== undefined) {
+    dbUpdates.name = updates.name;
+    console.log('[mapLanguageToDatabaseUpdate] Mapped name:', updates.name);
+  }
+  if ('description' in updates && updates.description !== undefined) {
+    dbUpdates.description = updates.description;
+    console.log('[mapLanguageToDatabaseUpdate] Mapped description:', updates.description);
+  }
+  if ('icon' in updates && updates.icon !== undefined) {
+    dbUpdates.icon_url = updates.icon; // ← KEY: 'icon' → 'icon_url'
+    console.log('[mapLanguageToDatabaseUpdate] Mapped icon → icon_url:', updates.icon);
+  }
+  if ('visibility' in updates && updates.visibility !== undefined) {
+    dbUpdates.visibility = updates.visibility;
+    console.log('[mapLanguageToDatabaseUpdate] Mapped visibility:', updates.visibility);
+  }
+  if ('case_sensitive' in updates && updates.case_sensitive !== undefined) {
+    dbUpdates.case_sensitive = updates.case_sensitive;
+    console.log('[mapLanguageToDatabaseUpdate] Mapped case_sensitive:', updates.case_sensitive);
+  }
+
+  // Map specs (nested object → individual columns)
+  if (updates.specs && typeof updates.specs === 'object') {
+    console.log('[mapLanguageToDatabaseUpdate] Processing specs:', updates.specs);
+    
+    if (updates.specs.alphabetScript !== undefined) {
+      dbUpdates.alphabet_script = updates.specs.alphabetScript; // ← KEY: alphabetScript → alphabet_script
+      console.log('[mapLanguageToDatabaseUpdate] Mapped alphabetScript → alphabet_script:', updates.specs.alphabetScript);
+    }
+    if (updates.specs.writingDirection !== undefined) {
+      dbUpdates.writing_direction = updates.specs.writingDirection; // ← KEY: writingDirection → writing_direction
+      console.log('[mapLanguageToDatabaseUpdate] Mapped writingDirection → writing_direction:', updates.specs.writingDirection);
+    }
+    if (updates.specs.wordOrder !== undefined) {
+      dbUpdates.word_order = updates.specs.wordOrder; // ← KEY: wordOrder → word_order
+      console.log('[mapLanguageToDatabaseUpdate] Mapped wordOrder → word_order:', updates.specs.wordOrder);
+    }
+    if (updates.specs.depthLevel !== undefined) {
+      dbUpdates.depth_level = updates.specs.depthLevel; // ← KEY: depthLevel → depth_level
+      console.log('[mapLanguageToDatabaseUpdate] Mapped depthLevel → depth_level:', updates.specs.depthLevel);
+    }
+    if (updates.specs.phonemeSet !== undefined) {
+      dbUpdates.phoneme_set = updates.specs.phonemeSet; // ← KEY: phonemeSet → phoneme_set
+      console.log('[mapLanguageToDatabaseUpdate] Mapped phonemeSet → phoneme_set:', updates.specs.phonemeSet);
+    }
+  }
+
+  console.log('[mapLanguageToDatabaseUpdate] FINAL OUTPUT (ready for Supabase):', dbUpdates);
+  return dbUpdates;
+};
+
+const mapDatabaseLanguageToLanguage = (dbData: any): Language => {
+  console.log('[mapDatabaseLanguageToLanguage] Input database data:', {
+    id: dbData.id,
+    alphabet_script: dbData.alphabet_script,
+    writing_direction: dbData.writing_direction,
+    word_order: dbData.word_order,
+    depth_level: dbData.depth_level,
+    case_sensitive: dbData.case_sensitive,
+    phoneme_count: dbData.phoneme_count,
+  });
+
+  const result: Language = {
+    id: dbData.id,
+    owner_id: dbData.owner_id,
+    name: dbData.name,
+    description: dbData.description,
+    icon: dbData.icon || '🌍', // fallback
+    icon_url: dbData.icon_url,
+    cover_image_url: dbData.cover_image_url,
+    visibility: dbData.visibility as 'private' | 'friends' | 'public' | undefined,
+    specs: {
+      alphabetScript: dbData.alphabet_script,
+      writingDirection: dbData.writing_direction as 'ltr' | 'rtl' | 'boustrophedon' | undefined,
+      wordOrder: dbData.word_order,
+      depthLevel: dbData.depth_level as 'realistic' | 'simplified' | undefined,
+      phonemeSet: dbData.phoneme_set || [], // Will be fetched from phonemes table if needed
+    },
+    total_words: dbData.total_words || 0,
+    total_rules: dbData.total_rules || 0,
+    total_contributors: dbData.total_contributors || 1,
+    phoneme_count: dbData.phoneme_count,
+    case_sensitive: dbData.case_sensitive || false,
+    created_at: dbData.created_at,
+    updated_at: dbData.updated_at,
+  };
+
+  console.log('[mapDatabaseLanguageToLanguage] Output Language type:', {
+    specs: result.specs,
+    case_sensitive: result.case_sensitive,
+    phoneme_count: result.phoneme_count,
+  });
+
+  return result;
+};
+
 export const getLanguage = async (languageId: string) => {
   try {
     console.log('[getLanguage] Fetching language:', languageId);
 
+    // Simple query - just get the language data
     const { data, error } = await supabase
       .from('languages')
       .select('*')
@@ -267,6 +482,7 @@ export const getLanguage = async (languageId: string) => {
       .single();
 
     if (error) {
+      console.error('[getLanguage] Error:', error.code, error.message);
       if (error.code === 'PGRST116') {
         throw new Error('Language not found');
       }
@@ -274,7 +490,7 @@ export const getLanguage = async (languageId: string) => {
     }
 
     console.log('[getLanguage] Successfully fetched language:', languageId);
-    return data as Language;
+    return mapDatabaseLanguageToLanguage(data);
   } catch (err) {
     console.error('Get language error:', err);
     throw err;
@@ -295,29 +511,119 @@ export const getLanguage = async (languageId: string) => {
  */
 export const updateLanguage = async (
   languageId: string,
-  updates: Partial<CreateLanguageInput>
+  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean }>
 ) => {
   try {
-    console.log('[updateLanguage] Updating language:', languageId);
+    console.log('[updateLanguage] Starting update for language:', languageId);
+    console.log('[updateLanguage] Received updates:', updates);
 
+    // Use the dedicated reverse mapper to convert Language → DB columns
+    const dbUpdates = mapLanguageToDatabaseUpdate(updates);
+
+    console.log('[updateLanguage] UPDATE payload keys:', Object.keys(dbUpdates));
+    console.log('[updateLanguage] UPDATE payload values:', {
+      name: dbUpdates.name,
+      description: dbUpdates.description,
+      icon_url: dbUpdates.icon_url,
+      visibility: dbUpdates.visibility,
+      alphabet_script: dbUpdates.alphabet_script,
+      writing_direction: dbUpdates.writing_direction,
+      word_order: dbUpdates.word_order,
+      depth_level: dbUpdates.depth_level,
+      case_sensitive: dbUpdates.case_sensitive,
+      updated_at: dbUpdates.updated_at,
+    });
+
+    // Verify we have something to update (more than just updated_at)
+    const updateFieldCount = Object.keys(dbUpdates).length - 1; // -1 for updated_at
+    if (updateFieldCount === 0) {
+      console.warn('[updateLanguage] ⚠️  No fields to update (only updated_at)');
+      // Still execute to at least update the timestamp
+    }
+
+    // Attempt UPDATE with SELECT
+    console.log('[updateLanguage] Executing Supabase UPDATE...');
     const { data, error } = await supabase
       .from('languages')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbUpdates)
       .eq('id', languageId)
-      .select()
+      .select('*')
       .single();
 
     if (error) {
-      throw new Error(`Failed to update language: ${error.message}`);
+      console.error('[updateLanguage] ERROR CODE:', error.code);
+      console.error('[updateLanguage] ERROR MESSAGE:', error.message);
+      console.error('[updateLanguage] Full error object:', error);
+      
+      // PGRST204 means UPDATE succeeded but SELECT returned 0 rows
+      // This is likely an RLS issue - UPDATE succeeded but can't SELECT the result
+      if (error.code === 'PGRST204') {
+        console.warn('[updateLanguage] UPDATE likely succeeded but SELECT blocked by RLS');
+        console.log('[updateLanguage] Attempting to fetch updated language separately...');
+        
+        // Try to fetch the updated language with a fresh query
+        const { data: refetchData, error: refetchError } = await supabase
+          .from('languages')
+          .select('*')
+          .eq('id', languageId)
+          .single();
+
+        if (refetchError) {
+          console.error('[updateLanguage] REFETCH ERROR:', refetchError.code, refetchError.message);
+          throw new Error(`Update succeeded but could not fetch updated data: ${refetchError.message}`);
+        }
+
+        if (!refetchData) {
+          throw new Error('Update succeeded but refetch returned no data');
+        }
+
+        console.log('[updateLanguage] ✅ Refetch successful, data from database:');
+        console.log('  name:', refetchData.name);
+        console.log('  description:', refetchData.description);
+        console.log('  visibility:', refetchData.visibility);
+        console.log('  updated_at:', refetchData.updated_at);
+
+        const mapped = mapDatabaseLanguageToLanguage(refetchData);
+        console.log('[updateLanguage] ✅ Successfully updated language:', languageId);
+        return mapped;
+      }
+
+      // Other errors
+      if (error.code === 'PGRST116') {
+        throw new Error('Language not found or you do not have permission to update it');
+      }
+      throw new Error(`Failed to update language: ${error.message} (${error.code})`);
     }
 
-    console.log('[updateLanguage] Successfully updated language:', languageId);
-    return data as Language;
+    if (!data) {
+      console.error('[updateLanguage] UPDATE returned null data');
+      throw new Error('Update succeeded but returned no data');
+    }
+
+    console.log('[updateLanguage] Raw data returned from database:');
+    console.log('  id:', data.id);
+    console.log('  name:', data.name);
+    console.log('  description:', data.description);
+    console.log('  icon_url:', data.icon_url);
+    console.log('  visibility:', data.visibility);
+    console.log('  alphabet_script:', data.alphabet_script);
+    console.log('  writing_direction:', data.writing_direction);
+    console.log('  word_order:', data.word_order);
+    console.log('  depth_level:', data.depth_level);
+    console.log('  case_sensitive:', data.case_sensitive);
+    console.log('  updated_at:', data.updated_at);
+
+    const mapped = mapDatabaseLanguageToLanguage(data);
+    console.log('[updateLanguage] Mapped result:', {
+      name: mapped.name,
+      description: mapped.description,
+      visibility: mapped.visibility,
+      specs: mapped.specs,
+    });
+    console.log('[updateLanguage] ✅ Successfully updated language:', languageId);
+    return mapped;
   } catch (err) {
-    console.error('Update language error:', err);
+    console.error('[updateLanguage] ❌ Unexpected error:', err);
     throw err;
   }
 };

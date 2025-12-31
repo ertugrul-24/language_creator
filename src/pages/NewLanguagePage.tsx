@@ -306,7 +306,9 @@ export const NewLanguagePage: React.FC = () => {
 
           {/* Specs Section */}
           {activeSection === 'specs' && (
-            <LanguageSpecsForm data={specs} onChange={setSpecs} errors={specsErrors} />
+            <LanguageSpecsForm data={specs} onChange={setSpecs} errors={Object.fromEntries(
+              Object.entries(specsErrors).filter(([, v]) => v !== undefined)
+            ) as Record<string, string>} />
           )}
 
           {/* Form Actions */}

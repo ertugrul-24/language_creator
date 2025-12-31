@@ -1,10 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/services/supabaseClient';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  const [stats, setStats] = useState({
+    activeProjects: 0,
+    totalWords: 0,
+    totalRules: 0,
+    dayStreak: 0,
+  });
+  const [languages, setLanguages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        if (!user?.id) {
+          setLoading(false);
+          return;
+        }
+
+        console.log('[HomePage] Fetching user stats for user_id:', user.id);
+
+        // Fetch active projects (languages where user is a collaborator)
+        const { data: collaborations, error: collabError } = await supabase
+          .from('language_collaborators')
+          .select('language_id')
+          .eq('user_id', user.id);
+
+        if (collabError) {
+          console.error('[HomePage] Error fetching collaborations:', collabError);
+        } else {
+          const activeProjectCount = collaborations?.length || 0;
+          console.log('[HomePage] Active projects count:', activeProjectCount);
+          
+          // Fetch the actual language details
+          if (activeProjectCount > 0) {
+            const languageIds = collaborations?.map(c => c.language_id) || [];
+            const { data: langs, error: langsError } = await supabase
+              .from('languages')
+              .select('*')
+              .in('id', languageIds);
+
+            if (langsError) {
+              console.error('[HomePage] Error fetching languages:', langsError);
+            } else {
+              setLanguages(langs || []);
+            }
+          }
+
+          // Calculate totals from languages
+          const { data: allLanguages, error: totalsError } = await supabase
+            .from('languages')
+            .select('total_words, total_rules')
+            .in('id', collaborations?.map(c => c.language_id) || []);
+
+          if (totalsError) {
+            console.error('[HomePage] Error fetching totals:', totalsError);
+          } else {
+            const totalWords = allLanguages?.reduce((sum, lang) => sum + (lang.total_words || 0), 0) || 0;
+            const totalRules = allLanguages?.reduce((sum, lang) => sum + (lang.total_rules || 0), 0) || 0;
+            
+            setStats({
+              activeProjects: activeProjectCount,
+              totalWords,
+              totalRules,
+              dayStreak: 0, // TODO: Implement in future phase
+            });
+          }
+        }
+      } catch (err) {
+        console.error('[HomePage] Unexpected error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserStats();
+  }, [user?.id]);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display selection:bg-primary/30 selection:text-primary">
@@ -148,28 +225,28 @@ export const HomePage: React.FC = () => {
                 <div className="bg-surface-dark p-4 rounded-xl border border-border-dark flex flex-col gap-2">
                   <span className="material-symbols-outlined text-primary text-2xl">list_alt</span>
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-white">0</span>
+                    <span className="text-2xl font-bold text-white">{stats.totalWords}</span>
                     <span className="text-text-secondary text-xs">Total Words</span>
                   </div>
                 </div>
                 <div className="bg-surface-dark p-4 rounded-xl border border-border-dark flex flex-col gap-2">
                   <span className="material-symbols-outlined text-emerald-400 text-2xl">rule</span>
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-white">0</span>
+                    <span className="text-2xl font-bold text-white">{stats.totalRules}</span>
                     <span className="text-text-secondary text-xs">Grammar Rules</span>
                   </div>
                 </div>
                 <div className="bg-surface-dark p-4 rounded-xl border border-border-dark flex flex-col gap-2">
                   <span className="material-symbols-outlined text-purple-400 text-2xl">forum</span>
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-white">0</span>
+                    <span className="text-2xl font-bold text-white">{stats.activeProjects}</span>
                     <span className="text-text-secondary text-xs">Active Projects</span>
                   </div>
                 </div>
                 <div className="bg-surface-dark p-4 rounded-xl border border-border-dark flex flex-col gap-2">
                   <span className="material-symbols-outlined text-orange-400 text-2xl">local_fire_department</span>
                   <div className="flex flex-col">
-                    <span className="text-2xl font-bold text-white">0</span>
+                    <span className="text-2xl font-bold text-white">{stats.dayStreak}</span>
                     <span className="text-text-secondary text-xs">Day Streak</span>
                   </div>
                 </div>
@@ -184,17 +261,49 @@ export const HomePage: React.FC = () => {
                     <a className="text-sm text-primary hover:text-blue-400 font-medium" href="#">View All</a>
                   </div>
 
-                  {/* Empty State */}
-                  <div className="bg-surface-dark rounded-xl border border-border-dark p-8 text-center">
-                    <span className="material-symbols-outlined text-4xl text-text-secondary mb-3 block">language</span>
-                    <p className="text-text-secondary">No projects yet. Create your first language to get started!</p>
-                    <button 
-                      onClick={() => navigate('/languages/new')}
-                      className="mt-4 bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                    >
-                      Create Language
-                    </button>
-                  </div>
+                  {/* Languages List or Empty State */}
+                  {loading ? (
+                    <div className="bg-surface-dark rounded-xl border border-border-dark p-8 text-center">
+                      <p className="text-text-secondary">Loading projects...</p>
+                    </div>
+                  ) : languages.length > 0 ? (
+                    <div className="space-y-3">
+                      {languages.map((language) => (
+                        <div
+                          key={language.id}
+                          onClick={() => navigate(`/languages/${language.id}`)}
+                          className="bg-surface-dark hover:bg-surface-dark/80 rounded-xl border border-border-dark p-4 cursor-pointer transition-all hover:border-primary/50"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3 flex-1">
+                              <div className="text-3xl mt-1">{language.icon_url || '🌍'}</div>
+                              <div className="flex-1">
+                                <h4 className="text-lg font-semibold text-white">{language.name}</h4>
+                                <p className="text-sm text-text-secondary line-clamp-1">{language.description || 'No description'}</p>
+                                <div className="flex gap-4 mt-2 text-xs text-text-secondary">
+                                  <span>{language.total_words || 0} words</span>
+                                  <span>{language.total_rules || 0} rules</span>
+                                  <span className="capitalize">{language.visibility || 'private'}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className="material-symbols-outlined text-text-secondary">arrow_forward</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-surface-dark rounded-xl border border-border-dark p-8 text-center">
+                      <span className="material-symbols-outlined text-4xl text-text-secondary mb-3 block">language</span>
+                      <p className="text-text-secondary">No projects yet. Create your first language to get started!</p>
+                      <button 
+                        onClick={() => navigate('/languages/new')}
+                        className="mt-4 bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                      >
+                        Create Language
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Column: Quick Tools & Heatmap */}

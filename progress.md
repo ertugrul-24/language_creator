@@ -118,7 +118,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Duration:** 2-3 weeks (Jan 10-30)
 
-**Status:** 🟨 In Progress (P1.1-P1.3 Complete, P1.4-P1.7 Not Started)
+**Status:** 🟨 In Progress (P1.1-P1.4 Complete, P1.5-P1.7 Not Started)
 
 **Dependencies:** Phase 0 complete
 
@@ -162,24 +162,50 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Test error scenarios (duplicate names, invalid data) ✅
   - [x] Verify database entries match form data ✅
   - [x] Check logs show helpful debugging information ✅
+
   
   **Database:** PostgreSQL in Supabase  
   **Cost:** Free tier ($0/month)  
   **Implementation:** 8-step process with comprehensive logging
+  **Schema Cache Issue Fixed:** Run `docs/FIX_SCHEMA_CACHE.sql` to add missing columns and refresh cache
   **References:** 
   - [docs/P1_3_IMPLEMENTATION_SUMMARY.md](docs/P1_3_IMPLEMENTATION_SUMMARY.md) - Complete summary
   - [docs/P1_3_TESTING_CHECKLIST.md](docs/P1_3_TESTING_CHECKLIST.md) - Manual testing guide (575+ lines)
+  - [docs/SCHEMA_CACHE_ERROR_FIX.md](docs/SCHEMA_CACHE_ERROR_FIX.md) - Schema cache error troubleshooting
+  - [docs/FIX_SCHEMA_CACHE.sql](docs/FIX_SCHEMA_CACHE.sql) - SQL to fix schema cache
   - [verify-p1-3-setup.js](verify-p1-3-setup.js) - Prerequisite verification script
 
-- [ ] **P1.4** Build language dashboard/detail page
-  - [ ] Create `/languages/{languageId}` page
-  - [ ] Fetch language data from Supabase
-  - [ ] Display language header: name, icon, owner, creation date
-  - [ ] Show language stats: total words, total rules, contributors count
-  - [ ] Create tabs: Overview | Dictionary | Rules | Courses
-  - [ ] Overview tab shows specs in expandable sections
-  - [ ] Edit language button (owner/editor only)
-  - [ ] Language visibility settings (private/friends/public)
+- [x] **P1.4** Build language dashboard/detail page ✅ COMPLETE (Fixed read/update issues)
+  - [x] Create `/languages/{languageId}` page ✅ (LanguageDetailPage.tsx)
+  - [x] Fetch language data from Supabase ✅ (Fetches language, owner info, and user role)
+  - [x] Display language header: name, icon, owner, creation date ✅ (LanguageHeader component)
+  - [x] Show language stats: total words, total rules, contributors count ✅ (Stats in Overview tab)
+  - [x] Create tabs: Overview | Dictionary | Rules | Courses ✅ (LanguageTabs component)
+  - [x] Overview tab shows specs in expandable sections ✅ (OverviewTab with 4 collapsible sections)
+  - [x] Edit language button (owner/editor only) ✅ (EditLanguageModal component)
+  - [x] Language visibility settings (private/friends/public) ✅ (VisibilitySettingsModal component)
+  - [x] **FIXES:** Read/Update issues resolved ✅
+    - [x] Fixed owner resolution (was "Unknown", now displays correctly)
+    - [x] Fixed specs display (was "Unspecified", now shows correct values)
+    - [x] Fixed UPDATE queries (Edit Language and Visibility Settings now save)
+    - [x] Fixed database column mapping (snake_case → camelCase)
+    - [x] Added proper error logging and fallbacks
+    - [x] Detailed documentation: [P1_4_READ_UPDATE_FIXES.md](docs/P1_4_READ_UPDATE_FIXES.md)
+    - [x] Debugging guide: [DEBUGGING_READ_UPDATE_ISSUES.md](docs/DEBUGGING_READ_UPDATE_ISSUES.md)
+  
+  **Implementation Details:**
+  - LanguageDetailPage: Main container with data fetching, tab state, and modals
+  - LanguageHeader: Gradient header with language info, edit/visibility buttons
+  - LanguageTabs: Tabbed interface with 4 tabs (Overview, Dictionary, Rules, Courses)
+  - OverviewTab: 4 expandable sections (Basic Info, Phonology, Grammar, Statistics)
+  - DictionaryTab: Word table with search, filter, pagination (placeholder for add/edit)
+  - RulesTab: Rule cards with examples, category filter (placeholder for add/edit)
+  - CoursesTab: Course cards grid with enrollment stats (placeholder for creation)
+  - EditLanguageModal: Update name, description, icon (owner/editor only)
+  - VisibilitySettingsModal: Change visibility (private/friends/public)
+  - Integrated with App.tsx routing: `/languages/:languageId`
+  - Error handling and loading states included
+  - Role-based UI: buttons only show for owner/editor
 
 - [ ] **P1.5** Build languages list page
   - [ ] Create `/languages` page
@@ -501,8 +527,8 @@ This document tracks development phases with clear milestones. Each phase includ
 
 ## Current Status
 
-**Last Updated:** December 31, 2025  
-**Current Phase:** Phase 1 (P1.2 ✅ Complete)  
+**Last Updated:** January 1, 2026  
+**Current Phase:** Phase 1 (P1.4 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -534,13 +560,25 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Comprehensive testing checklist (575+ lines)
   - ✅ Setup verification script
   - ✅ Database SQL query verification examples
+- ✅ P1.4: Build language dashboard/detail page
+  - ✅ LanguageDetailPage with data fetching
+  - ✅ LanguageHeader with gradient background
+  - ✅ Tabbed interface (Overview | Dictionary | Rules | Courses)
+  - ✅ OverviewTab with 4 expandable spec sections
+  - ✅ DictionaryTab with search and filtering
+  - ✅ RulesTab with category filtering
+  - ✅ CoursesTab with course cards
+  - ✅ EditLanguageModal for updating language info
+  - ✅ VisibilitySettingsModal for privacy settings
+  - ✅ Role-based UI (owner/editor/viewer/none)
+  - ✅ Error handling and loading states
+  - ✅ Integrated with router (/languages/:languageId)
 
 ### What's Next
-- 🔄 Phase 1: Core Language Creation (P1.4-P1.7)
-  - P1.4: Build language dashboard/detail page
-  - P1.5: Build languages list page
-  - P1.6: Implement language editing
-  - P1.7: Update dashboard home page
+- 🔄 Phase 1: Core Language Creation (P1.5-P1.7)
+  - P1.5: Build languages list page (/languages) - view all created languages
+  - P1.6: Implement language editing - prevent breaking changes, log edits
+  - P1.7: Update dashboard home page - show active projects and stats
 
 ---
 
