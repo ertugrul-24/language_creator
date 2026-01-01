@@ -660,3 +660,106 @@ export const deleteLanguage = async (languageId: string) => {
     throw err;
   }
 };
+
+/**
+ * Get languages the user collaborates on (not created by them)
+ * Queries language_collaborators table and joins with languages
+ * 
+ * @param userId - The user's ID
+ * @returns Array of Language objects with collaboration metadata
+ * @throws Error if query fails
+ */
+export const getCollaboratedLanguages = async (userId: string) => {
+  try {
+    console.log('[getCollaboratedLanguages] Starting query with userId:', userId);
+
+    const { data, error } = await supabase
+      .from('language_collaborators')
+      .select(`
+        role,
+        language_id,
+        languages(
+          id,
+          owner_id,
+          name,
+          description,
+          icon,
+          icon_url,
+          cover_image_url,
+          visibility,
+          specs,
+          total_words,
+          total_rules,
+          total_contributors,
+          phoneme_count,
+          case_sensitive,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('[getCollaboratedLanguages] Query error:', error);
+      throw new Error(`Failed to fetch collaborated languages: ${error.message}`);
+    }
+
+    // Filter to only include languages NOT owned by this user
+    const collaboratedLanguages = (data || [])
+      .filter((item: any) => item.languages && item.languages.owner_id !== userId)
+      .map((item: any) => ({
+        ...item.languages as Language,
+        collaboratorRole: item.role, // Add role metadata for UI
+      }));
+
+    console.log('[getCollaboratedLanguages] Query successful, received:', collaboratedLanguages.length, 'collaborated languages');
+    return collaboratedLanguages as (Language & { collaboratorRole: string })[];
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Get collaborated languages error';
+    console.error('[getCollaboratedLanguages]', message);
+    throw err;
+  }
+};
+
+/**
+ * Get all languages for a user (created + collaborated)
+ * Returns languages with metadata indicating ownership/role
+ * 
+ * @param userId - The user's ID
+ * @returns Combined array with ownership/role metadata
+ * @throws Error if query fails
+ */
+export const getAllUserLanguages = async (userId: string) => {
+  try {
+    console.log('[getAllUserLanguages] Starting query with userId:', userId);
+
+    // Fetch both created and collaborated languages in parallel
+    const [createdLanguages, collaboratedLanguages] = await Promise.all([
+      getUserLanguages(userId),
+      getCollaboratedLanguages(userId),
+    ]);
+
+    // Add metadata to created languages
+    const created = createdLanguages.map((lang) => ({
+      ...lang,
+      userRole: 'owner' as const,
+      type: 'created' as const,
+    }));
+
+    // Add metadata to collaborated languages
+    const collaborated = collaboratedLanguages.map((lang) => ({
+      ...lang,
+      userRole: lang.collaboratorRole as 'editor' | 'viewer',
+      type: 'collaborated' as const,
+    }));
+
+    const all = [...created, ...collaborated];
+    console.log('[getAllUserLanguages] Total languages:', all.length, '(created:', created.length, ', collaborated:', collaborated.length, ')');
+
+    return all;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Get all user languages error';
+    console.error('[getAllUserLanguages]', message);
+    throw err;
+  }
+};

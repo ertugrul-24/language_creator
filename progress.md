@@ -118,7 +118,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Duration:** 2-3 weeks (Jan 10-30)
 
-**Status:** 🟨 In Progress (P1.1-P1.4 Complete, P1.5-P1.7 Not Started)
+**Status:** 🟨 In Progress (P1.1-P1.5 Complete, P1.6-P1.7 Not Started)
 
 **Dependencies:** Phase 0 complete
 
@@ -207,14 +207,26 @@ This document tracks development phases with clear milestones. Each phase includ
   - Error handling and loading states included
   - Role-based UI: buttons only show for owner/editor
 
-- [ ] **P1.5** Build languages list page
-  - [ ] Create `/languages` page
-  - [ ] List user's created languages with cards (name, icon, stats, last modified)
-  - [ ] List languages collaborator on (with role badge)
-  - [ ] Add filter: Created by me vs Collaborating on
-  - [ ] Add sort: Recently modified, Alphabetical
-  - [ ] "New Language" button prominent at top
-  - [ ] Responsive grid layout
+- [x] **P1.5** Build languages list page ✅ COMPLETE
+  - [x] Create `/languages` page
+  - [x] List user's created languages with cards (name, icon, stats, last modified)
+  - [x] List languages collaborator on (with role badge)
+  - [x] Add filter: Created by me vs Collaborating on
+  - [x] Add sort: Recently modified, Alphabetical
+  - [x] "New Language" button prominent at top
+  - [x] Responsive grid layout
+  
+  **Implementation Details:**
+  - Added `getCollaboratedLanguages()` service function to fetch languages user collaborates on
+  - Added `getAllUserLanguages()` service function to combine created + collaborated languages
+  - Created comprehensive language card component with stats display
+  - Implemented 3-option filter (All, Created by me, Collaborating on)
+  - Implemented 2-option sort dropdown (Recently modified, Alphabetical)
+  - Role badges: Owner (green), Editor (blue), Viewer (amber)
+  - Responsive grid: 1 col mobile → 2 col tablet → 3 col desktop
+  - Stats display: Total words, Total rules, Last modified date
+  - Empty states for no languages and filter no results
+  - Reference: [docs/P1_5_LANGUAGES_LIST_PAGE.md](docs/P1_5_LANGUAGES_LIST_PAGE.md)
 
 - [ ] **P1.6** Implement language editing
   - [ ] Allow owner/editor to edit specs (with confirmation)
@@ -528,7 +540,7 @@ This document tracks development phases with clear milestones. Each phase includ
 ## Current Status
 
 **Last Updated:** January 1, 2026  
-**Current Phase:** Phase 1 (P1.4 ✅ Complete)  
+**Current Phase:** Phase 1 (P1.5 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -573,6 +585,13 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Role-based UI (owner/editor/viewer/none)
   - ✅ Error handling and loading states
   - ✅ Integrated with router (/languages/:languageId)
+- ✅ P1.5: Build languages list page
+  - ✅ Comprehensive `/languages` page with all features
+  - ✅ Filter: All, Created by me, Collaborating on
+  - ✅ Sort: Recently modified, Alphabetical
+  - ✅ Role badges (Owner, Editor, Viewer)
+  - ✅ Responsive grid layout
+  - ✅ Language stats display (words, rules, last modified)
 
 ### What's Next
 - 🔄 Phase 1: Core Language Creation (P1.5-P1.7)
