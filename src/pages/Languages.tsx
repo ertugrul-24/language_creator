@@ -201,10 +201,10 @@ export const Languages: React.FC = () => {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortType)}
-              className="bg-surface-light text-white border border-border-dark rounded-lg px-4 py-2 text-sm font-medium hover:border-blue-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="bg-surface-light dark:bg-surface-dark text-text-primary dark:text-white border border-border-dark rounded-lg px-4 py-2 text-sm font-medium hover:border-blue-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-colors dark:hover:bg-surface-light/10 cursor-pointer"
             >
-              <option value="recent">Recently modified</option>
-              <option value="alphabetical">Alphabetical (A-Z)</option>
+              <option value="recent" className="bg-surface-dark text-white">Recently modified</option>
+              <option value="alphabetical" className="bg-surface-dark text-white">Alphabetical (A-Z)</option>
             </select>
           </div>
         </div>
@@ -239,7 +239,7 @@ export const Languages: React.FC = () => {
               >
                 {/* Header with Icon and Arrow */}
                 <div className="flex items-start justify-between mb-4">
-                  <div className="text-4xl">{lang.icon || '🌍'}</div>
+                  <div className="text-4xl">{lang.icon_url || lang.icon || '🌍'}</div>
                   <span className="material-symbols-outlined text-text-secondary group-hover:text-blue-400 transition">arrow_outward</span>
                 </div>
 
