@@ -1,5 +1,5 @@
 interface VisibilityBadgeProps {
-  visibility: string;
+  visibility?: string;
 }
 
 const VisibilityBadge: React.FC<VisibilityBadgeProps> = ({ visibility }) => {
@@ -9,7 +9,7 @@ const VisibilityBadge: React.FC<VisibilityBadgeProps> = ({ visibility }) => {
     public: { icon: '🌐', label: 'Public', bg: 'bg-green-500' },
   };
 
-  const config = badgeConfig[visibility] || badgeConfig.private;
+  const config = badgeConfig[(visibility || 'private') as keyof typeof badgeConfig];
 
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold text-white ${config.bg}`}>

@@ -125,7 +125,7 @@ export const checkRLSBlockingUpdate = async (languageId: string) => {
   const timestamp = new Date().toISOString();
 
   // Try a simple UPDATE
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('languages')
     .update({ updated_at: timestamp })
     .eq('id', languageId);
