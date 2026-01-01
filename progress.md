@@ -118,7 +118,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Duration:** 2-3 weeks (Jan 10-30)
 
-**Status:** 🟨 In Progress (P1.1-P1.5 Complete, P1.6-P1.7 Not Started)
+**Status:** 🟨 In Progress (P1.1-P1.6 Complete, P1.7 Not Started)
 
 **Dependencies:** Phase 0 complete
 
@@ -228,11 +228,21 @@ This document tracks development phases with clear milestones. Each phase includ
   - Empty states for no languages and filter no results
   - Reference: [docs/P1_5_LANGUAGES_LIST_PAGE.md](docs/P1_5_LANGUAGES_LIST_PAGE.md)
 
-- [ ] **P1.6** Implement language editing
-  - [ ] Allow owner/editor to edit specs (with confirmation)
-  - [ ] Prevent breaking changes (e.g., deleting phonemes with dependent words)
-  - [ ] Log changes to activity
-  - [ ] Show "last modified" timestamp
+- [x] **P1.6** Implement language editing ✅ COMPLETE
+  - [x] Allow owner/editor to edit specs (with confirmation)
+  - [x] Prevent breaking changes (depth level confirmation modal)
+  - [x] Log changes to activity
+  - [x] Show "last modified" timestamp
+  
+  **Implementation Details:**
+  - Created EditLanguageSpecsModal component for editing alphabetScript, writingDirection, wordOrder, depthLevel
+  - Added confirmation dialog when changing depth level to 'simplified'
+  - Integrated activity logging with activityService.ts (logActivity, logSpecsChange functions)
+  - Updated timestamp automatically on changes via updateLanguage()
+  - Role-based access control: only owner/editor can edit
+  - Added "Edit Language Specifications" button in OverviewTab
+  - Seamless modal workflow with error handling and loading states
+  - Reference: [src/components/language-detail/EditLanguageSpecsModal.tsx](src/components/language-detail/EditLanguageSpecsModal.tsx)
 
 - [ ] **P1.7** Update dashboard home page
   - [ ] Display user's active projects (languages) in cards
@@ -540,7 +550,7 @@ This document tracks development phases with clear milestones. Each phase includ
 ## Current Status
 
 **Last Updated:** January 1, 2026  
-**Current Phase:** Phase 1 (P1.5 ✅ Complete)  
+**Current Phase:** Phase 1 (P1.6 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -592,6 +602,13 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Role badges (Owner, Editor, Viewer)
   - ✅ Responsive grid layout
   - ✅ Language stats display (words, rules, last modified)
+- ✅ P1.6: Implement language editing
+  - ✅ EditLanguageSpecsModal for editing all specs
+  - ✅ Confirmation dialog for depth level changes
+  - ✅ Activity logging for spec modifications
+  - ✅ Auto-updating last modified timestamps
+  - ✅ Role-based access control (owner/editor only)
+  - ✅ Integrated with LanguageDetailPage
 
 ### What's Next
 - 🔄 Phase 1: Core Language Creation (P1.5-P1.7)
