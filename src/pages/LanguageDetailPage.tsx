@@ -9,6 +9,7 @@ import LanguageHeader from '@/components/language-detail/LanguageHeader';
 import LanguageTabs from '@/components/language-detail/LanguageTabs';
 import EditLanguageModal from '@/components/language-detail/EditLanguageModal';
 import VisibilitySettingsModal from '@/components/language-detail/VisibilitySettingsModal';
+import EditLanguageSpecsModal from '@/components/language-detail/EditLanguageSpecsModal';
 import type { Language } from '@/types/database';
 
 type LanguageDetailPageProps = Record<string, never>;
@@ -24,6 +25,7 @@ const LanguageDetailPage: React.FC<LanguageDetailPageProps> = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'dictionary' | 'rules' | 'courses'>('overview');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isVisibilityModalOpen, setIsVisibilityModalOpen] = useState(false);
+  const [isEditSpecsModalOpen, setIsEditSpecsModalOpen] = useState(false);
   const [owner, setOwner] = useState<{ display_name: string } | null>(null);
   const [userRole, setUserRole] = useState<'owner' | 'editor' | 'viewer' | 'none'>('none');
 
@@ -218,6 +220,7 @@ const LanguageDetailPage: React.FC<LanguageDetailPageProps> = () => {
             onTabChange={setActiveTab}
             language={language}
             canEdit={canEdit}
+            onEditSpecs={() => setIsEditSpecsModalOpen(true)}
           />
 
           {/* Edit Modal */}
@@ -226,6 +229,17 @@ const LanguageDetailPage: React.FC<LanguageDetailPageProps> = () => {
               language={language}
               isOpen={isEditModalOpen}
               onClose={() => setIsEditModalOpen(false)}
+              onUpdate={handleLanguageUpdate}
+              canEdit={canEdit}
+            />
+          )}
+
+          {/* Edit Specs Modal */}
+          {isEditSpecsModalOpen && (
+            <EditLanguageSpecsModal
+              language={language}
+              isOpen={isEditSpecsModalOpen}
+              onClose={() => setIsEditSpecsModalOpen(false)}
               onUpdate={handleLanguageUpdate}
               canEdit={canEdit}
             />

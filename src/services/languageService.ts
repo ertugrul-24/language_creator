@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { logSpecsChange } from './activityService';
 import type { Language } from '@/types/database';
 import type { LanguageSpecs } from '@/components/LanguageSpecsForm';
 
@@ -621,6 +622,25 @@ export const updateLanguage = async (
       specs: mapped.specs,
     });
     console.log('[updateLanguage] ✅ Successfully updated language:', languageId);
+
+    // Log activity if specs were changed
+    if (updates.specs) {
+      try {
+        const auth = await supabase.auth.getUser();
+        if (auth.data.user) {
+          await logSpecsChange(
+            auth.data.user.id,
+            languageId,
+            {}, // Old specs - we don't have them here, but could enhance this
+            updates.specs
+          );
+        }
+      } catch (logErr) {
+        // Don't fail the update if activity logging fails
+        console.warn('[updateLanguage] Activity logging failed (non-critical):', logErr);
+      }
+    }
+
     return mapped;
   } catch (err) {
     console.error('[updateLanguage] ❌ Unexpected error:', err);

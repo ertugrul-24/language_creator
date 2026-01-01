@@ -4,6 +4,7 @@ import type { Language } from '@/types/database';
 interface OverviewTabProps {
   language: Language;
   canEdit: boolean;
+  onEditSpecs?: () => void;
 }
 
 interface ExpandableSpec {
@@ -13,7 +14,7 @@ interface ExpandableSpec {
   content: React.ReactNode;
 }
 
-const OverviewTab: React.FC<OverviewTabProps> = ({ language }) => {
+const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpecs }) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['basic']));
 
   const toggleSection = (sectionId: string) => {
@@ -173,6 +174,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language }) => {
           )}
         </div>
       ))}
+
+      {/* Edit Specs Button */}
+      {canEdit && onEditSpecs && (
+        <button
+          onClick={onEditSpecs}
+          className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <span className="material-symbols-outlined">edit</span>
+          Edit Language Specifications
+        </button>
+      )}
     </div>
   );
 };
