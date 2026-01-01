@@ -21,6 +21,8 @@ interface FormData {
   writingDirection: string;
   wordOrder: string;
   depthLevel: string;
+  // Phonology
+  phoneme_count: number;
 }
 
 const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
@@ -38,6 +40,7 @@ const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
     writingDirection: language.specs?.writingDirection || '',
     wordOrder: language.specs?.wordOrder || '',
     depthLevel: language.specs?.depthLevel || '',
+    phoneme_count: language.phoneme_count || 0,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +58,7 @@ const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
         writingDirection: language.specs?.writingDirection || '',
         wordOrder: language.specs?.wordOrder || '',
         depthLevel: language.specs?.depthLevel || '',
+        phoneme_count: language.phoneme_count || 0,
       });
       setError(null);
       setConfirmDepthChange(false);
@@ -75,6 +79,12 @@ const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
       setFormData((prev) => ({
         ...prev,
         depthLevel: value,
+      }));
+    } else if (name === 'phoneme_count') {
+      // Handle number input for phoneme count
+      setFormData((prev) => ({
+        ...prev,
+        phoneme_count: parseInt(value) || 0,
       }));
     } else {
       setFormData((prev) => ({
@@ -105,22 +115,34 @@ const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
 
       console.log('[EditLanguageModal] Submitting updates:', formData);
 
+      // Only include non-empty spec fields in the update
+      const updatedSpecs: any = {};
+      if (formData.alphabetScript) updatedSpecs.alphabetScript = formData.alphabetScript;
+      if (formData.writingDirection) updatedSpecs.writingDirection = formData.writingDirection;
+      if (formData.wordOrder) updatedSpecs.wordOrder = formData.wordOrder;
+      if (formData.depthLevel) updatedSpecs.depthLevel = formData.depthLevel;
+
       const updatePayload: any = {
         name: formData.name.trim(),
         description: formData.description.trim(),
         icon: formData.icon_url,
-        specs: {
-          alphabetScript: formData.alphabetScript,
-          writingDirection: formData.writingDirection,
-          wordOrder: formData.wordOrder,
-          depthLevel: formData.depthLevel,
-          ...(language.specs || {}), // Preserve existing spec fields
-        },
+        specs: updatedSpecs,
+        phoneme_count: formData.phoneme_count,
       };
+
+      console.log('[EditLanguageModal] Update payload:', {
+        name: updatePayload.name,
+        description: updatePayload.description,
+        icon: updatePayload.icon,
+        specs: updatePayload.specs,
+        phoneme_count: updatePayload.phoneme_count,
+      });
 
       const updatedLanguage = await updateLanguage(language.id, updatePayload);
 
       console.log('[EditLanguageModal] ✅ Language updated successfully');
+      console.log('[EditLanguageModal] Updated language specs:', updatedLanguage.specs);
+      console.log('[EditLanguageModal] Updated phoneme_count:', updatedLanguage.phoneme_count);
       onUpdate(updatedLanguage);
       onClose();
     } catch (err) {
@@ -323,6 +345,26 @@ const EditLanguageModal: React.FC<EditLanguageModalProps> = ({
                       ⚠️ Simplified languages are suitable for learning purposes but less linguistically realistic.
                     </p>
                   )}
+                </div>
+
+                {/* Phoneme Count */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Phoneme Count
+                  </label>
+                  <input
+                    type="number"
+                    name="phoneme_count"
+                    value={formData.phoneme_count}
+                    onChange={handleChange}
+                    min="0"
+                    max="1000"
+                    disabled={!canEdit || saving}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Total number of distinct phonemes in this language
+                  </p>
                 </div>
               </div>
             )}

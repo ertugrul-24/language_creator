@@ -366,7 +366,7 @@ export const getUserLanguages = async (userId: string) => {
  * Output: { name: "French", alphabet_script: "Latin" }
  */
 const mapLanguageToDatabaseUpdate = (
-  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean }>
+  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean; phoneme_count?: number }>
 ): Record<string, any> => {
   const dbUpdates: any = {
     updated_at: new Date().toISOString(),
@@ -374,7 +374,7 @@ const mapLanguageToDatabaseUpdate = (
 
   console.log('[mapLanguageToDatabaseUpdate] Input updates:', updates);
 
-  // Map simple fields (name, description, icon, visibility, case_sensitive)
+  // Map simple fields (name, description, icon, visibility, case_sensitive, phoneme_count)
   if ('name' in updates && updates.name !== undefined) {
     dbUpdates.name = updates.name;
     console.log('[mapLanguageToDatabaseUpdate] Mapped name:', updates.name);
@@ -395,24 +395,30 @@ const mapLanguageToDatabaseUpdate = (
     dbUpdates.case_sensitive = updates.case_sensitive;
     console.log('[mapLanguageToDatabaseUpdate] Mapped case_sensitive:', updates.case_sensitive);
   }
+  if ('phoneme_count' in updates && updates.phoneme_count !== undefined) {
+    dbUpdates.phoneme_count = updates.phoneme_count;
+    console.log('[mapLanguageToDatabaseUpdate] Mapped phoneme_count:', updates.phoneme_count);
+  }
 
   // Map specs (nested object → individual columns)
+  // CRITICAL: Only map specs that are explicitly provided (not undefined)
   if (updates.specs && typeof updates.specs === 'object') {
     console.log('[mapLanguageToDatabaseUpdate] Processing specs:', updates.specs);
     
-    if (updates.specs.alphabetScript !== undefined) {
+    // Only set spec fields if they have a value, otherwise leave them untouched in DB
+    if (updates.specs.alphabetScript) {
       dbUpdates.alphabet_script = updates.specs.alphabetScript; // ← KEY: alphabetScript → alphabet_script
       console.log('[mapLanguageToDatabaseUpdate] Mapped alphabetScript → alphabet_script:', updates.specs.alphabetScript);
     }
-    if (updates.specs.writingDirection !== undefined) {
+    if (updates.specs.writingDirection) {
       dbUpdates.writing_direction = updates.specs.writingDirection; // ← KEY: writingDirection → writing_direction
       console.log('[mapLanguageToDatabaseUpdate] Mapped writingDirection → writing_direction:', updates.specs.writingDirection);
     }
-    if (updates.specs.wordOrder !== undefined) {
+    if (updates.specs.wordOrder) {
       dbUpdates.word_order = updates.specs.wordOrder; // ← KEY: wordOrder → word_order
       console.log('[mapLanguageToDatabaseUpdate] Mapped wordOrder → word_order:', updates.specs.wordOrder);
     }
-    if (updates.specs.depthLevel !== undefined) {
+    if (updates.specs.depthLevel) {
       dbUpdates.depth_level = updates.specs.depthLevel; // ← KEY: depthLevel → depth_level
       console.log('[mapLanguageToDatabaseUpdate] Mapped depthLevel → depth_level:', updates.specs.depthLevel);
     }
@@ -512,7 +518,7 @@ export const getLanguage = async (languageId: string) => {
  */
 export const updateLanguage = async (
   languageId: string,
-  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean }>
+  updates: Partial<CreateLanguageInput> & Partial<{ visibility: string; specs?: Partial<LanguageSpecs>; case_sensitive?: boolean; phoneme_count?: number }>
 ) => {
   try {
     console.log('[updateLanguage] Starting update for language:', languageId);
