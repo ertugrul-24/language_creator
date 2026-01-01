@@ -673,44 +673,46 @@ export const getCollaboratedLanguages = async (userId: string) => {
   try {
     console.log('[getCollaboratedLanguages] Starting query with userId:', userId);
 
-    const { data, error } = await supabase
+    // Step 1: Get all collaboration records for this user
+    const { data: collaborations, error: collabError } = await supabase
       .from('language_collaborators')
-      .select(`
-        role,
-        language_id,
-        languages(
-          id,
-          owner_id,
-          name,
-          description,
-          icon,
-          icon_url,
-          cover_image_url,
-          visibility,
-          specs,
-          total_words,
-          total_rules,
-          total_contributors,
-          phoneme_count,
-          case_sensitive,
-          created_at,
-          updated_at
-        )
-      `)
+      .select('role, language_id')
       .eq('user_id', userId);
 
-    if (error) {
-      console.error('[getCollaboratedLanguages] Query error:', error);
-      throw new Error(`Failed to fetch collaborated languages: ${error.message}`);
+    if (collabError) {
+      console.error('[getCollaboratedLanguages] Collaborations query error:', collabError);
+      throw new Error(`Failed to fetch collaborations: ${collabError.message}`);
     }
 
-    // Filter to only include languages NOT owned by this user
-    const collaboratedLanguages = (data || [])
-      .filter((item: any) => item.languages && item.languages.owner_id !== userId)
-      .map((item: any) => ({
-        ...item.languages as Language,
-        collaboratorRole: item.role, // Add role metadata for UI
-      }));
+    if (!collaborations || collaborations.length === 0) {
+      console.log('[getCollaboratedLanguages] User has no collaborations');
+      return [];
+    }
+
+    // Step 2: Get the language IDs for languages NOT owned by this user
+    const languageIds = collaborations.map((c: any) => c.language_id);
+    console.log('[getCollaboratedLanguages] Found', languageIds.length, 'collaboration entries');
+
+    // Step 3: Fetch language details for those IDs, excluding ones they own
+    const { data: languages, error: langError } = await supabase
+      .from('languages')
+      .select('*')
+      .in('id', languageIds)
+      .neq('owner_id', userId);
+
+    if (langError) {
+      console.error('[getCollaboratedLanguages] Languages query error:', langError);
+      throw new Error(`Failed to fetch languages: ${langError.message}`);
+    }
+
+    // Step 4: Map back the roles from collaboration records
+    const collaboratedLanguages = (languages || []).map((lang) => {
+      const collab = collaborations.find((c: any) => c.language_id === lang.id);
+      return {
+        ...lang as Language,
+        collaboratorRole: collab?.role || 'viewer', // Add role metadata for UI
+      };
+    });
 
     console.log('[getCollaboratedLanguages] Query successful, received:', collaboratedLanguages.length, 'collaborated languages');
     return collaboratedLanguages as (Language & { collaboratorRole: string })[];
