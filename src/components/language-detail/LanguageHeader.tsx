@@ -17,12 +17,21 @@ const LanguageHeader: React.FC<LanguageHeaderProps> = ({
   onVisibilityClick,
 }) => {
   const canEdit = userRole === 'owner' || userRole === 'editor';
-  const createdAt = new Date(language.created_at);
-  const formattedDate = createdAt.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  
+  // Format date as DD.MM.YYYY – HH:MM
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}.${month}.${year} – ${hours}:${minutes}`;
+  };
+
+  // Use updated_at if available, otherwise fall back to created_at
+  const lastModified = language.updated_at || language.created_at;
+  const formattedDate = formatDate(lastModified);
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 rounded-lg p-8 text-white shadow-lg">
@@ -40,7 +49,7 @@ const LanguageHeader: React.FC<LanguageHeaderProps> = ({
                 Created by <span className="font-semibold">{owner?.display_name || 'Unknown'}</span>
               </span>
               <span>•</span>
-              <span>{formattedDate}</span>
+              <span>Last Modified: {formattedDate}</span>
               <span>•</span>
               <VisibilityBadge visibility={language.visibility} />
             </div>
