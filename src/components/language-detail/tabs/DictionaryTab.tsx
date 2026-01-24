@@ -37,6 +37,14 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
       try {
         setLoading(true);
         console.log('🔍 [DictionaryTab] Starting fetch for language:', language.id);
+        console.log('🔍 [DictionaryTab] Language object:', language);
+        
+        if (!language.id) {
+          console.error('❌ [DictionaryTab] Language ID is missing!');
+          setError('Language ID is missing');
+          setLoading(false);
+          return;
+        }
         
         const { data, error: err } = await supabase
           .from('dictionaries')
@@ -46,15 +54,19 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           .order('created_at', { ascending: false });
 
         if (err) {
-          console.error('❌ [DictionaryTab] Supabase error:', err.code, err.message);
+          console.error('❌ [DictionaryTab] Supabase error code:', err.code);
+          console.error('❌ [DictionaryTab] Supabase error message:', err.message);
+          console.error('❌ [DictionaryTab] Full error:', JSON.stringify(err, null, 2));
           throw err;
         }
         
         console.log(`✅ [DictionaryTab] Fetched ${data?.length || 0} words from database`);
+        console.log('✅ [DictionaryTab] First word:', data?.[0]);
         setAllWords(data || []);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to fetch dictionary';
         console.error('❌ [DictionaryTab] Error fetching dictionary:', message);
+        console.error('❌ [DictionaryTab] Error object:', err);
         setError(message);
       } finally {
         setLoading(false);
