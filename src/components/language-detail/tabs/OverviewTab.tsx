@@ -56,8 +56,8 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Alphabet/Script</p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="text-sm text-text-secondary mb-1">Alphabet/Script</p>
+            <p className="font-semibold text-white">
               {language.specs?.alphabetScript || 'Not specified'}
             </p>
           </div>
@@ -68,11 +68,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Phoneme Count</p>
-            <p className="font-semibold text-gray-900 dark:text-white">{language.phoneme_count || 0}</p>
+            <p className="text-sm text-text-secondary mb-1">Phoneme Count</p>
+            <p className="font-semibold text-white">{language.phoneme_count || 0}</p>
           </div>
           <div className="md:col-span-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Phoneme Set</p>
+            <p className="text-sm text-text-secondary mb-1">Phoneme Set</p>
             <div className="flex flex-wrap gap-2">
               {language.specs?.phonemeSet && language.specs.phonemeSet.length > 0 ? (
                 language.specs.phonemeSet.map((phoneme: any, idx: number) => (
@@ -98,20 +98,20 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Word Order</p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="text-sm text-text-secondary mb-1">Word Order</p>
+            <p className="font-semibold text-white">
               {language.specs?.wordOrder || 'Not specified'}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Case Sensitive</p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="text-sm text-text-secondary mb-1">Case Sensitive</p>
+            <p className="font-semibold text-white">
               {language.case_sensitive ? '✓ Yes' : '✗ No'}
             </p>
           </div>
           <div className="md:col-span-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Depth Level</p>
-            <p className="font-semibold text-gray-900 dark:text-white capitalize">
+            <p className="text-sm text-text-secondary mb-1">Depth Level</p>
+            <p className="font-semibold text-white capitalize">
               {language.specs?.depthLevel || 'Not specified'}
             </p>
             {language.specs?.depthLevel === 'simplified' && (
@@ -130,11 +130,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
       content: (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">📖 Total Words</p>
+            <p className="text-sm text-text-secondary mb-2">📖 Total Words</p>
             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{language.total_words || 0}</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">📝 Grammar Rules</p>
+            <p className="text-sm text-text-secondary mb-2">📝 Grammar Rules</p>
             <p className="text-3xl font-bold text-green-600 dark:text-green-400">{language.total_rules || 0}</p>
           </div>
           <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">

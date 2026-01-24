@@ -147,19 +147,19 @@ const RulesTab: React.FC<RulesTabProps> = ({ language, canEdit }) => {
 
                   {rule.examples && rule.examples.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                      <p className="text-xs font-semibold text-text-secondary mb-2">
                         Examples:
                       </p>
                       <ul className="space-y-2">
                         {rule.examples.map((example: any, idx: number) => (
                           <li
                             key={idx}
-                            className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-2 rounded"
+                            className="text-sm text-text-secondary bg-surface-dark p-2 rounded"
                           >
                             <span className="font-mono font-semibold">{example.input}</span> →{' '}
                             <span className="font-mono font-semibold">{example.output}</span>
                             {example.explanation && (
-                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                              <div className="text-xs text-text-secondary mt-1">
                                 {example.explanation}
                               </div>
                             )}
@@ -187,7 +187,7 @@ const RulesTab: React.FC<RulesTabProps> = ({ language, canEdit }) => {
       )}
 
       {filteredRules.length > 0 && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <p className="text-xs text-text-secondary text-center">
           Showing {filteredRules.length} of {rules.length} rules
         </p>
       )}
