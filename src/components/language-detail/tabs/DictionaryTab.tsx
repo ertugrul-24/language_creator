@@ -45,9 +45,18 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           setLoading(false);
           return;
         }
+
+        // Check auth state
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+        console.log('🔐 [DictionaryTab] Auth user:', authUser?.id);
+        if (authError) {
+          console.error('🔐 [DictionaryTab] Auth error:', authError.message);
+        }
+        
+        console.log('📡 [DictionaryTab] Query: SELECT * FROM dictionary_entries WHERE language_id =', language.id, 'AND approval_status = approved');
         
         const { data, error: err } = await supabase
-          .from('dictionaries')
+          .from('dictionary_entries')
           .select('*')
           .eq('language_id', language.id)
           .eq('approval_status', 'approved')
@@ -56,12 +65,17 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
         if (err) {
           console.error('❌ [DictionaryTab] Supabase error code:', err.code);
           console.error('❌ [DictionaryTab] Supabase error message:', err.message);
+          console.error('❌ [DictionaryTab] Supabase error details:', err.details);
           console.error('❌ [DictionaryTab] Full error:', JSON.stringify(err, null, 2));
           throw err;
         }
         
         console.log(`✅ [DictionaryTab] Fetched ${data?.length || 0} words from database`);
-        console.log('✅ [DictionaryTab] First word:', data?.[0]);
+        if (data && data.length > 0) {
+          console.log('✅ [DictionaryTab] First word:', data[0]);
+        } else {
+          console.log('ℹ️  [DictionaryTab] No words found - this is normal for new languages');
+        }
         setAllWords(data || []);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to fetch dictionary';

@@ -36,7 +36,7 @@ export const getWords = async (
 ): Promise<{ words: DictionaryWord[]; total: number; error: string | null }> => {
   try {
     let query = supabase
-      .from('dictionaries')
+      .from('dictionary_entries')
       .select('*', { count: 'exact' })
       .eq('language_id', languageId)
       .eq('approval_status', 'approved')
@@ -88,7 +88,7 @@ export const addWord = async (input: AddWordInput): Promise<{ success: boolean; 
     console.log('[wordService] Adding word:', input.word);
 
     const { data, error } = await supabase
-      .from('dictionaries')
+      .from('dictionary_entries')
       .insert([
         {
           language_id: input.languageId,
@@ -135,7 +135,7 @@ export const updateWord = async (
     if (updates.examples) updateData.examples = updates.examples;
 
     const { error } = await supabase
-      .from('dictionaries')
+      .from('dictionary_entries')
       .update(updateData)
       .eq('id', wordId);
 
@@ -158,7 +158,7 @@ export const deleteWord = async (wordId: string): Promise<{ success: boolean; er
     console.log('[wordService] Deleting word:', wordId);
 
     const { error } = await supabase
-      .from('dictionaries')
+      .from('dictionary_entries')
       .delete()
       .eq('id', wordId);
 
@@ -181,7 +181,7 @@ export const getPartsOfSpeech = async (
 ): Promise<{ pos: string[]; error: string | null }> => {
   try {
     const { data, error } = await supabase
-      .from('dictionaries')
+      .from('dictionary_entries')
       .select('part_of_speech', { count: 'exact' })
       .eq('language_id', languageId)
       .eq('approval_status', 'approved');
