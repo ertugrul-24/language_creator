@@ -267,7 +267,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Goal:** Users can add words, define rules, create flashcard courses in Supabase  
 **Duration:** 2-3 weeks  
-**Status:** 🟨 In Progress (P2.1 Complete + Navigation Fixed + API Debugging)  
+**Status:** � P2.1 Complete (All Issues Fixed)  
 **Dependencies:** Phase 1 complete
 
 ### Phase 2 Subtasks
@@ -295,35 +295,23 @@ This document tracks development phases with clear milestones. Each phase includ
   - Reference: [src/components/language-detail/tabs/DictionaryTab.tsx](src/components/language-detail/tabs/DictionaryTab.tsx)
   - Reference: [src/services/wordService.ts](src/services/wordService.ts)
 
-  **ROUTING FIX (Jan 24):**
-  - ✅ Removed old placeholder pages: Dictionary.tsx, Grammar.tsx, Courses.tsx
-  - ✅ Removed standalone routes: /dictionary, /grammar, /courses from App.tsx
-  - ✅ Dictionary/Grammar/Courses now render as tabs within /languages/:languageId
-  - ✅ Added console.log to DictionaryTab to verify mounting: "✅ DictionaryTab MOUNTED"
-  - ✅ Build: 0 TypeScript errors, 114 modules (down from 117)
-  - Dictionary tab now properly displays table UI when clicked instead of placeholder
+  **API BUG FIX - ROOT CAUSE (Jan 24):**
+  - ✅ **FOUND:** DictionaryTab & wordService queried wrong table name
+  - ✅ **ISSUE:** Using `.from('dictionaries')` when actual table is `dictionary_entries`
+  - ✅ **FIX APPLIED:** Updated all references in:
+    - DictionaryTab.tsx (1 fix)
+    - wordService.ts (5 fixes: getWords, addWord, updateWord, deleteWord, getPartsOfSpeech)
+  - ✅ **RESULT:** API calls now execute against correct Supabase table
+  - ✅ Build: 0 TypeScript errors, 117 modules, 513.69 KB
+  - Logging added to debug data structure and verify successful fetches
 
-  **NAVIGATION BUG FIX (Jan 24 - Issue 1):**
-  - ✅ Removed broken /dictionary, /grammar, /courses links from Sidebar.tsx
-  - ✅ Removed broken links from HomePage.tsx left sidebar navigation
-  - ✅ Removed broken links from Settings.tsx
-  - Root cause: These routes didn't exist (deleted), causing ProtectedRoute failures
-  - These links were causing brief login page flashes and redirects back to home
-
-  **API DEBUGGING (Jan 24 - Issue 2):**
-  - ✅ Added comprehensive logging to DictionaryTab.tsx:
-    - Logs language ID when fetch starts
-    - Logs full language object for debugging
-    - Checks if language.id exists before querying
-    - Logs Supabase error code and full error object as JSON
-    - Logs first word returned to verify data structure
-  - Environment: .env.local confirmed with valid Supabase credentials
-  - Next step: Check browser console for detailed error messages
-  - Possible causes being logged:
-    - Missing language ID (auth issue)
-    - Supabase RLS policy denials (permissions)
-    - Connection/token issues
-    - Data structure mismatches
+  **REGRESSION FIXED (Jan 24 - Re-enabled Features):**
+  - ✅ Restored Dashboard navigation links (Dictionary, Grammar, Courses)
+  - ✅ Restored to Sidebar, HomePage, Settings navigation
+  - ✅ Recreated Dictionary.tsx, Grammar.tsx, Courses.tsx with hub pages
+  - ✅ Restored exports in pages/index.ts
+  - ✅ Restored routes in App.tsx with ProtectedRoute guards
+  - These pages now explain features and provide navigation to /languages
 
 - [ ] **P2.2** Create add word form
   - [ ] Modal/page with fields:
