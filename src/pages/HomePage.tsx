@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/services/supabaseClient';
+import { ActivityHeatmap } from '@/components/dashboard/ActivityHeatmap';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -312,19 +313,31 @@ export const HomePage: React.FC = () => {
                   <div className="flex flex-col gap-4">
                     <h3 className="text-lg font-bold text-white">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-3">
-                      <button className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square">
+                      <button 
+                        onClick={() => alert('Add Word feature coming in Phase 2')}
+                        className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square"
+                      >
                         <span className="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">add_circle</span>
                         <span className="text-sm font-medium text-white">Add Word</span>
                       </button>
-                      <button className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square">
+                      <button 
+                        onClick={() => alert('New Rule feature coming in Phase 2')}
+                        className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square"
+                      >
                         <span className="material-symbols-outlined text-emerald-400 text-3xl group-hover:scale-110 transition-transform">gavel</span>
                         <span className="text-sm font-medium text-white">New Rule</span>
                       </button>
-                      <button className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square">
+                      <button 
+                        onClick={() => alert('Phonology feature coming in Phase 2')}
+                        className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square"
+                      >
                         <span className="material-symbols-outlined text-purple-400 text-3xl group-hover:scale-110 transition-transform">graphic_eq</span>
                         <span className="text-sm font-medium text-white">Phonology</span>
                       </button>
-                      <button className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square">
+                      <button 
+                        onClick={() => alert('Export feature coming soon')}
+                        className="bg-surface-dark hover:bg-primary/20 hover:border-primary/50 border border-border-dark p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group aspect-square"
+                      >
                         <span className="material-symbols-outlined text-orange-400 text-3xl group-hover:scale-110 transition-transform">file_upload</span>
                         <span className="text-sm font-medium text-white">Export PDF</span>
                       </button>
@@ -332,15 +345,7 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   {/* Activity Heatmap */}
-                  <div className="flex flex-col gap-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-bold text-white">Activity</h3>
-                      <span className="text-xs text-text-secondary">Last 30 days</span>
-                    </div>
-                    <div className="bg-surface-dark border border-border-dark rounded-xl p-4 text-center py-8">
-                      <p className="text-text-secondary text-sm">No activity yet. Start creating languages to see your activity here!</p>
-                    </div>
-                  </div>
+                  <ActivityHeatmap />
                 </div>
               </div>
 
