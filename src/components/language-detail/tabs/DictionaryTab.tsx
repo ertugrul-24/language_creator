@@ -73,6 +73,14 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
         console.log(`✅ [DictionaryTab] Fetched ${data?.length || 0} words from database`);
         if (data && data.length > 0) {
           console.log('✅ [DictionaryTab] First word:', data[0]);
+          console.log('✅ [DictionaryTab] Sample data structure:', {
+            id: data[0].id,
+            word: data[0].word,
+            translation: data[0].translation,
+            part_of_speech: data[0].part_of_speech,
+            created_at: data[0].created_at,
+            added_by: data[0].added_by,
+          });
         } else {
           console.log('ℹ️  [DictionaryTab] No words found - this is normal for new languages');
         }
