@@ -36,6 +36,8 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
     const fetchWords = async () => {
       try {
         setLoading(true);
+        console.log('🔍 [DictionaryTab] Starting fetch for language:', language.id);
+        
         const { data, error: err } = await supabase
           .from('dictionaries')
           .select('*')
@@ -43,11 +45,16 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           .eq('approval_status', 'approved')
           .order('created_at', { ascending: false });
 
-        if (err) throw err;
+        if (err) {
+          console.error('❌ [DictionaryTab] Supabase error:', err.code, err.message);
+          throw err;
+        }
+        
+        console.log(`✅ [DictionaryTab] Fetched ${data?.length || 0} words from database`);
         setAllWords(data || []);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to fetch dictionary';
-        console.error('❌ Error fetching dictionary:', message);
+        console.error('❌ [DictionaryTab] Error fetching dictionary:', message);
         setError(message);
       } finally {
         setLoading(false);
