@@ -75,7 +75,7 @@ const CoursesTab: React.FC<CoursesTabProps> = ({ language, canEdit }) => {
         </div>
       ) : courses.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+          <p className="text-text-secondary text-lg mb-2">
             No courses for this language yet
           </p>
           {canEdit && (

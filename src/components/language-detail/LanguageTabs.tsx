@@ -29,21 +29,21 @@ const LanguageTabs: React.FC<LanguageTabsProps> = ({
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 border-b border-border-dark">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors relative ${
               activeTab === tab.id
-                ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-text-secondary hover:text-white'
             }`}
           >
             <span className="text-xl">{tab.icon}</span>
             <span>{tab.label}</span>
             {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="ml-1 px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
+              <span className="ml-1 px-2 py-1 bg-primary text-white text-xs font-bold rounded-full">
                 {tab.badge}
               </span>
             )}
@@ -52,7 +52,7 @@ const LanguageTabs: React.FC<LanguageTabsProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+      <div className="bg-surface-dark rounded-lg p-6 border border-border-dark">
         {activeTab === 'overview' && <OverviewTab language={language} canEdit={canEdit} onEditSpecs={onEditSpecs} />}
         {activeTab === 'dictionary' && <DictionaryTab language={language} canEdit={canEdit} />}
         {activeTab === 'rules' && <RulesTab language={language} canEdit={canEdit} />}

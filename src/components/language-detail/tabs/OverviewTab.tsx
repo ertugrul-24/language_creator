@@ -35,16 +35,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Language Name</p>
-            <p className="text-lg font-semibold text-gray-900 dark:text-white">{language.name}</p>
+            <p className="text-sm text-text-secondary mb-1">Language Name</p>
+            <p className="text-lg font-semibold text-white">{language.name}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Icon</p>
+            <p className="text-sm text-text-secondary mb-1">Icon</p>
             <p className="text-4xl">{language.icon_url || language.icon || '🌍'}</p>
           </div>
           <div className="md:col-span-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Description</p>
-            <p className="text-gray-900 dark:text-white">{language.description || 'No description provided'}</p>
+            <p className="text-sm text-text-secondary mb-1">Description</p>
+            <p className="text-white">{language.description || 'No description provided'}</p>
           </div>
         </div>
       ),
@@ -62,8 +62,8 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Writing Direction</p>
-            <p className="font-semibold text-gray-900 dark:text-white">
+            <p className="text-sm text-text-secondary mb-1">Writing Direction</p>
+            <p className="font-semibold text-white">
               {language.specs?.writingDirection || 'Not specified'}
             </p>
           </div>
@@ -84,7 +84,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ language, canEdit, onEditSpec
                   </span>
                 ))
               ) : (
-                <span className="text-gray-500 dark:text-gray-400">No phonemes defined</span>
+                <span className="text-text-secondary">No phonemes defined</span>
               )}
             </div>
           </div>
