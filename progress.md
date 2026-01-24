@@ -267,18 +267,33 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Goal:** Users can add words, define rules, create flashcard courses in Supabase  
 **Duration:** 2-3 weeks  
-**Status:** ⏳ Not Started  
+**Status:** 🟨 In Progress (P2.1 Complete)  
 **Dependencies:** Phase 1 complete
 
 ### Phase 2 Subtasks
 
-- [ ] **P2.1** Build dictionary page (Dictionary tab)
-  - [ ] Create table/list view of words in language
-  - [ ] Columns: Word, Translation, Part of Speech, Added by, Date
-  - [ ] Implement search bar (search by word or translation)
-  - [ ] Add filters: Part of Speech dropdown
-  - [ ] Pagination (load 50 words, "Load More" button)
-  - [ ] Sort options: Name A-Z, Date Added, Most Popular
+- [x] **P2.1** Build dictionary page (Dictionary tab) ✅ COMPLETE
+  - [x] Create table/list view of words in language
+  - [x] Columns: Word, Translation, Part of Speech, Date Added, Added by
+  - [x] Implement search bar (search by word or translation)
+  - [x] Add filters: Part of Speech dropdown
+  - [x] Pagination (load 50 words, "Load More" button)
+  - [x] Sort options: Name A-Z, Date Added, Most Popular
+
+  **Implementation Details:**
+  - Enhanced DictionaryTab component with full filtering, sorting, and pagination
+  - Added state management for search, filtering, sorting, and pagination
+  - Implemented 4 sort options: Date Added (default), Name A-Z, Name Z-A, Most Popular
+  - Display 50 words initially with "Load More" button to load additional words
+  - Search works for both word and translation fields
+  - Part of Speech filter dropdown with unique values from language
+  - Styled with dark theme design system (Tailwind + custom colors)
+  - Table displays: Word, Translation, Part of Speech badge, Date Added, Added by
+  - Edit/Delete action buttons for owner/editor users (placeholder handlers)
+  - Created wordService.ts with CRUD functions for dictionary operations
+  - Service includes: getWords(), addWord(), updateWord(), deleteWord(), getPartsOfSpeech()
+  - Reference: [src/components/language-detail/tabs/DictionaryTab.tsx](src/components/language-detail/tabs/DictionaryTab.tsx)
+  - Reference: [src/services/wordService.ts](src/services/wordService.ts)
 
 - [ ] **P2.2** Create add word form
   - [ ] Modal/page with fields:
@@ -550,7 +565,7 @@ This document tracks development phases with clear milestones. Each phase includ
 ## Current Status
 
 **Last Updated:** January 24, 2026  
-**Current Phase:** Phase 1 (P1.7 ✅ Complete - MVP Ready for Phase 2)  
+**Current Phase:** Phase 2 (P2.1 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -614,13 +629,19 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Show stats: Total Words, Total Rules, Active Projects, Day Streak
   - ✅ Quick action buttons with click handlers (non-functional placeholders)
   - ✅ Activity heatmap component (30-day GitHub-style visualization)
+- ✅ P2.1: Build dictionary page (Dictionary tab)
+  - ✅ Table/list view of words with Word, Translation, Part of Speech, Date, Added by
+  - ✅ Search functionality (word or translation)
+  - ✅ Part of Speech filter dropdown
+  - ✅ Sort options: Date Added, Name A-Z, Name Z-A, Most Popular
+  - ✅ Pagination: load 50 words initially, "Load More" button
+  - ✅ wordService.ts with CRUD functions (getWords, addWord, updateWord, deleteWord)
 
 ### What's Next
-- 🔄 Phase 2: Dictionary & Grammar Rules (P2.1-P2.12)
-  - P2.1: Build dictionary page with search, filters, pagination
+- 🔄 Phase 2: Dictionary & Grammar Rules (P2.2-P2.12)
   - P2.2: Create add word form with IPA and audio support
-  - P2.3: Implement word CRUD in Supabase
-  - P2.4-P2.12: Grammar rules, courses, activity tracking (see Phase 2 section)
+  - P2.3: Implement word CRUD in Supabase (using wordService)
+  - P2.4-P2.12: Inline editing, grammar rules, courses, activity tracking (see Phase 2 section)
 
 ---
 
