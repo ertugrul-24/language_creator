@@ -118,6 +118,27 @@ export const HomePage: React.FC = () => {
                 <span className="text-sm font-medium">Languages</span>
               </a>
               <a
+                href="/dictionary"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined">menu_book</span>
+                <span className="text-sm font-medium">Dictionary</span>
+              </a>
+              <a
+                href="/grammar"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined">spellcheck</span>
+                <span className="text-sm font-medium">Grammar</span>
+              </a>
+              <a
+                href="/courses"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
+              >
+                <span className="material-symbols-outlined">school</span>
+                <span className="text-sm font-medium">Courses</span>
+              </a>
+              <a
                 href="/settings"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-dark hover:text-white transition-colors"
               >

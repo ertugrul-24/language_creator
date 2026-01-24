@@ -14,6 +14,9 @@ export const Sidebar: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Home', icon: 'home' },
     { path: '/languages', label: 'Languages', icon: 'language' },
+    { path: '/dictionary', label: 'Dictionary', icon: 'menu_book' },
+    { path: '/grammar', label: 'Grammar', icon: 'spellcheck' },
+    { path: '/courses', label: 'Courses', icon: 'school' },
   ];
 
   return (
