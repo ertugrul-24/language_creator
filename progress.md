@@ -267,7 +267,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Goal:** Users can add words, define rules, create flashcard courses in Supabase  
 **Duration:** 2-3 weeks  
-**Status:** 🟨 In Progress (P2.1 Complete + Fixed Routing)  
+**Status:** 🟨 In Progress (P2.1 Complete + Navigation Fixed + API Debugging)  
 **Dependencies:** Phase 1 complete
 
 ### Phase 2 Subtasks
@@ -302,6 +302,28 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Added console.log to DictionaryTab to verify mounting: "✅ DictionaryTab MOUNTED"
   - ✅ Build: 0 TypeScript errors, 114 modules (down from 117)
   - Dictionary tab now properly displays table UI when clicked instead of placeholder
+
+  **NAVIGATION BUG FIX (Jan 24 - Issue 1):**
+  - ✅ Removed broken /dictionary, /grammar, /courses links from Sidebar.tsx
+  - ✅ Removed broken links from HomePage.tsx left sidebar navigation
+  - ✅ Removed broken links from Settings.tsx
+  - Root cause: These routes didn't exist (deleted), causing ProtectedRoute failures
+  - These links were causing brief login page flashes and redirects back to home
+
+  **API DEBUGGING (Jan 24 - Issue 2):**
+  - ✅ Added comprehensive logging to DictionaryTab.tsx:
+    - Logs language ID when fetch starts
+    - Logs full language object for debugging
+    - Checks if language.id exists before querying
+    - Logs Supabase error code and full error object as JSON
+    - Logs first word returned to verify data structure
+  - Environment: .env.local confirmed with valid Supabase credentials
+  - Next step: Check browser console for detailed error messages
+  - Possible causes being logged:
+    - Missing language ID (auth issue)
+    - Supabase RLS policy denials (permissions)
+    - Connection/token issues
+    - Data structure mismatches
 
 - [ ] **P2.2** Create add word form
   - [ ] Modal/page with fields:
