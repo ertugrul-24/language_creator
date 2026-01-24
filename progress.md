@@ -267,7 +267,7 @@ This document tracks development phases with clear milestones. Each phase includ
 
 **Goal:** Users can add words, define rules, create flashcard courses in Supabase  
 **Duration:** 2-3 weeks  
-**Status:** 🟨 In Progress (P2.1 Complete)  
+**Status:** 🟨 In Progress (P2.1 Complete + Fixed Routing)  
 **Dependencies:** Phase 1 complete
 
 ### Phase 2 Subtasks
@@ -294,6 +294,14 @@ This document tracks development phases with clear milestones. Each phase includ
   - Service includes: getWords(), addWord(), updateWord(), deleteWord(), getPartsOfSpeech()
   - Reference: [src/components/language-detail/tabs/DictionaryTab.tsx](src/components/language-detail/tabs/DictionaryTab.tsx)
   - Reference: [src/services/wordService.ts](src/services/wordService.ts)
+
+  **ROUTING FIX (Jan 24):**
+  - ✅ Removed old placeholder pages: Dictionary.tsx, Grammar.tsx, Courses.tsx
+  - ✅ Removed standalone routes: /dictionary, /grammar, /courses from App.tsx
+  - ✅ Dictionary/Grammar/Courses now render as tabs within /languages/:languageId
+  - ✅ Added console.log to DictionaryTab to verify mounting: "✅ DictionaryTab MOUNTED"
+  - ✅ Build: 0 TypeScript errors, 114 modules (down from 117)
+  - Dictionary tab now properly displays table UI when clicked instead of placeholder
 
 - [ ] **P2.2** Create add word form
   - [ ] Modal/page with fields:
