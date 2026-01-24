@@ -20,6 +20,8 @@ interface DictionaryWord {
 type SortOption = 'name-asc' | 'name-desc' | 'date-added' | 'popularity';
 
 const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
+  console.log('✅ DictionaryTab MOUNTED - Language:', language.name, 'ID:', language.id);
+  
   const [allWords, setAllWords] = useState<DictionaryWord[]>([]);
   const [displayedWords, setDisplayedWords] = useState<DictionaryWord[]>([]);
   const [loading, setLoading] = useState(true);
