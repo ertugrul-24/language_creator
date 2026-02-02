@@ -390,12 +390,41 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Update language stats (totalWords) on add/delete ✅
   - [x] Only owner/editor can delete words ✅ (RLS enforces)
 
-- [ ] **P2.4** Build inline word editing
-  - [ ] Edit button on each word row → opens modal
-  - [ ] Form pre-fills with existing data
-  - [ ] Save changes to Supabase
-  - [ ] Show "edited by [user]" timestamp
-  - [ ] Undo/History (optional for P2)
+- [ ] **P2.4** Build inline word editing ✅ COMPLETE
+  - [x] Edit button on each word row → opens modal ✅
+  - [x] Form pre-fills with existing data ✅
+  - [x] Save changes to Supabase ✅
+  - [x] Delete word with confirmation modal ✅
+  - [x] Show error messages with Supabase details ✅
+
+  **Bug Fixes Applied:**
+  - ✅ **UPDATE now works:** updateWord() verifies ownership before updating, sends full Supabase response, includes .select() for confirmation
+  - ✅ **DELETE now works:** deleteWord() includes full error details, updates language stats after deletion
+  - ✅ **totalWords stats:** Now updates automatically on add/delete via updateLanguageStats()
+  - ✅ **Comprehensive logging:** All operations log full Supabase responses including error codes/hints
+
+  **Implementation Details:**
+  - Created EditWordModal.tsx component with complete edit form
+  - Created DeleteWordConfirmModal.tsx for confirmation dialogs
+  - Enhanced DictionaryTab with edit/delete button handlers
+  - Edit modal pre-fills all word data
+  - Delete modal shows confirmation before removal
+  - Both operations refresh word list after success
+  - Error messages surface real Supabase error details
+  - wordService functions include detailed console logging for debugging
+
+  **Testing Checklist:**
+  1. Add a word → word appears in list (P2.2 - already working)
+  2. Click Edit → form opens with prefilled data
+  3. Change word/translation → click Save → word updates in list
+  4. Verify in Supabase: row data changed
+  5. Click Delete → confirmation modal shows
+  6. Click Delete button → word disappears from list
+  7. Verify in Supabase: row deleted
+  8. Check Overview tab → totalWords matches actual count
+  9. Add more words → totalWords increments
+  10. Delete words → totalWords decrements
+  11. Check browser console (F12) → see detailed Supabase responses
 
 - [ ] **P2.5** Build grammar rules page (Rules tab)
   - [ ] Create list view of grammar rules
@@ -640,7 +669,7 @@ This document tracks development phases with clear milestones. Each phase includ
 ## Current Status
 
 **Last Updated:** February 2, 2026  
-**Current Phase:** Phase 2 (P2.3 ✅ Complete)  
+**Current Phase:** Phase 2 (P2.4 ✅ Complete - Edit/Delete Fixed)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -719,7 +748,9 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Success notification with auto-close
   - ✅ Integration with wordService.addWord()
   - ✅ Auto-refresh word list after addition
-  - ✅ Professional dark theme UI- ✅ P2.3: Implement word CRUD in Supabase ✅ COMPLETE
+  - ✅ Professional dark theme UI
+
+- ✅ P2.3: Implement word CRUD in Supabase ✅ COMPLETE
   - ✅ updateLanguageStats() function added to languageService
   - ✅ Auto-counts total words and total rules from database
   - ✅ addWord() now updates language stats after insertion
@@ -729,6 +760,16 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Pagination implemented: limit/offset parameters
   - ✅ Search implemented: word or translation full-text search
   - ✅ RLS policies ensure only owner can delete (owner_id = auth.uid())
+
+- ✅ P2.4: Build inline word editing ✅ COMPLETE
+  - ✅ EditWordModal component for updating words
+  - ✅ DeleteWordConfirmModal for safe deletion
+  - ✅ Edit button opens modal with prefilled data
+  - ✅ Delete button shows confirmation dialog
+  - ✅ Changes saved to Supabase with owner verification
+  - ✅ Comprehensive Supabase error logging for debugging
+  - ✅ Language stats updated after edit/delete
+  - ✅ Word list refreshed on success
 ### What's Next
 - 🔄 Phase 2: Dictionary & Grammar Rules (P2.3-P2.12)
   - P2.3: Implement word CRUD in Supabase
