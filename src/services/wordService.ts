@@ -100,34 +100,64 @@ export const addWord = async (input: AddWordInput): Promise<{ success: boolean; 
 
     console.log('✅ [wordService.addWord] User authenticated:', user.id);
 
+    const payload = {
+      language_id: input.languageId,
+      owner_id: user.id,
+      word: input.word,
+      translation: input.translation,
+      part_of_speech: input.partOfSpeech,
+      pronunciation: input.pronunciation || null,
+      etymology: input.etymologyNote || null,
+      examples: input.examples || [],
+    };
+
+    console.log('📤 [wordService.addWord] Sending payload to Supabase:', payload);
+
     const { data, error } = await supabase
       .from('words')
-      .insert([
-        {
-          language_id: input.languageId,
-          owner_id: user.id,
-          word: input.word,
-          translation: input.translation,
-          part_of_speech: input.partOfSpeech,
-          pronunciation: input.pronunciation || null,
-          etymology: input.etymologyNote || null,
-          examples: input.examples || [],
-        },
-      ])
+      .insert([payload])
       .select('id')
       .single();
 
     if (error) {
-      console.error('❌ [wordService.addWord] Insert error:', error);
+      const errorDetails = {
+        message: error.message,
+        code: (error as any).code,
+        details: (error as any).details,
+        hint: (error as any).hint,
+        status: (error as any).status,
+        fullError: error
+      };
+      console.error('❌ [wordService.addWord] Insert error:', errorDetails);
       throw error;
     }
 
     console.log('✅ [wordService.addWord] Word added successfully:', data.id);
     return { success: true, wordId: data.id, error: null };
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to add word';
-    console.error('❌ [wordService.addWord] Exception:', message);
-    return { success: false, error: message };
+    let message = 'Failed to add word';
+    let details = '';
+    
+    if (err instanceof Error) {
+      message = err.message;
+    }
+    
+    // Extract Supabase-specific error details
+    if (typeof err === 'object' && err !== null) {
+      const supabaseErr = err as any;
+      if (supabaseErr.code) details += `[${supabaseErr.code}] `;
+      if (supabaseErr.details) details += supabaseErr.details;
+      if (supabaseErr.hint) details += ` HINT: ${supabaseErr.hint}`;
+    }
+    
+    const fullMessage = details ? `${message} - ${details}` : message;
+    console.error('❌ [wordService.addWord] Full error details:', {
+      message,
+      details,
+      fullMessage,
+      originalError: err
+    });
+    return { success: false, error: fullMessage };
   }
 };
 
