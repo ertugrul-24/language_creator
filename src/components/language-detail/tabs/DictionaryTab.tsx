@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Language } from '@/types/database';
 import { supabase } from '@/services/supabaseClient';
+import AddWordModal from '@/components/language-detail/AddWordModal';
 
 interface DictionaryTabProps {
   language: Language;
@@ -30,6 +31,7 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
   const [filterPOS, setFilterPOS] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('date-added');
   const [itemsToShow, setItemsToShow] = useState(50);
+  const [isAddWordModalOpen, setIsAddWordModalOpen] = useState(false);
 
   // Fetch all words
   useEffect(() => {
@@ -149,6 +151,33 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
     setItemsToShow((prev) => prev + 50);
   };
 
+  const handleWordAdded = () => {
+    console.log('🔄 [DictionaryTab] Word added, refreshing list...');
+    setItemsToShow(50); // Reset pagination
+    // Refetch words
+    const fetchWords = async () => {
+      try {
+        setLoading(true);
+        const { data, error: err } = await supabase
+          .from('dictionary_entries')
+          .select('*')
+          .eq('language_id', language.id)
+          .eq('approval_status', 'approved')
+          .order('created_at', { ascending: false });
+
+        if (err) throw err;
+        setAllWords(data || []);
+        console.log('✅ [DictionaryTab] Words refreshed:', data?.length || 0);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to refresh words';
+        console.error('❌ [DictionaryTab] Error refreshing:', message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWords();
+  };
+
   return (
     <div className="space-y-4">
       {/* Header with Stats */}
@@ -159,7 +188,10 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           </p>
         </div>
         {canEdit && (
-          <button className="px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors font-medium flex items-center gap-2">
+          <button
+            onClick={() => setIsAddWordModalOpen(true)}
+            className="px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+          >
             <span className="material-symbols-outlined text-[20px]">add</span>
             Add Word
           </button>
@@ -295,7 +327,13 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           </div>
         </>
       )}
-    </div>
+      {/* Add Word Modal */}
+      <AddWordModal
+        isOpen={isAddWordModalOpen}
+        onClose={() => setIsAddWordModalOpen(false)}
+        language={language}
+        onWordAdded={handleWordAdded}
+      />    </div>
   );
 };
 
