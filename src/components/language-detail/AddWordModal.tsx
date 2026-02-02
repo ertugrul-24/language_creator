@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { addWord } from '@/services/wordService';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import type { Language } from '@/types/database';
 
 interface AddWordModalProps {
@@ -63,6 +64,7 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
   onWordAdded,
 }) => {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<FormData>({
@@ -76,7 +78,6 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
   const [nextExampleId, setNextExampleId] = useState(1);
@@ -127,7 +128,6 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
     }
 
     setLoading(true);
-    setSuccessMessage(null);
 
     try {
       const result = await addWord({
@@ -146,7 +146,8 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
       });
 
       if (result.success) {
-        setSuccessMessage(`✅ Word "${formData.word}" added successfully!`);
+        const successMsg = `✅ Word "${formData.word}" added successfully!`;
+        addToast(successMsg, 'success', 2000);
         console.log('✅ [AddWordModal] Word added:', result.wordId);
 
         // Reset form
@@ -168,7 +169,9 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
           onClose();
         }, 1500);
       } else {
-        setErrors({ word: result.error || 'Failed to add word' });
+        const errorMsg = result.error || 'Failed to add word';
+        addToast(errorMsg, 'error');
+        setErrors({ word: errorMsg });
         console.error('❌ [AddWordModal] Error adding word:', result.error);
       }
     } catch (err) {
@@ -231,9 +234,6 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
 
   // Close modal and reset
   const handleClose = () => {
-    if (successMessage) {
-      return;
-    }
     setFormData({
       word: '',
       translation: '',
@@ -268,12 +268,6 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
           </button>
         </div>
 
-        {/* Success Message */}
-        {successMessage && (
-          <div className="mx-6 mt-4 p-4 bg-green-900 border border-green-700 rounded-lg text-green-100">
-            {successMessage}
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -487,7 +481,7 @@ const AddWordModal: React.FC<AddWordModalProps> = ({
           <div className="flex gap-3 pt-4 border-t border-slate-700">
             <button
               type="submit"
-              disabled={loading || !!successMessage}
+              disabled={loading}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 transition flex items-center justify-center gap-2"
             >
               {loading ? (

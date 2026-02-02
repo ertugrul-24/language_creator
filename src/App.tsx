@@ -6,6 +6,8 @@ import DebugLanguagePage from '@/pages/DebugLanguagePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { SignupPage } from '@/pages/SignupPage';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ToastProvider } from '@/context/ToastContext';
+import ToastContainer from '@/components/ToastContainer';
 import './styles/globals.css';
 
 /**
@@ -40,8 +42,10 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
+      <ToastProvider>
+        <Router>
+          <ToastContainer />
+          <Routes>
           {/* Auth Routes */}
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/signup" element={<SignupPage />} />
@@ -124,6 +128,7 @@ function App() {
           <Route path="*" element={<Navigate to="/auth/login" replace />} />
         </Routes>
       </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }

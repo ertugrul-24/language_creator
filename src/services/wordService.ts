@@ -6,7 +6,7 @@ interface DictionaryWord {
   translation: string;
   part_of_speech: string;
   pronunciation?: string;
-  added_by?: string;
+  owner_id?: string;
   created_at?: string;
 }
 
@@ -35,11 +35,12 @@ export const getWords = async (
   }
 ): Promise<{ words: DictionaryWord[]; total: number; error: string | null }> => {
   try {
+    console.log('🔍 [wordService.getWords] Fetching words for language:', languageId);
+    
     let query = supabase
-      .from('dictionary_entries')
+      .from('words')
       .select('*', { count: 'exact' })
       .eq('language_id', languageId)
-      .eq('approval_status', 'approved')
       .order('created_at', { ascending: false });
 
     // Apply filters
@@ -62,8 +63,12 @@ export const getWords = async (
 
     const { data, error, count } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ [wordService.getWords] Query error:', error);
+      throw error;
+    }
 
+    console.log('✅ [wordService.getWords] Fetched ${data?.length || 0} words');
     return {
       words: data || [],
       total: count || 0,
@@ -71,7 +76,7 @@ export const getWords = async (
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to fetch words';
-    console.error('❌ Error fetching words:', message);
+    console.error('❌ [wordService.getWords] Error:', message);
     return {
       words: [],
       total: 0,
@@ -85,33 +90,43 @@ export const getWords = async (
  */
 export const addWord = async (input: AddWordInput): Promise<{ success: boolean; wordId?: string; error: string | null }> => {
   try {
-    console.log('[wordService] Adding word:', input.word);
+    console.log('📝 [wordService.addWord] Adding word:', input.word, 'to language:', input.languageId);
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('❌ [wordService.addWord] Auth error:', authError);
+      return { success: false, error: 'User not authenticated' };
+    }
+
+    console.log('✅ [wordService.addWord] User authenticated:', user.id);
 
     const { data, error } = await supabase
-      .from('dictionary_entries')
+      .from('words')
       .insert([
         {
           language_id: input.languageId,
+          owner_id: user.id,
           word: input.word,
           translation: input.translation,
           part_of_speech: input.partOfSpeech,
           pronunciation: input.pronunciation || null,
-          etymology_note: input.etymologyNote || null,
+          etymology: input.etymologyNote || null,
           examples: input.examples || [],
-          added_by: input.userEmail,
-          approval_status: 'approved',
         },
       ])
       .select('id')
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ [wordService.addWord] Insert error:', error);
+      throw error;
+    }
 
-    console.log('✅ Word added:', data.id);
+    console.log('✅ [wordService.addWord] Word added successfully:', data.id);
     return { success: true, wordId: data.id, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to add word';
-    console.error('❌ Error adding word:', message);
+    console.error('❌ [wordService.addWord] Exception:', message);
     return { success: false, error: message };
   }
 };
@@ -124,28 +139,31 @@ export const updateWord = async (
   updates: Partial<AddWordInput>
 ): Promise<{ success: boolean; error: string | null }> => {
   try {
-    console.log('[wordService] Updating word:', wordId);
+    console.log('✏️ [wordService.updateWord] Updating word:', wordId);
 
     const updateData: Record<string, any> = {};
     if (updates.word) updateData.word = updates.word;
     if (updates.translation) updateData.translation = updates.translation;
     if (updates.partOfSpeech) updateData.part_of_speech = updates.partOfSpeech;
     if (updates.pronunciation) updateData.pronunciation = updates.pronunciation;
-    if (updates.etymologyNote) updateData.etymology_note = updates.etymologyNote;
+    if (updates.etymologyNote) updateData.etymology = updates.etymologyNote;
     if (updates.examples) updateData.examples = updates.examples;
 
     const { error } = await supabase
-      .from('dictionary_entries')
+      .from('words')
       .update(updateData)
       .eq('id', wordId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ [wordService.updateWord] Update error:', error);
+      throw error;
+    }
 
-    console.log('✅ Word updated:', wordId);
+    console.log('✅ [wordService.updateWord] Word updated:', wordId);
     return { success: true, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to update word';
-    console.error('❌ Error updating word:', message);
+    console.error('❌ [wordService.updateWord] Error:', message);
     return { success: false, error: message };
   }
 };
@@ -155,20 +173,23 @@ export const updateWord = async (
  */
 export const deleteWord = async (wordId: string): Promise<{ success: boolean; error: string | null }> => {
   try {
-    console.log('[wordService] Deleting word:', wordId);
+    console.log('🗑️ [wordService.deleteWord] Deleting word:', wordId);
 
     const { error } = await supabase
-      .from('dictionary_entries')
+      .from('words')
       .delete()
       .eq('id', wordId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ [wordService.deleteWord] Delete error:', error);
+      throw error;
+    }
 
-    console.log('✅ Word deleted:', wordId);
+    console.log('✅ [wordService.deleteWord] Word deleted:', wordId);
     return { success: true, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to delete word';
-    console.error('❌ Error deleting word:', message);
+    console.error('❌ [wordService.deleteWord] Error:', message);
     return { success: false, error: message };
   }
 };
@@ -180,19 +201,24 @@ export const getPartsOfSpeech = async (
   languageId: string
 ): Promise<{ pos: string[]; error: string | null }> => {
   try {
+    console.log('🏷️ [wordService.getPartsOfSpeech] Fetching POS for language:', languageId);
+    
     const { data, error } = await supabase
-      .from('dictionary_entries')
+      .from('words')
       .select('part_of_speech', { count: 'exact' })
-      .eq('language_id', languageId)
-      .eq('approval_status', 'approved');
+      .eq('language_id', languageId);
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ [wordService.getPartsOfSpeech] Query error:', error);
+      throw error;
+    }
 
     const uniquePOS = [...new Set(data?.map((d) => d.part_of_speech) || [])].sort();
+    console.log('✅ [wordService.getPartsOfSpeech] Found ${uniquePOS.length} unique POS');
     return { pos: uniquePOS, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to fetch parts of speech';
-    console.error('❌ Error fetching parts of speech:', message);
+    console.error('❌ [wordService.getPartsOfSpeech] Error:', message);
     return { pos: [], error: message };
   }
 };
