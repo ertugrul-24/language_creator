@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Language } from '@/types/database';
 import { supabase } from '@/services/supabaseClient';
+import { getWords } from '@/services/wordService';
 import AddWordModal from '@/components/language-detail/AddWordModal';
 
 interface DictionaryTabProps {
@@ -38,59 +39,40 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
     const fetchWords = async () => {
       try {
         setLoading(true);
-        console.log('🔍 [DictionaryTab] Starting fetch for language:', language.id);
-        console.log('🔍 [DictionaryTab] Language object:', language);
+        console.log('🔍 [DictionaryTab.useEffect] Loading words for language:', language.id);
         
         if (!language.id) {
-          console.error('❌ [DictionaryTab] Language ID is missing!');
+          console.error('❌ [DictionaryTab.useEffect] Language ID is missing!');
           setError('Language ID is missing');
-          setLoading(false);
           return;
         }
 
         // Check auth state
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-        console.log('🔐 [DictionaryTab] Auth user:', authUser?.id);
+        console.log('🔐 [DictionaryTab.useEffect] Auth user:', authUser?.id);
         if (authError) {
-          console.error('🔐 [DictionaryTab] Auth error:', authError.message);
+          console.error('🔐 [DictionaryTab.useEffect] Auth error:', authError.message);
         }
         
-        console.log('📡 [DictionaryTab] Query: SELECT * FROM dictionary_entries WHERE language_id =', language.id, 'AND approval_status = approved');
-        
-        const { data, error: err } = await supabase
-          .from('dictionary_entries')
-          .select('*')
-          .eq('language_id', language.id)
-          .eq('approval_status', 'approved')
-          .order('created_at', { ascending: false });
+        console.log('📡 [DictionaryTab.useEffect] Calling wordService.getWords...');
+        const result = await getWords(language.id);
 
-        if (err) {
-          console.error('❌ [DictionaryTab] Supabase error code:', err.code);
-          console.error('❌ [DictionaryTab] Supabase error message:', err.message);
-          console.error('❌ [DictionaryTab] Supabase error details:', err.details);
-          console.error('❌ [DictionaryTab] Full error:', JSON.stringify(err, null, 2));
-          throw err;
+        if (result.error) {
+          console.error('❌ [DictionaryTab.useEffect] wordService error:', result.error);
+          throw new Error(result.error);
         }
         
-        console.log(`✅ [DictionaryTab] Fetched ${data?.length || 0} words from database`);
-        if (data && data.length > 0) {
-          console.log('✅ [DictionaryTab] First word:', data[0]);
-          console.log('✅ [DictionaryTab] Sample data structure:', {
-            id: data[0].id,
-            word: data[0].word,
-            translation: data[0].translation,
-            part_of_speech: data[0].part_of_speech,
-            created_at: data[0].created_at,
-            added_by: data[0].added_by,
-          });
+        console.log(`✅ [DictionaryTab.useEffect] Loaded ${result.words.length} words from database`);
+        if (result.words.length > 0) {
+          console.log('   First word:', result.words[0]);
         } else {
-          console.log('ℹ️  [DictionaryTab] No words found - this is normal for new languages');
+          console.log('ℹ️  [DictionaryTab.useEffect] No words yet - this is normal for new languages');
         }
-        setAllWords(data || []);
+        setAllWords(result.words || []);
+        setError(null);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to fetch dictionary';
-        console.error('❌ [DictionaryTab] Error fetching dictionary:', message);
-        console.error('❌ [DictionaryTab] Error object:', err);
+        const message = err instanceof Error ? err.message : 'Failed to load words';
+        console.error('❌ [DictionaryTab.useEffect] Exception:', message);
         setError(message);
       } finally {
         setLoading(false);
@@ -152,25 +134,29 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
   };
 
   const handleWordAdded = () => {
-    console.log('🔄 [DictionaryTab] Word added, refreshing list...');
+    console.log('🔄 [DictionaryTab] Word added, refreshing word list...');
     setItemsToShow(50); // Reset pagination
-    // Refetch words
+    // Refetch words using wordService (queries correct 'words' table)
     const fetchWords = async () => {
       try {
         setLoading(true);
-        const { data, error: err } = await supabase
-          .from('dictionary_entries')
-          .select('*')
-          .eq('language_id', language.id)
-          .eq('approval_status', 'approved')
-          .order('created_at', { ascending: false });
-
-        if (err) throw err;
-        setAllWords(data || []);
-        console.log('✅ [DictionaryTab] Words refreshed:', data?.length || 0);
+        console.log('📡 [DictionaryTab.handleWordAdded] Fetching from wordService...');
+        const result = await getWords(language.id);
+        
+        if (result.error) {
+          console.error('❌ [DictionaryTab.handleWordAdded]', result.error);
+          throw new Error(result.error);
+        }
+        
+        console.log('✅ [DictionaryTab.handleWordAdded] Refreshed:', result.words.length, 'words');
+        if (result.words.length > 0) {
+          console.log('   Latest:', result.words[0]);
+        }
+        setAllWords(result.words || []);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to refresh words';
-        console.error('❌ [DictionaryTab] Error refreshing:', message);
+        const message = err instanceof Error ? err.message : 'Failed to refresh';
+        console.error('❌ [DictionaryTab.handleWordAdded]', message);
+        setError(message);
       } finally {
         setLoading(false);
       }

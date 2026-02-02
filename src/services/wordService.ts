@@ -113,11 +113,32 @@ export const addWord = async (input: AddWordInput): Promise<{ success: boolean; 
 
     console.log('📤 [wordService.addWord] Sending payload to Supabase:', payload);
 
+    // Validate payload
+    console.log('[wordService.addWord] Payload validation:');
+    console.log('  language_id:', payload.language_id, payload.language_id ? 'OK' : 'NULL');
+    console.log('  owner_id:', payload.owner_id, payload.owner_id ? 'OK' : 'NULL');
+    console.log('  word:', payload.word, payload.word ? 'OK' : 'EMPTY');
+    console.log('  translation:', payload.translation, payload.translation ? 'OK' : 'EMPTY');
+    console.log('  part_of_speech:', payload.part_of_speech, payload.part_of_speech ? 'OK' : 'EMPTY');
+
     const { data, error } = await supabase
       .from('words')
       .insert([payload])
-      .select('id')
+      .select('*')
       .single();
+
+    // Log FULL Supabase response
+    console.log('📥 [wordService.addWord] Supabase response:', {
+      status: error ? 'ERROR' : 'SUCCESS',
+      data,
+      error: error ? {
+        message: error.message,
+        code: (error as any).code,
+        status: (error as any).status,
+        details: (error as any).details,
+        hint: (error as any).hint
+      } : null
+    });
 
     if (error) {
       const errorDetails = {
@@ -128,11 +149,23 @@ export const addWord = async (input: AddWordInput): Promise<{ success: boolean; 
         status: (error as any).status,
         fullError: error
       };
-      console.error('❌ [wordService.addWord] Insert error:', errorDetails);
+      console.error('❌ [wordService.addWord] Insert FAILED:', errorDetails);
       throw error;
     }
 
-    console.log('✅ [wordService.addWord] Word added successfully:', data.id);
+    if (!data || !data.id) {
+      console.error('❌ [wordService.addWord] Insert returned no data!', data);
+      throw new Error('Insert succeeded but returned empty response');
+    }
+
+    console.log('✅ [wordService.addWord] Word persisted to Supabase:', {
+      id: data.id,
+      word: data.word,
+      translation: data.translation,
+      owner_id: data.owner_id,
+      language_id: data.language_id,
+      created_at: data.created_at
+    });
     return { success: true, wordId: data.id, error: null };
   } catch (err) {
     let message = 'Failed to add word';
