@@ -325,7 +325,7 @@ This document tracks development phases with clear milestones. Each phase includ
   - [x] Form validation (all required fields, IPA format check)
   - [x] Success notification
 
-  **Implementation Details:**
+  **Frontend Implementation Complete ✅**
   - Created AddWordModal.tsx component with complete modal form
   - Form fields: word (required), translation (required), partOfSpeech (required dropdown with 11 options), pronunciation (optional with IPA validation)
   - Optional audio file upload with file type validation and preview player
@@ -335,7 +335,7 @@ This document tracks development phases with clear milestones. Each phase includ
     - Required field checks for word, translation, and POS
     - IPA format validation using regex for phonetic/phonemic notation
     - Example phrase validation: all examples must have both phrase and translation
-  - Success notification shows confirmation message for 1.5 seconds before closing
+  - Toast notification system for success/error feedback (auto-dismiss after 3s)
   - Form integrates with wordService.addWord() for database insertion
   - After successful addition, word list automatically refreshes (fetches fresh data)
   - Professional dark theme styling with Tailwind CSS
@@ -343,7 +343,44 @@ This document tracks development phases with clear milestones. Each phase includ
   - Error messages displayed inline for each field
   - Integrated into DictionaryTab with "Add Word" button
   - Role-based access: button only visible when canEdit=true
-  - Build verification: 119 modules, 0 TypeScript errors
+  - Build verification: 121 modules, 0 TypeScript errors
+
+  **Backend Setup Required ⚠️ (IMPORTANT)**
+  - **MUST RUN:** Execute [docs/CREATE_WORDS_TABLE.sql](docs/CREATE_WORDS_TABLE.sql) in Supabase SQL Editor
+  - Creates public.words table with schema:
+    - id (UUID, primary key)
+    - language_id (UUID, foreign key → languages.id)
+    - owner_id (UUID, foreign key → auth.users.id)
+    - word, translation, part_of_speech (TEXT, required)
+    - pronunciation, audio_url, etymology (TEXT, optional)
+    - examples (JSONB, for example phrases)
+    - created_at, updated_at (TIMESTAMPTZ)
+  - Adds RLS policies:
+    - INSERT: owner_id = auth.uid()
+    - SELECT: owner_id = auth.uid()
+    - UPDATE: owner_id = auth.uid()
+    - DELETE: owner_id = auth.uid()
+  - Creates indexes for performance
+  - **Setup Guide:** See [docs/P2_2_BACKEND_SETUP.md](docs/P2_2_BACKEND_SETUP.md) for detailed instructions
+
+  **Service Layer Updates**
+  - Updated wordService.ts to query 'words' table (was 'dictionary_entries')
+  - Added owner_id parameter using authenticated user ID
+  - Added comprehensive logging with emoji prefixes for debugging
+  - All CRUD functions updated: getWords, addWord, updateWord, deleteWord, getPartsOfSpeech
+  - Proper error handling and user-friendly error messages
+
+  **Testing Instructions**
+  1. Execute CREATE_WORDS_TABLE.sql in Supabase (see setup guide)
+  2. Start dev server: `npm run dev`
+  3. Navigate to language detail page → Dictionary tab
+  4. Click "Add Word" button
+  5. Fill form and submit
+  6. **Expected:** Toast shows "✅ Word '[word]' added successfully!"
+  7. **Expected:** Word list refreshes with new word at top
+  8. **Console:** Check for `✅ [wordService.addWord] Word added successfully: [id]`
+
+  **Build Status:** ✅ 121 modules, 0 TypeScript errors
 
 - [ ] **P2.3** Implement word CRUD in Supabase
   - [ ] Write `addWord()` Supabase function
