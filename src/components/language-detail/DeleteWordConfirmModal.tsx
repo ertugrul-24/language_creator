@@ -22,15 +22,18 @@ const DeleteWordConfirmModal: React.FC<DeleteWordConfirmModalProps> = ({
 }) => {
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async () => {
     setIsLoading(true);
+    setError(null);
     console.log('🗑️ [DeleteWordConfirmModal] Deleting word:', word.id, 'from language:', languageId);
 
     const result = await deleteWord(word.id, languageId);
 
     if (result.error) {
       console.error('Delete word error:', result.error);
+      setError(result.error);
       addToast(`Failed to delete word: ${result.error}`, 'error');
       setIsLoading(false);
       return;
@@ -54,6 +57,11 @@ const DeleteWordConfirmModal: React.FC<DeleteWordConfirmModalProps> = ({
 
         {/* Content */}
         <div className="px-6 py-4">
+          {error && (
+            <div className="bg-red-500/20 border border-red-500 rounded px-4 py-3 text-red-300 mb-4">
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
           <p className="text-text-secondary mb-2">Are you sure you want to delete this word?</p>
           <p className="text-white font-semibold text-lg">{word.word}</p>
           <p className="text-text-secondary text-sm mt-2">This action cannot be undone.</p>

@@ -179,6 +179,60 @@ const LanguageDetailPage: React.FC<LanguageDetailPageProps> = () => {
     }
   };
 
+  // Refresh language data (especially total_words stats)
+  const refreshLanguage = async () => {
+    if (!languageId) return;
+    
+    try {
+      console.log('[LanguageDetailPage.refreshLanguage] Refreshing language stats...');
+      const { data: languageData, error: langError } = await supabase
+        .from('languages')
+        .select('*')
+        .eq('id', languageId)
+        .single();
+
+      if (langError) {
+        console.error('[LanguageDetailPage.refreshLanguage] Error:', langError);
+        return;
+      }
+
+      if (!languageData) return;
+
+      const mappedLanguage: Language = {
+        id: languageData.id,
+        owner_id: languageData.owner_id,
+        name: languageData.name,
+        description: languageData.description,
+        icon: languageData.icon || '🌍',
+        icon_url: languageData.icon_url,
+        cover_image_url: languageData.cover_image_url,
+        visibility: languageData.visibility,
+        specs: {
+          alphabetScript: languageData.alphabet_script,
+          writingDirection: languageData.writing_direction,
+          wordOrder: languageData.word_order,
+          depthLevel: languageData.depth_level,
+          phonemeSet: languageData.phoneme_set || [],
+        },
+        total_words: languageData.total_words || 0,
+        total_rules: languageData.total_rules || 0,
+        total_contributors: languageData.total_contributors || 1,
+        phoneme_count: languageData.phoneme_count,
+        case_sensitive: languageData.case_sensitive || false,
+        created_at: languageData.created_at,
+        updated_at: languageData.updated_at,
+      };
+
+      setLanguage(mappedLanguage);
+      console.log('[LanguageDetailPage.refreshLanguage] Language stats refreshed:', {
+        total_words: mappedLanguage.total_words,
+        total_rules: mappedLanguage.total_rules,
+      });
+    } catch (err) {
+      console.error('[LanguageDetailPage.refreshLanguage] Exception:', err);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   if (error || !language) {
@@ -221,6 +275,7 @@ const LanguageDetailPage: React.FC<LanguageDetailPageProps> = () => {
             language={language}
             canEdit={canEdit}
             onEditSpecs={() => setIsEditSpecsModalOpen(true)}
+            onLanguageUpdated={refreshLanguage}
           />
 
           {/* Edit Modal */}

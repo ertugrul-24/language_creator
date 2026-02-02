@@ -214,81 +214,90 @@ export const updateWord = async (
   updates: Partial<AddWordInput>
 ): Promise<{ success: boolean; error: string | null }> => {
   try {
-    console.log('✏️ [wordService.updateWord] Starting update for word:', wordId);
-    console.log('  Updates:', updates);
+    console.log('========== UPDATE WORD START ==========');
+    console.log('updateWord() called with:', { wordId, updates });
 
-    // Verify word exists and belongs to current user
+    // Get current user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return { success: false, error: 'User not authenticated' };
+    }
+    console.log('Current user:', user.id);
+
+    // Fetch word to verify ownership
     const { data: wordData, error: fetchError } = await supabase
       .from('words')
-      .select('id, owner_id, language_id')
+      .select('id, owner_id, language_id, word')
       .eq('id', wordId)
       .single();
 
     if (fetchError) {
-      console.error('❌ [wordService.updateWord] Fetch error:', fetchError);
-      return { success: false, error: 'Word not found or access denied' };
+      console.error('Fetch error (word not found or access denied):', fetchError);
+      return { success: false, error: `Word not found: ${fetchError.message}` };
     }
 
-    console.log('✅ [wordService.updateWord] Word found:', {
+    console.log('Word found:', {
       id: wordData.id,
+      word: wordData.word,
       owner_id: wordData.owner_id,
-      language_id: wordData.language_id
+      current_user: user.id,
+      owner_matches: wordData.owner_id === user.id
     });
 
-    // Build update data
-    const updateData: Record<string, any> = {
+    if (wordData.owner_id !== user.id) {
+      console.error('Permission denied: user is not the owner');
+      return { success: false, error: 'Permission denied: You can only edit your own words' };
+    }
+
+    // Build update payload
+    const updatePayload: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
     
-    if (updates.word !== undefined) updateData.word = updates.word;
-    if (updates.translation !== undefined) updateData.translation = updates.translation;
-    if (updates.partOfSpeech !== undefined) updateData.part_of_speech = updates.partOfSpeech;
-    if (updates.pronunciation !== undefined) updateData.pronunciation = updates.pronunciation || null;
-    if (updates.etymologyNote !== undefined) updateData.etymology = updates.etymologyNote || null;
-    if (updates.examples !== undefined) updateData.examples = updates.examples || [];
+    if (updates.word !== undefined) updatePayload.word = updates.word;
+    if (updates.translation !== undefined) updatePayload.translation = updates.translation;
+    if (updates.partOfSpeech !== undefined) updatePayload.part_of_speech = updates.partOfSpeech;
+    if (updates.pronunciation !== undefined) updatePayload.pronunciation = updates.pronunciation || null;
+    if (updates.etymologyNote !== undefined) updatePayload.etymology = updates.etymologyNote || null;
+    if (updates.examples !== undefined) updatePayload.examples = updates.examples || [];
 
-    console.log('📤 [wordService.updateWord] Sending to Supabase:', {
-      wordId,
-      updateData,
-      updateFields: Object.keys(updateData)
-    });
+    console.log('Update payload:', updatePayload);
 
-    const { data, error } = await supabase
+    // Execute update
+    const { data: updatedData, error: updateError } = await supabase
       .from('words')
-      .update(updateData)
+      .update(updatePayload)
       .eq('id', wordId)
       .select('*')
       .single();
 
-    console.log('📥 [wordService.updateWord] Supabase response:', {
-      status: error ? 'ERROR' : 'SUCCESS',
-      data,
-      error: error ? {
-        message: error.message,
-        code: (error as any).code,
-        details: (error as any).details,
-        hint: (error as any).hint
+    console.log('Supabase response:', {
+      success: !updateError,
+      data: updatedData,
+      error: updateError ? {
+        message: updateError.message,
+        code: (updateError as any).code,
+        details: (updateError as any).details,
+        hint: (updateError as any).hint,
+        status: (updateError as any).status,
       } : null
     });
 
-    if (error) {
-      console.error('❌ [wordService.updateWord] Update FAILED:', error);
-      throw error;
+    if (updateError) {
+      console.error('UPDATE FAILED:', updateError);
+      throw updateError;
     }
 
-    if (!data) {
-      console.error('❌ [wordService.updateWord] Update returned no data');
+    if (!updatedData) {
+      console.error('Update returned no data');
       throw new Error('Update succeeded but returned empty response');
     }
 
-    console.log('✅ [wordService.updateWord] Word updated successfully:', {
-      id: data.id,
-      word: data.word,
-      translation: data.translation,
-      updated_at: data.updated_at
-    });
-
+    console.log('Update successful:', updatedData.word);
+    console.log('========== UPDATE WORD SUCCESS ==========');
     return { success: true, error: null };
+
   } catch (err) {
     let message = 'Failed to update word';
     let details = '';
@@ -299,18 +308,15 @@ export const updateWord = async (
     
     if (typeof err === 'object' && err !== null) {
       const supabaseErr = err as any;
-      if (supabaseErr.code) details += `[${supabaseErr.code}] `;
-      if (supabaseErr.details) details += supabaseErr.details;
-      if (supabaseErr.hint) details += ` HINT: ${supabaseErr.hint}`;
+      if (supabaseErr.code) details += `Code: ${supabaseErr.code} | `;
+      if (supabaseErr.details) details += `Details: ${supabaseErr.details} | `;
+      if (supabaseErr.hint) details += `Hint: ${supabaseErr.hint}`;
     }
     
     const fullMessage = details ? `${message} - ${details}` : message;
-    console.error('❌ [wordService.updateWord] Full error:', {
-      message,
-      details,
-      fullMessage,
-      originalError: err
-    });
+    console.error('========== UPDATE WORD FAILED ==========');
+    console.error('Final error:', fullMessage);
+    console.error('Original error:', err);
     return { success: false, error: fullMessage };
   }
 };
@@ -325,9 +331,18 @@ export const deleteWord = async (
   languageId: string
 ): Promise<{ success: boolean; error: string | null }> => {
   try {
-    console.log('🗑️ [wordService.deleteWord] Deleting word:', wordId, 'from language:', languageId);
+    console.log('========== DELETE WORD START ==========');
+    console.log('deleteWord() called with:', { wordId, languageId });
 
-    // First, verify the word exists and belongs to current user
+    // Get current user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return { success: false, error: 'User not authenticated' };
+    }
+    console.log('Current user:', user.id);
+
+    // Fetch word to verify ownership
     const { data: wordData, error: fetchError } = await supabase
       .from('words')
       .select('id, owner_id, language_id, word')
@@ -335,52 +350,62 @@ export const deleteWord = async (
       .single();
 
     if (fetchError) {
-      console.error('❌ [wordService.deleteWord] Fetch error:', fetchError);
-      return { success: false, error: 'Word not found or access denied' };
+      console.error('Fetch error (word not found or access denied):', fetchError);
+      return { success: false, error: `Word not found: ${fetchError.message}` };
     }
 
-    console.log('✅ [wordService.deleteWord] Word found:', {
+    console.log('Word found:', {
       id: wordData.id,
       word: wordData.word,
       owner_id: wordData.owner_id,
-      language_id: wordData.language_id
+      current_user: user.id,
+      owner_matches: wordData.owner_id === user.id
     });
 
-    const { data, error } = await supabase
+    if (wordData.owner_id !== user.id) {
+      console.error('Permission denied: user is not the owner');
+      return { success: false, error: 'Permission denied: You can only delete your own words' };
+    }
+
+    // Delete the word
+    const { data: deletedData, error: deleteError } = await supabase
       .from('words')
       .delete()
       .eq('id', wordId)
       .select('id')
       .single();
 
-    console.log('📥 [wordService.deleteWord] Supabase response:', {
-      status: error ? 'ERROR' : 'SUCCESS',
-      data,
-      error: error ? {
-        message: error.message,
-        code: (error as any).code,
-        details: (error as any).details,
-        hint: (error as any).hint
+    console.log('Delete response:', {
+      success: !deleteError,
+      data: deletedData,
+      error: deleteError ? {
+        message: deleteError.message,
+        code: (deleteError as any).code,
+        details: (deleteError as any).details,
+        hint: (deleteError as any).hint,
+        status: (deleteError as any).status,
       } : null
     });
 
-    if (error) {
-      console.error('❌ [wordService.deleteWord] Delete FAILED:', error);
-      throw error;
+    if (deleteError) {
+      console.error('DELETE FAILED:', deleteError);
+      throw deleteError;
     }
 
-    console.log('✅ [wordService.deleteWord] Word deleted successfully:', wordData.word);
+    console.log('Delete successful:', wordData.word);
 
-    // Update language stats to reflect removed word
-    console.log('📊 [wordService.deleteWord] Updating language stats...');
+    // Update language stats
+    console.log('Updating language stats...');
     const statsResult = await updateLanguageStats(languageId);
     if (statsResult.error) {
-      console.warn('⚠️  [wordService.deleteWord] Stats update failed (non-critical):', statsResult.error);
+      console.warn('Stats update failed (non-critical):', statsResult.error);
     } else {
-      console.log('✅ [wordService.deleteWord] Language stats updated');
+      console.log('Language stats updated');
     }
 
+    console.log('========== DELETE WORD SUCCESS ==========');
     return { success: true, error: null };
+
   } catch (err) {
     let message = 'Failed to delete word';
     let details = '';
@@ -391,18 +416,15 @@ export const deleteWord = async (
     
     if (typeof err === 'object' && err !== null) {
       const supabaseErr = err as any;
-      if (supabaseErr.code) details += `[${supabaseErr.code}] `;
-      if (supabaseErr.details) details += supabaseErr.details;
-      if (supabaseErr.hint) details += ` HINT: ${supabaseErr.hint}`;
+      if (supabaseErr.code) details += `Code: ${supabaseErr.code} | `;
+      if (supabaseErr.details) details += `Details: ${supabaseErr.details} | `;
+      if (supabaseErr.hint) details += `Hint: ${supabaseErr.hint}`;
     }
     
     const fullMessage = details ? `${message} - ${details}` : message;
-    console.error('❌ [wordService.deleteWord] Full error:', {
-      message,
-      details,
-      fullMessage,
-      originalError: err
-    });
+    console.error('========== DELETE WORD FAILED ==========');
+    console.error('Final error:', fullMessage);
+    console.error('Original error:', err);
     return { success: false, error: fullMessage };
   }
 };

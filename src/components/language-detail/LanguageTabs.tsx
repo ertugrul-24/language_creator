@@ -10,6 +10,7 @@ interface LanguageTabsProps {
   language: Language;
   canEdit: boolean;
   onEditSpecs?: () => void;
+  onLanguageUpdated?: () => void;
 }
 
 const LanguageTabs: React.FC<LanguageTabsProps> = ({
@@ -18,6 +19,7 @@ const LanguageTabs: React.FC<LanguageTabsProps> = ({
   language,
   canEdit,
   onEditSpecs,
+  onLanguageUpdated,
 }) => {
   const tabs = [
     { id: 'overview' as const, label: 'Overview', icon: '📋' },
@@ -54,7 +56,7 @@ const LanguageTabs: React.FC<LanguageTabsProps> = ({
       {/* Tab Content */}
       <div className="bg-surface-dark rounded-lg p-6 border border-border-dark">
         {activeTab === 'overview' && <OverviewTab language={language} canEdit={canEdit} onEditSpecs={onEditSpecs} />}
-        {activeTab === 'dictionary' && <DictionaryTab language={language} canEdit={canEdit} />}
+        {activeTab === 'dictionary' && <DictionaryTab language={language} canEdit={canEdit} onLanguageUpdated={onLanguageUpdated} />}
         {activeTab === 'rules' && <RulesTab language={language} canEdit={canEdit} />}
         {activeTab === 'courses' && <CoursesTab language={language} canEdit={canEdit} />}
       </div>

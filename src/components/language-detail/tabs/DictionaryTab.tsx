@@ -9,6 +9,7 @@ import DeleteWordConfirmModal from '@/components/language-detail/DeleteWordConfi
 interface DictionaryTabProps {
   language: Language;
   canEdit: boolean;
+  onLanguageUpdated?: () => void;
 }
 
 interface DictionaryWord {
@@ -23,7 +24,7 @@ interface DictionaryWord {
 
 type SortOption = 'name-asc' | 'name-desc' | 'date-added' | 'popularity';
 
-const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
+const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit, onLanguageUpdated }) => {
   console.log('✅ DictionaryTab MOUNTED - Language:', language.name, 'ID:', language.id);
   
   const [allWords, setAllWords] = useState<DictionaryWord[]>([]);
@@ -159,6 +160,12 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
           console.log('   Latest:', result.words[0]);
         }
         setAllWords(result.words || []);
+        
+        // Also refresh the parent language data to update stats
+        if (onLanguageUpdated) {
+          console.log('📊 [DictionaryTab.handleWordAdded] Calling onLanguageUpdated callback...');
+          onLanguageUpdated();
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to refresh';
         console.error('❌ [DictionaryTab.handleWordAdded]', message);
