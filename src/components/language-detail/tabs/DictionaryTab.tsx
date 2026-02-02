@@ -3,6 +3,8 @@ import type { Language } from '@/types/database';
 import { supabase } from '@/services/supabaseClient';
 import { getWords } from '@/services/wordService';
 import AddWordModal from '@/components/language-detail/AddWordModal';
+import EditWordModal from '@/components/language-detail/EditWordModal';
+import DeleteWordConfirmModal from '@/components/language-detail/DeleteWordConfirmModal';
 
 interface DictionaryTabProps {
   language: Language;
@@ -33,6 +35,10 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
   const [sortBy, setSortBy] = useState<SortOption>('date-added');
   const [itemsToShow, setItemsToShow] = useState(50);
   const [isAddWordModalOpen, setIsAddWordModalOpen] = useState(false);
+  const [editingWord, setEditingWord] = useState<DictionaryWord | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deletingWord, setDeletingWord] = useState<DictionaryWord | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Fetch all words
   useEffect(() => {
@@ -281,10 +287,22 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
                     <td className="px-4 py-3 text-text-secondary text-sm">{word.added_by || '—'}</td>
                     {canEdit && (
                       <td className="px-4 py-3 text-center">
-                        <button className="text-primary hover:text-blue-400 mr-3 font-medium text-sm transition-colors">
+                        <button
+                          onClick={() => {
+                            setEditingWord(word);
+                            setIsEditModalOpen(true);
+                          }}
+                          className="text-primary hover:text-blue-400 mr-3 font-medium text-sm transition-colors"
+                        >
                           Edit
                         </button>
-                        <button className="text-red-500 hover:text-red-400 font-medium text-sm transition-colors">
+                        <button
+                          onClick={() => {
+                            setDeletingWord(word);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="text-red-500 hover:text-red-400 font-medium text-sm transition-colors"
+                        >
                           Delete
                         </button>
                       </td>
@@ -319,7 +337,36 @@ const DictionaryTab: React.FC<DictionaryTabProps> = ({ language, canEdit }) => {
         onClose={() => setIsAddWordModalOpen(false)}
         language={language}
         onWordAdded={handleWordAdded}
-      />    </div>
+      />
+
+      {/* Edit Word Modal */}
+      {editingWord && (
+        <EditWordModal
+          word={editingWord}
+          languageId={language.id}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingWord(null);
+          }}
+          onWordUpdated={handleWordAdded}
+        />
+      )}
+
+      {/* Delete Word Confirmation Modal */}
+      {deletingWord && (
+        <DeleteWordConfirmModal
+          word={deletingWord}
+          languageId={language.id}
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setDeletingWord(null);
+          }}
+          onWordDeleted={handleWordAdded}
+        />
+      )}
+    </div>
   );
 };
 
