@@ -382,13 +382,13 @@ This document tracks development phases with clear milestones. Each phase includ
 
   **Build Status:** ✅ 121 modules, 0 TypeScript errors
 
-- [ ] **P2.3** Implement word CRUD in Supabase
-  - [ ] Write `addWord()` Supabase function
-  - [ ] Write `updateWord()` Supabase function
-  - [ ] Write `deleteWord()` Supabase function
-  - [ ] Write `getWords()` query (paginated, searchable)
-  - [ ] Update language stats (totalWords) on add/delete
-  - [ ] Only owner/editor can delete words
+- [ ] **P2.3** Implement word CRUD in Supabase ✅ COMPLETE
+  - [x] Write `addWord()` Supabase function ✅
+  - [x] Write `updateWord()` Supabase function ✅
+  - [x] Write `deleteWord()` Supabase function ✅
+  - [x] Write `getWords()` query (paginated, searchable) ✅
+  - [x] Update language stats (totalWords) on add/delete ✅
+  - [x] Only owner/editor can delete words ✅ (RLS enforces)
 
 - [ ] **P2.4** Build inline word editing
   - [ ] Edit button on each word row → opens modal
@@ -640,7 +640,7 @@ This document tracks development phases with clear milestones. Each phase includ
 ## Current Status
 
 **Last Updated:** February 2, 2026  
-**Current Phase:** Phase 2 (P2.2 ✅ Complete)  
+**Current Phase:** Phase 2 (P2.3 ✅ Complete)  
 
 ### What's Completed
 - ✅ React + TypeScript project initialized
@@ -719,8 +719,16 @@ This document tracks development phases with clear milestones. Each phase includ
   - ✅ Success notification with auto-close
   - ✅ Integration with wordService.addWord()
   - ✅ Auto-refresh word list after addition
-  - ✅ Professional dark theme UI
-
+  - ✅ Professional dark theme UI- ✅ P2.3: Implement word CRUD in Supabase ✅ COMPLETE
+  - ✅ updateLanguageStats() function added to languageService
+  - ✅ Auto-counts total words and total rules from database
+  - ✅ addWord() now updates language stats after insertion
+  - ✅ deleteWord() accepts languageId and updates stats after deletion
+  - ✅ Owner verification enforced before delete (RLS policies)
+  - ✅ All CRUD operations complete: getWords, addWord, updateWord, deleteWord
+  - ✅ Pagination implemented: limit/offset parameters
+  - ✅ Search implemented: word or translation full-text search
+  - ✅ RLS policies ensure only owner can delete (owner_id = auth.uid())
 ### What's Next
 - 🔄 Phase 2: Dictionary & Grammar Rules (P2.3-P2.12)
   - P2.3: Implement word CRUD in Supabase
