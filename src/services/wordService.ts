@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabaseClient';
+import { updateLanguageStats } from '@/services/languageService';
 
 interface DictionaryWord {
   id: string;
@@ -166,6 +167,16 @@ export const addWord = async (input: AddWordInput): Promise<{ success: boolean; 
       language_id: data.language_id,
       created_at: data.created_at
     });
+
+    // Update language stats to reflect new word count
+    console.log('📊 [wordService.addWord] Updating language stats...');
+    const statsResult = await updateLanguageStats(input.languageId);
+    if (statsResult.error) {
+      console.warn('⚠️  [wordService.addWord] Stats update failed (non-critical):', statsResult.error);
+    } else {
+      console.log('✅ [wordService.addWord] Language stats updated');
+    }
+
     return { success: true, wordId: data.id, error: null };
   } catch (err) {
     let message = 'Failed to add word';
@@ -233,10 +244,29 @@ export const updateWord = async (
 
 /**
  * Delete a word from the dictionary
+ * Only the owner/creator can delete their words (enforced by RLS policies)
+ * Updates language stats after deletion
  */
-export const deleteWord = async (wordId: string): Promise<{ success: boolean; error: string | null }> => {
+export const deleteWord = async (
+  wordId: string,
+  languageId: string
+): Promise<{ success: boolean; error: string | null }> => {
   try {
     console.log('🗑️ [wordService.deleteWord] Deleting word:', wordId);
+
+    // First, verify the word exists and belongs to current user
+    const { error: fetchError } = await supabase
+      .from('words')
+      .select('id, owner_id, language_id')
+      .eq('id', wordId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ [wordService.deleteWord] Fetch error:', fetchError);
+      return { success: false, error: 'Word not found or access denied' };
+    }
+
+    console.log('✅ [wordService.deleteWord] Word found, proceeding with deletion');
 
     const { error } = await supabase
       .from('words')
@@ -249,6 +279,16 @@ export const deleteWord = async (wordId: string): Promise<{ success: boolean; er
     }
 
     console.log('✅ [wordService.deleteWord] Word deleted:', wordId);
+
+    // Update language stats to reflect removed word
+    console.log('📊 [wordService.deleteWord] Updating language stats...');
+    const statsResult = await updateLanguageStats(languageId);
+    if (statsResult.error) {
+      console.warn('⚠️  [wordService.deleteWord] Stats update failed (non-critical):', statsResult.error);
+    } else {
+      console.log('✅ [wordService.deleteWord] Language stats updated');
+    }
+
     return { success: true, error: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to delete word';

@@ -791,3 +791,67 @@ export const getAllUserLanguages = async (userId: string) => {
     throw err;
   }
 };
+
+/**
+ * Update language statistics (totalWords, totalRules, etc.)
+ * Automatically calculates stats from database counts
+ */
+export const updateLanguageStats = async (
+  languageId: string
+): Promise<{ success: boolean; error: string | null }> => {
+  try {
+    console.log('📊 [updateLanguageStats] Updating stats for language:', languageId);
+
+    // Count total words
+    const { count: wordCount, error: wordError } = await supabase
+      .from('words')
+      .select('id', { count: 'exact', head: true })
+      .eq('language_id', languageId);
+
+    if (wordError) {
+      console.error('❌ [updateLanguageStats] Error counting words:', wordError);
+      throw wordError;
+    }
+
+    console.log('✅ [updateLanguageStats] Word count:', wordCount);
+
+    // Count total rules
+    const { count: ruleCount, error: ruleError } = await supabase
+      .from('grammar_rules')
+      .select('id', { count: 'exact', head: true })
+      .eq('language_id', languageId);
+
+    if (ruleError) {
+      console.warn('⚠️  [updateLanguageStats] Error counting rules (may not be critical):', ruleError);
+    }
+
+    console.log('✅ [updateLanguageStats] Rule count:', ruleCount);
+
+    // Update language with new stats
+    const { error: updateError } = await supabase
+      .from('languages')
+      .update({
+        total_words: wordCount || 0,
+        total_rules: ruleCount || 0,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', languageId);
+
+    if (updateError) {
+      console.error('❌ [updateLanguageStats] Update error:', updateError);
+      throw updateError;
+    }
+
+    console.log('✅ [updateLanguageStats] Successfully updated stats:', {
+      languageId,
+      totalWords: wordCount,
+      totalRules: ruleCount,
+    });
+
+    return { success: true, error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Failed to update language stats';
+    console.error('❌ [updateLanguageStats] Error:', message);
+    return { success: false, error: message };
+  }
+};
