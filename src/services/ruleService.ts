@@ -114,16 +114,38 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
       examples: input.examples || [],
     };
 
-    console.log('📤 [ruleService.addRule] Sending payload:', payload);
+    console.log('📤 [ruleService.addRule] Sending payload to Supabase:', payload);
+
+    // Validate payload
+    console.log('[ruleService.addRule] Payload validation:');
+    console.log('  language_id:', payload.language_id, payload.language_id ? 'OK' : 'NULL');
+    console.log('  owner_id:', payload.owner_id, payload.owner_id ? 'OK' : 'NULL');
+    console.log('  name:', payload.name, payload.name ? 'OK' : 'EMPTY');
+    console.log('  category:', payload.category, payload.category ? 'OK' : 'EMPTY');
+    console.log('  rule_type:', payload.rule_type, payload.rule_type ? 'OK' : 'EMPTY');
+    console.log('  examples (count):', Array.isArray(payload.examples) ? payload.examples.length : 'NOT_ARRAY');
 
     const { data, error } = await supabase
       .from('grammar_rules')
       .insert([payload])
-      .select('id, name')
+      .select('*')
       .single();
 
+    // Log FULL Supabase response
+    console.log('📥 [ruleService.addRule] Supabase response:', {
+      status: error ? 'ERROR' : 'SUCCESS',
+      data,
+      error: error ? {
+        message: error.message,
+        code: (error as any).code,
+        status: (error as any).status,
+        details: (error as any).details,
+        hint: (error as any).hint
+      } : null
+    });
+
     if (error) {
-      console.error('❌ [ruleService.addRule] Insert error:', error);
+      console.error('❌ [ruleService.addRule] Insert error:', error.message);
       throw error;
     }
 
@@ -145,22 +167,44 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
 
     return { success: true, ruleId: data.id, error: null };
   } catch (err) {
+    console.error('❌ [ruleService.addRule] Exception caught');
+    
     let message = 'Failed to add rule';
-    let details = '';
+    let errorDetails = '';
 
+    // Log the raw error
+    console.error('   Raw error:', err);
+    console.error('   Error type:', (err as any)?.constructor?.name);
+
+    // Extract message
     if (err instanceof Error) {
       message = err.message;
+      console.error('   Error message:', message);
     }
 
+    // Extract Supabase error details
     if (typeof err === 'object' && err !== null) {
       const supabaseErr = err as any;
-      if (supabaseErr.code) details += `[${supabaseErr.code}] `;
-      if (supabaseErr.details) details += supabaseErr.details;
-      if (supabaseErr.hint) details += ` HINT: ${supabaseErr.hint}`;
+      console.error('   Supabase error code:', supabaseErr.code);
+      console.error('   Supabase error status:', supabaseErr.status);
+      console.error('   Supabase error details:', supabaseErr.details);
+      console.error('   Supabase error hint:', supabaseErr.hint);
+      
+      // Build user-friendly message
+      if (supabaseErr.code === 'PGRST204') {
+        errorDetails = `[PGRST204] Table or column not found. Verify schema: https://app.supabase.com`;
+      } else if (supabaseErr.code === 'PGRST301') {
+        errorDetails = `[PGRST301] JWT claims do not match RLS policy. User not authenticated or RLS policy mismatch.`;
+      } else if (supabaseErr.message) {
+        errorDetails = `[${supabaseErr.code || 'ERROR'}] ${supabaseErr.message}`;
+        if (supabaseErr.details) errorDetails += ` | ${supabaseErr.details}`;
+        if (supabaseErr.hint) errorDetails += ` | Hint: ${supabaseErr.hint}`;
+      }
     }
 
-    const fullMessage = details ? `${message} - ${details}` : message;
-    console.error('❌ [ruleService.addRule] Error:', fullMessage);
+    const fullMessage = errorDetails || message;
+    console.error('❌ [ruleService.addRule] Final error to user:', fullMessage);
+    
     return { success: false, error: fullMessage };
   }
 };
