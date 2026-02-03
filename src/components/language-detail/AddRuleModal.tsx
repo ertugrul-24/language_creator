@@ -19,7 +19,7 @@ interface FormData {
 }
 
 const AddRuleModal: React.FC<AddRuleModalProps> = ({ language, onClose, onRuleAdded }) => {
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -97,19 +97,19 @@ const AddRuleModal: React.FC<AddRuleModalProps> = ({ language, onClose, onRuleAd
       if (!result.success) {
         console.error('❌ [AddRuleModal] Error adding rule:', result.error);
         setError(result.error || 'Failed to add rule');
-        showToast('Failed to add rule: ' + result.error, 'error');
+        addToast('Failed to add rule: ' + result.error, 'error');
         return;
       }
 
       console.log('✅ [AddRuleModal] Rule added successfully:', result.ruleId);
-      showToast(`✅ Grammar rule "${formData.name}" added successfully!`, 'success');
+      addToast(`✅ Grammar rule "${formData.name}" added successfully!`, 'success');
       onRuleAdded();
       onClose();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to add rule';
       console.error('❌ [AddRuleModal] Exception:', message);
       setError(message);
-      showToast(message, 'error');
+      addToast(message, 'error');
     } finally {
       setLoading(false);
     }

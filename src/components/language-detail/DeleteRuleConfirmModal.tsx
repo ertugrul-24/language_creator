@@ -17,7 +17,7 @@ const DeleteRuleConfirmModal: React.FC<DeleteRuleConfirmModalProps> = ({
   onClose,
   onRuleDeleted,
 }) => {
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,19 +33,19 @@ const DeleteRuleConfirmModal: React.FC<DeleteRuleConfirmModalProps> = ({
       if (!result.success) {
         console.error('❌ [DeleteRuleConfirmModal] Error deleting rule:', result.error);
         setError(result.error || 'Failed to delete rule');
-        showToast('Failed to delete rule: ' + result.error, 'error');
+        addToast('Failed to delete rule: ' + result.error, 'error');
         return;
       }
 
       console.log('✅ [DeleteRuleConfirmModal] Rule deleted successfully');
-      showToast(`✅ Grammar rule "${ruleName}" deleted successfully!`, 'success');
+      addToast(`✅ Grammar rule "${ruleName}" deleted successfully!`, 'success');
       onRuleDeleted();
       onClose();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete rule';
       console.error('❌ [DeleteRuleConfirmModal] Exception:', message);
       setError(message);
-      showToast(message, 'error');
+      addToast(message, 'error');
     } finally {
       setLoading(false);
     }

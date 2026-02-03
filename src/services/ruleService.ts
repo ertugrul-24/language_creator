@@ -311,7 +311,7 @@ export const deleteRule = async (
     }
 
     // Delete the rule
-    const { data: deletedData, error: deleteError } = await supabase
+    const { error: deleteError } = await supabase
       .from('grammar_rules')
       .delete()
       .eq('id', ruleId)
@@ -366,11 +366,13 @@ export const getRuleCategories = async (languageId: string): Promise<string[]> =
     const { data, error } = await supabase
       .from('grammar_rules')
       .select('category')
-      .eq('language_id', languageId)
-      .distinct();
+      .eq('language_id', languageId);
 
     if (error) throw error;
-    return data?.map((d) => d.category).filter(Boolean) || [];
+    
+    // Filter unique categories
+    const uniqueCategories = [...new Set(data?.map((d: any) => d.category).filter(Boolean) || [])];
+    return Array.from(uniqueCategories) as string[];
   } catch (err) {
     console.error('Error fetching categories:', err);
     return [];

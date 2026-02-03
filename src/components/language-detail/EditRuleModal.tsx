@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Language } from '@/types/database';
 import { updateRule } from '@/services/ruleService';
 import { useToast } from '@/context/ToastContext';
@@ -30,7 +30,7 @@ interface FormData {
 }
 
 const EditRuleModal: React.FC<EditRuleModalProps> = ({ rule, language, onClose, onRuleUpdated }) => {
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -107,19 +107,19 @@ const EditRuleModal: React.FC<EditRuleModalProps> = ({ rule, language, onClose, 
       if (!result.success) {
         console.error('❌ [EditRuleModal] Error updating rule:', result.error);
         setError(result.error || 'Failed to update rule');
-        showToast('Failed to update rule: ' + result.error, 'error');
+        addToast('Failed to update rule: ' + result.error, 'error');
         return;
       }
 
       console.log('✅ [EditRuleModal] Rule updated successfully');
-      showToast(`✅ Grammar rule "${formData.name}" updated successfully!`, 'success');
+      addToast(`✅ Grammar rule "${formData.name}" updated successfully!`, 'success');
       onRuleUpdated();
       onClose();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update rule';
       console.error('❌ [EditRuleModal] Exception:', message);
       setError(message);
-      showToast(message, 'error');
+      addToast(message, 'error');
     } finally {
       setLoading(false);
     }
