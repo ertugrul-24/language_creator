@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import type { Language } from '@/types/database';
 import { getRules } from '@/services/ruleService';
 import AddRuleModal from '@/components/language-detail/AddRuleModal';
+import EditRuleModal from '@/components/language-detail/EditRuleModal';
+import DeleteRuleConfirmModal from '@/components/language-detail/DeleteRuleConfirmModal';
 
 interface RulesTabProps {
   language: Language;
@@ -33,6 +35,8 @@ const RulesTab: React.FC<RulesTabProps> = ({ language, canEdit }) => {
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [itemsToShow, setItemsToShow] = useState(50);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingRule, setEditingRule] = useState<GrammarRule | null>(null);
+  const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
 
   // Fetch all rules
   useEffect(() => {
@@ -263,20 +267,14 @@ const RulesTab: React.FC<RulesTabProps> = ({ language, canEdit }) => {
                     {canEdit && (
                       <div className="flex gap-2 ml-4">
                         <button
-                          onClick={() => {
-                            // Edit functionality - to be implemented
-                            console.log('Edit rule:', rule.id);
-                          }}
+                          onClick={() => setEditingRule(rule)}
                           className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300 hover:text-slate-100"
                           title="Edit rule"
                         >
                           <span className="text-lg">✏️</span>
                         </button>
                         <button
-                          onClick={() => {
-                            // Delete functionality - to be implemented
-                            console.log('Delete rule:', rule.id);
-                          }}
+                          onClick={() => setDeletingRuleId(rule.id)}
                           className="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-slate-300 hover:text-red-300"
                           title="Delete rule"
                         >
@@ -339,6 +337,27 @@ const RulesTab: React.FC<RulesTabProps> = ({ language, canEdit }) => {
           language={language}
           onClose={() => setShowAddModal(false)}
           onRuleAdded={handleRuleAdded}
+        />
+      )}
+
+      {/* Edit Rule Modal */}
+      {editingRule && (
+        <EditRuleModal
+          rule={editingRule}
+          language={language}
+          onClose={() => setEditingRule(null)}
+          onRuleUpdated={handleRuleAdded}
+        />
+      )}
+
+      {/* Delete Rule Confirmation Modal */}
+      {deletingRuleId && (
+        <DeleteRuleConfirmModal
+          ruleName={allRules.find((r) => r.id === deletingRuleId)?.name || 'Unknown Rule'}
+          ruleId={deletingRuleId}
+          languageId={language.id}
+          onClose={() => setDeletingRuleId(null)}
+          onRuleDeleted={handleRuleAdded}
         />
       )}
     </div>
