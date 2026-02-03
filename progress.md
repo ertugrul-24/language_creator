@@ -426,26 +426,34 @@ This document tracks development phases with clear milestones. Each phase includ
   10. Delete words → totalWords decrements
   11. Check browser console (F12) → see detailed Supabase responses
 
-- [ ] **P2.5** Build grammar rules page (Rules tab)
-  - [ ] Create list view of grammar rules
-  - [ ] Display: Rule name, Category, Pattern preview, Added by
-  - [ ] Search/filter by category (morphology, phonology, syntax, pragmatics)
-  - [ ] "Add Rule" button
+- [x] **P2.5** Build grammar rules page (Rules tab)
+  - [x] Create list view of grammar rules with search and filter
+  - [x] Display: Rule name, Category, Pattern preview, Added by (in cards)
+  - [x] Search/filter by category (morphology, phonology, syntax, pragmatics)
+  - [x] "Add Rule" button + modal form
+  - [x] Edit/Delete buttons with modals
+  - [x] Pagination with "Load More" button
+  - [x] Error handling and success notifications
 
-- [ ] **P2.6** Create add/edit rule form
-  - [ ] Fields:
-    - [ ] Rule Name
-    - [ ] Description (markdown editor)
-    - [ ] Category dropdown
-    - [ ] Rule Type dropdown (phoneme_rule, inflection, word_order, agreement)
-    - [ ] Pattern (regex or prose)
-    - [ ] Examples (dynamic: multiple input/output/explanation triplets)
-  - [ ] Validation (at least 3 examples, pattern required)
+- [x] **P2.6** Create add/edit rule form
+  - [x] Fields:
+    - [x] Rule Name (required)
+    - [x] Description (textarea)
+    - [x] Category dropdown (4 options)
+    - [x] Rule Type dropdown (4 types: phoneme_rule, inflection, word_order, agreement)
+    - [x] Pattern (text input)
+    - [x] Examples (dynamic: multiple input/output/explanation triplets)
+  - [x] Validation (all required fields, example input/output required)
+  - [x] Add/Remove example buttons
+  - [x] Dark slate theme matching word modals
 
-- [ ] **P2.7** Implement rule CRUD in Supabase
-  - [ ] Write Supabase functions for add/update/delete/get
-  - [ ] Update language stats (totalRules)
-  - [ ] Enforce permissions (owner/editor only)
+- [x] **P2.7** Implement rule CRUD in Supabase
+  - [x] Created ruleService.ts with getRules/addRule/updateRule/deleteRule functions
+  - [x] Update language stats (total_rules) after add/delete
+  - [x] Enforce ownership verification (owner_id check)
+  - [x] SQL migration: CREATE_GRAMMAR_RULES_TABLE.sql with RLS policies
+  - [x] Comprehensive logging for debugging
+  - [x] Error handling with meaningful messages
 
 - [ ] **P2.8** Build courses list page (Courses tab)
   - [ ] Display created/enrolled courses
