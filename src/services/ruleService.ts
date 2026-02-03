@@ -115,14 +115,18 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
     };
 
     console.log('📤 [ruleService.addRule] Sending payload to Supabase:', payload);
+    console.log('📤 [ruleService.addRule] Payload keys:', Object.keys(payload));
+    console.log('📤 [ruleService.addRule] Payload JSON:', JSON.stringify(payload));
 
-    // Validate payload
-    console.log('[ruleService.addRule] Payload validation:');
+    // Validate payload - verify EXACT column names
+    console.log('[ruleService.addRule] Payload validation (checking exact snake_case column names):');
     console.log('  language_id:', payload.language_id, payload.language_id ? 'OK' : 'NULL');
     console.log('  owner_id:', payload.owner_id, payload.owner_id ? 'OK' : 'NULL');
     console.log('  name:', payload.name, payload.name ? 'OK' : 'EMPTY');
+    console.log('  description:', payload.description, payload.description ? 'OK' : 'NULL/EMPTY');
     console.log('  category:', payload.category, payload.category ? 'OK' : 'EMPTY');
     console.log('  rule_type:', payload.rule_type, payload.rule_type ? 'OK' : 'EMPTY');
+    console.log('  pattern:', payload.pattern, payload.pattern ? 'OK' : 'NULL');
     console.log('  examples (count):', Array.isArray(payload.examples) ? payload.examples.length : 'NOT_ARRAY');
 
     const { data, error } = await supabase
@@ -131,7 +135,12 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
       .select('*')
       .single();
 
-    // Log FULL Supabase response
+    // Log FULL Supabase response with REQUEST details
+    console.log('🔵 [ruleService.addRule] INSERT QUERY DETAILS:');
+    console.log('   Table: grammar_rules');
+    console.log('   Method: .insert([payload]).select("*").single()');
+    console.log('   Payload fields count:', Object.keys(payload).length);
+    console.log('   Payload:', payload);
     console.log('📥 [ruleService.addRule] Supabase response:', {
       status: error ? 'ERROR' : 'SUCCESS',
       data,
