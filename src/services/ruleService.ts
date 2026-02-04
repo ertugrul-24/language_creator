@@ -129,41 +129,69 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
     console.log('  pattern:', payload.pattern, payload.pattern ? 'OK' : 'NULL');
     console.log('  examples (count):', Array.isArray(payload.examples) ? payload.examples.length : 'NOT_ARRAY');
 
-    const { data, error } = await supabase
-      .from('grammar_rules')
-      .insert([payload])
-      .select('*')
-      .single();
+    console.log('[ruleService.addRule] Attempting insert via table...');
+    
+    // Strategy 1: RPC Call (Primary) to bypass loose table permission/visibility issues
+    // We map keys manually to match RPC arguments: p_language_id, p_owner_id, etc.
+    const { data, error } = await supabase.rpc('create_grammar_rule', {
+      p_language_id: payload.language_id,
+      p_owner_id: payload.owner_id,
+      p_name: payload.name,
+      p_description: payload.description,
+      p_category: payload.category,
+      p_rule_type: payload.rule_type,
+      p_pattern: payload.pattern,
+      p_examples: payload.examples
+    });
+
+    // Strategy 2: Fallback to Table Insert (Legacy) if RPC fails with "function not found"
+    // (This allows for backward compatibility if migration hasn't run yet)
+    let finalData = data;
+    let finalError = error;
+
+    if (error && (error.code === 'PGRST202' || error.message?.includes('function not found'))) {
+      console.warn('⚠️ [ruleService.addRule] RPC failed (function missing), falling back to TABLE insert...', error);
+      const { data: tableData, error: tableError } = await supabase
+        .from('grammar_rules')
+        .insert([payload])
+        .select('*')
+        .single();
+        
+      finalData = tableData;
+      finalError = tableError;
+    }
 
     // Log FULL Supabase response with REQUEST details
-    console.log('🔵 [ruleService.addRule] INSERT QUERY DETAILS:');
-    console.log('   Table: grammar_rules');
-    console.log('   Method: .insert([payload]).select("*").single()');
-    console.log('   Payload fields count:', Object.keys(payload).length);
-    console.log('   Payload:', payload);
+    console.log('🔵 [ruleService.addRule] QUERY RESULT:');
+    console.log('   Method: RPC create_grammar_rule (or fallback)');
     console.log('📥 [ruleService.addRule] Supabase response:', {
-      status: error ? 'ERROR' : 'SUCCESS',
-      data,
-      error: error ? {
-        message: error.message,
-        code: (error as any).code,
-        status: (error as any).status,
-        details: (error as any).details,
-        hint: (error as any).hint
+      status: finalError ? 'ERROR' : 'SUCCESS',
+      data: finalData,
+      error: finalError ? {
+        message: finalError.message,
+        code: (finalError as any).code,
+        status: (finalError as any).status,
+        details: (finalError as any).details,
+        hint: (finalError as any).hint
       } : null
     });
 
-    if (error) {
-      console.error('❌ [ruleService.addRule] Insert error:', error.message);
-      throw error;
+    if (finalError) {
+      console.error('❌ [ruleService.addRule] Insert error:', finalError.message);
+      throw finalError;
     }
 
-    if (!data || !data.id) {
+    // data from RPC might be just the object or inside a wrapper depending on return type
+    // but we used 'returns jsonb' and 'to_jsonb', so it should be the object directly OR a single row.
+    // .rpc returns `data` as the return value.
+    const savedRule = finalData; 
+
+    if (!savedRule || !savedRule.id) {
       console.error('❌ [ruleService.addRule] Insert returned no data');
       throw new Error('Insert succeeded but returned empty response');
     }
 
-    console.log('✅ [ruleService.addRule] Rule persisted:', data.id);
+    console.log('✅ [ruleService.addRule] Rule persisted:', savedRule.id);
 
     // Update language stats
     console.log('📊 [ruleService.addRule] Updating language stats...');
@@ -174,7 +202,7 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
       console.log('✅ [ruleService.addRule] Language stats updated');
     }
 
-    return { success: true, ruleId: data.id, error: null };
+    return { success: true, ruleId: savedRule.id, error: null };
   } catch (err) {
     console.error('❌ [ruleService.addRule] Exception caught');
     
