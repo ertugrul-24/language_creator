@@ -103,95 +103,64 @@ export const addRule = async (input: AddRuleInput): Promise<{ success: boolean; 
 
     console.log('✅ [ruleService.addRule] User authenticated:', user.id);
 
+    // Verify payload strictly against schema to prevent PGRST204 (Column not found)
+    // Table: public.grammar_rules
+    // Columns: language_id, owner_id, name, description, category, rule_type, pattern, examples
     const payload = {
       language_id: input.languageId,
       owner_id: user.id,
       name: input.name,
-      description: input.description,
+      description: input.description || null, // Explicit null if missing
       category: input.category,
       rule_type: input.ruleType,
-      pattern: input.pattern || null,
+      pattern: input.pattern || '', // NOT NULL in DB, so default to empty string if missing
       examples: input.examples || [],
     };
 
-    console.log('📤 [ruleService.addRule] Sending payload to Supabase:', payload);
-    console.log('📤 [ruleService.addRule] Payload keys:', Object.keys(payload));
-    console.log('📤 [ruleService.addRule] Payload JSON:', JSON.stringify(payload));
+    console.log('📤 [ruleService.addRule] Sending STRICT payload to Supabase:', payload);
 
     // Validate payload - verify EXACT column names
-    console.log('[ruleService.addRule] Payload validation (checking exact snake_case column names):');
-    console.log('  language_id:', payload.language_id, payload.language_id ? 'OK' : 'NULL');
-    console.log('  owner_id:', payload.owner_id, payload.owner_id ? 'OK' : 'NULL');
-    console.log('  name:', payload.name, payload.name ? 'OK' : 'EMPTY');
-    console.log('  description:', payload.description, payload.description ? 'OK' : 'NULL/EMPTY');
-    console.log('  category:', payload.category, payload.category ? 'OK' : 'EMPTY');
-    console.log('  rule_type:', payload.rule_type, payload.rule_type ? 'OK' : 'EMPTY');
-    console.log('  pattern:', payload.pattern, payload.pattern ? 'OK' : 'NULL');
-    console.log('  examples (count):', Array.isArray(payload.examples) ? payload.examples.length : 'NOT_ARRAY');
+    console.log('[ruleService.addRule] Payload validation:');
+    console.log('  language_id:', payload.language_id);
+    console.log('  owner_id:', payload.owner_id);
+    console.log('  name:', payload.name);
+    console.log('  category:', payload.category);
+    console.log('  rule_type:', payload.rule_type);
+    console.log('  pattern:', payload.pattern);
+    console.log('  examples (isArray):', Array.isArray(payload.examples));
 
-    console.log('[ruleService.addRule] Attempting insert via table...');
-    
-    // Strategy 1: RPC Call (Primary) to bypass loose table permission/visibility issues
-    // We map keys manually to match RPC arguments: p_language_id, p_owner_id, etc.
-    const { data, error } = await supabase.rpc('create_grammar_rule', {
-      p_language_id: payload.language_id,
-      p_owner_id: payload.owner_id,
-      p_name: payload.name,
-      p_description: payload.description,
-      p_category: payload.category,
-      p_rule_type: payload.rule_type,
-      p_pattern: payload.pattern,
-      p_examples: payload.examples
-    });
-
-    // Strategy 2: Fallback to Table Insert (Legacy) if RPC fails with "function not found"
-    // (This allows for backward compatibility if migration hasn't run yet)
-    let finalData = data;
-    let finalError = error;
-
-    if (error && (error.code === 'PGRST202' || error.message?.includes('function not found'))) {
-      console.warn('⚠️ [ruleService.addRule] RPC failed (function missing), falling back to TABLE insert...', error);
-      const { data: tableData, error: tableError } = await supabase
-        .from('grammar_rules')
-        .insert([payload])
-        .select('*')
-        .single();
-        
-      finalData = tableData;
-      finalError = tableError;
-    }
+    const { data, error } = await supabase
+      .from('grammar_rules')
+      .insert([payload])
+      .select('*')
+      .single();
 
     // Log FULL Supabase response with REQUEST details
     console.log('🔵 [ruleService.addRule] QUERY RESULT:');
-    console.log('   Method: RPC create_grammar_rule (or fallback)');
+    console.log('   Method: .insert([payload]).select().single()');
     console.log('📥 [ruleService.addRule] Supabase response:', {
-      status: finalError ? 'ERROR' : 'SUCCESS',
-      data: finalData,
-      error: finalError ? {
-        message: finalError.message,
-        code: (finalError as any).code,
-        status: (finalError as any).status,
-        details: (finalError as any).details,
-        hint: (finalError as any).hint
+      status: error ? 'ERROR' : 'SUCCESS',
+      data,
+      error: error ? {
+        message: error.message,
+        code: (error as any).code,
+        status: (error as any).status,
+        details: (error as any).details,
+        hint: (error as any).hint
       } : null
     });
 
-    if (finalError) {
-      console.error('❌ [ruleService.addRule] Insert error:', finalError.message);
-      throw finalError;
+    if (error) {
+      console.error('❌ [ruleService.addRule] Insert error:', error.message);
+      throw error;
     }
 
-    // data from RPC might be just the object or inside a wrapper depending on return type
-    // but we used 'returns jsonb' and 'to_jsonb', so it should be the object directly OR a single row.
-    // .rpc returns `data` as the return value.
-    const savedRule = finalData; 
-
-    if (!savedRule || !savedRule.id) {
+    if (!data || !data.id) {
       console.error('❌ [ruleService.addRule] Insert returned no data');
       throw new Error('Insert succeeded but returned empty response');
     }
 
-    console.log('✅ [ruleService.addRule] Rule persisted:', savedRule.id);
+    console.log('✅ [ruleService.addRule] Rule persisted:', data.id);
 
     // Update language stats
     console.log('📊 [ruleService.addRule] Updating language stats...');
